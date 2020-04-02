@@ -1,0 +1,60 @@
+{
+  "name": "macrozilla",
+  "display_name": "Macrozilla",
+  "version": "0.1.0",
+  "description": "Use macros to create advanced rules",
+  "author": "Galveston01",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "mozilla",
+    "iot",
+    "adapter",
+    "rule",
+    "macro"
+  ],
+  "homepage": "https://github.com/Galveston01/macrozilla",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Galveston01/macrozilla.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Galveston01/macrozilla/issues"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "files": [
+    "LICENSE.md",
+    "README.md",
+    "SHA256SUMS",
+    "index.js",
+    "manifest.json",
+    "lib/",
+    "js/",
+    "css/",
+    "views/",
+    "images/"
+  ],
+  "moziot": {
+    "api": {
+      "min": 2,
+      "max": 2
+    },
+    "type": "extension",
+    "plugin": true,
+    "exec": "{nodeLoader} {path}"
+  },
+  "dependencies": {
+    "@babel/types": "^7.9.0"
+  }
+}

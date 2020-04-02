@@ -1,0 +1,204 @@
+#main-menu #extension-macrozilla-menu-item {
+    background-image: url('../images/menu-icon.svg');
+}
+
+#extension-macrozilla-view {
+    height: 100%;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+  
+#extension-macrozilla-container {
+    display:flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.6rem;
+    color: #ffffff;
+}
+
+#extension-macrozilla-content {
+    position: relative;
+    top: 6rem;
+    pointer-events: auto;
+}
+
+#extension-macrozilla-navbar {
+    position: relative;
+    overflow: hidden;
+    top: 4rem;
+    pointer-events: auto;
+}
+
+#extension-macrozilla-navbar ul {
+    list-style: none;
+    margin:2px;
+    padding:3px;
+    margin-left: -1em;
+    margin-right: -1em;
+}
+
+#extension-macrozilla-navbar ul li {
+    float:left;
+    text-align: center;
+    font-size: 2rem;
+    color: #ffffff;
+    padding: 0 1em;
+    border-left: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+}
+
+#extension-macrozilla-navbar ul li[active] {
+    font-weight: bold;
+}
+
+#extension-macrozilla-navbar ul li:hover:not([active]) {
+    opacity:0.8;
+    text-decoration: underline;
+}
+
+.extension-macrozilla-error {
+    background-color: #505050;
+    font-size: 1.8rem;
+    padding: 5px;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    margin-bottom: 5px;    
+    margin-left: 15px;
+}
+
+.extension-macrozilla-error::before {
+    background-color: #ff0000;
+    color: #ff0000;
+    content: "";
+    padding: 5px;
+    position: absolute;
+    margin-top: -5px;
+    margin-left: -20px;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    height: 2.4rem;
+    width: 0.5rem;
+}
+
+.extension-macrozilla-warning {
+    background-color: #505050;
+    font-size: 1.8rem;
+    padding: 5px;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    margin-bottom: 5px;
+    margin-left: 15px;
+}
+
+.extension-macrozilla-warning::before {
+    background-color: #ff9900;
+    color: #ff9900;
+    content: "";
+    padding: 5px;
+    position: absolute;
+    margin-top: -5px;
+    margin-left: -20px;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    height: 2.4rem;
+    width: 0.5rem;
+}
+
+.extension-macrozilla-create {
+    bottom: 2rem;
+    right: 2rem;
+    background: no-repeat center/100% url(/images/add.svg);
+    pointer-events: all;
+}
+
+.extension-macrozilla-back {
+    pointer-events: all;
+}
+
+#extension-macrozilla-dialog {
+    pointer-events: all;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.extension-macrozilla-dialog-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    padding-bottom: 10px;
+    margin-top: -2px;
+}
+
+.extension-macrozilla-dialog-content {
+    background-color: #597285;
+    margin: 1rem auto;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.extension-macrozilla-dialog-content div {
+    display:grid;
+    grid-template-columns: max-content max-content;
+    grid-gap:5px;
+    align-items: center;
+}
+
+.extension-macrozilla-dialog-content div input {
+    width: 15rem;
+}
+
+.extension-macrozilla-dialog-content div input[type=checkbox] {
+    margin: 19px 0;
+    height: 60%;
+}
+
+.extension-macrozilla-dialog-content button {
+    height: 4rem;
+    background-color: #7f93a1;
+    width: 100%;
+    margin-bottom: 0px;
+    margin-top: 1.25rem;
+}
+
+.extension-macrozilla-dialog-content div select {
+    width: 100%;
+}
+
+.extension-macrozilla-dialog-content div label {
+    width: 10rem;
+}
+
+#extension-macrozilla-variables {
+    width: 60rem;
+}
+
+#extension-macrozilla-variables div {
+    /*list-style: none;
+    background-color: #597285;
+    margin: 1rem auto;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    width: 60rem;
+    display: flex;*/
+    align-items: center;
+    /* grid-auto-rows: minmax(100px, auto); */
+    grid-template-columns: repeat(3, 1fr);
+}
+
+#extension-macrozilla-variables div span {
+    width: 33%;
+}
+
+#extension-macrozilla-variables div input {
+    width: 33%;
+}
+
+#extension-macrozilla-variables div button {
+    height: 100%;
+    width: 20%;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    margin-left: auto;
+    background: no-repeat center/100% url('../images/delete.svg');
+    border-color: rgba(0,0,0,0);
+}

@@ -1,0 +1,38 @@
+{
+  "author": "Galveston01",
+  "content_scripts": [
+    {
+      "js": [
+        "js/extension.js"
+      ],
+      "css": [
+        "css/extension.css"
+      ]
+    }
+  ],
+  "description": "Use macros to create advanced rules",
+  "gateway_specific_settings": {
+    "webthings": {
+      "exec": "{nodeLoader} {path}",
+      "primary_type": "adapter",
+      "strict_max_version": "*",
+      "strict_min_version": "0.10.0"
+    }
+  },
+  "homepage_url": "https://github.com/Galveston01/macrozilla",
+  "id": "macrozilla",
+  "license": "GPL-3.0",
+  "manifest_version": 1,
+  "name": "Macrozilla",
+  "short_name": "Macros",
+  "version": "0.1.0",
+  "web_accessible_resources": [
+    "js/*.js",
+    "css/*.css",
+    "views/*.html",
+    "images/*.svg"
+  ],
+
+  "options": {
+  }
+}
