@@ -22,7 +22,6 @@ export default class extends window.PageTemplate {
                   input.type = 'number';
                   input.value = res[x].value;
                   input.onchange = () => {
-                    console.log(x, parseInt(input.value));
                     window.API.postJson('/extensions/macrozilla/api/set-variable', {var: x, value: parseInt(input.value)});
                   };
                   break;
@@ -31,7 +30,6 @@ export default class extends window.PageTemplate {
                   input.type = 'checkbox';
                   input.checked = res[x].value;
                   input.onchange = () => {
-                    console.log(x, input.checked);
                     window.API.postJson('/extensions/macrozilla/api/set-variable', {var: x, value: input.checked});
                   };
                   break;
@@ -40,7 +38,6 @@ export default class extends window.PageTemplate {
                   input.type = 'text';
                   input.value = res[x].value;
                   input.onchange = () => {
-                    console.log(x, input.value);
                     window.API.postJson('/extensions/macrozilla/api/set-variable', {var: x, value: input.value});
                   };
                   break;
@@ -56,14 +53,16 @@ export default class extends window.PageTemplate {
               div.appendChild(button);
             });
           })
-          .catch(() => {
+          .catch((e) => {
             window.showNotification('error', 'An internal error occured!', document.getElementById('extension-macrozilla-content'));
+            console.error(e);
           });
         document.getElementById('extension-macrozilla-create').onclick = () => (window.location.href = '/extensions/macrozilla#variables-create');
         document.getElementById('extension-macrozilla-create').style.display = 'block';
       })
-      .catch(() => {
+      .catch((e) => {
         window.showNotification('error', 'An internal error occured!', document.getElementById('extension-macrozilla-content'));
+        console.error(e);
       });
   }
 

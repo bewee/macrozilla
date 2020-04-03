@@ -44,13 +44,15 @@ export default class extends window.PageTemplate {
             } else {
               window.showNotification('error', `Error: ${res}`, document.getElementById('extension-macrozilla-dialog'), 5);
             }
-          }).catch(() => {
+          }).catch((e) => {
             window.showNotification('error', 'An internal error occured!', document.getElementById('extension-macrozilla-dialog'));
+            console.error(e);
           });
         };
       })
-      .catch(() => {
+      .catch((e) => {
         window.showNotification('error', 'An internal error occured!', document.getElementById('extension-macrozilla-content'));
+        console.error(e);
       });
   }
 

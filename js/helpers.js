@@ -1,4 +1,4 @@
-export function loadPage(page) {
+window.loadPage = function(page) {
   return new Promise((resolve, reject) => {
     fetch(page)
       .then((res) => {
@@ -14,9 +14,9 @@ export function loadPage(page) {
         reject(err);
       });
   });
-}
+};
 
-export function showNotification(type, text, container, timeout = 0) {
+window.showNotification = function(type, text, container, timeout = 0) {
   const div = document.createElement('DIV');
   div.className = `extension-macrozilla-${type}`;
   div.innerHTML = text;
@@ -26,30 +26,38 @@ export function showNotification(type, text, container, timeout = 0) {
       div.remove();
     }, timeout*1000);
   }
-}
+};
 
-export function hideThing(id) {
+window.hideThing = function(id) {
   const s = document.createElement('STYLE');
   s.innerHTML = `#thing-${id}{display: none; pointer-events: none;}`;
   document.body.appendChild(s);
   console.log(id, 'macrozilla device hidden!');
-}
+};
 
-export function addThing(id) {
-  window.API.addThing({id: id, title: id, description: id}).then(() => {
-    console.log(id, 'macrozilla device added!');
-  });
-}
+window.addThing = function(id, title, description) {
+  window.API.postJson('/extensions/macrozilla/api/list-variables', {})
+    .then((res) => {
+      const props = {};
+      Object.keys(res).forEach((x) => {
+        props[x] = {type: res[x].datatype, value: res[x].value};
+      });
+      return window.API.addThing({id: id, title: title, description: description, properties: props});
+    })
+    .then(() => {
+      console.log(id, 'macrozilla device added!');
+    });
+};
 
-export function basename(path) {
+window.basename = function(path) {
   try {
     return path.split('/').reverse()[0];
   } catch (ex) {
     return false;
   }
-}
+};
 
-export class PageTemplate {
+window.PageTemplate = class {
 
   constructor(title) {
     this.title = title;
@@ -57,7 +65,7 @@ export class PageTemplate {
 
   show(path, container) {
     return new Promise((resolve, reject) => {
-      loadPage(`/extensions/macrozilla/views/${this.title}.html`)
+      window.loadPage(`/extensions/macrozilla/views/${this.title}.html`)
         .then((text) => {
           document.getElementById(container).innerHTML = text;
           if (path != '') {
@@ -82,4 +90,4 @@ export class PageTemplate {
         });
     });
   }
-}
+};

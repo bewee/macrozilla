@@ -25,8 +25,9 @@ s.addEventListener('load', () => {
             const page = new js.default.prototype.constructor('main');
             page.show(path);
           })
-          .catch(() => {
+          .catch((e) => {
             document.getElementById('extension-macrozilla-view').innerHTML = '<div class="extension-macrozilla-error">An internal error occured!</div>';
+            console.error(e);
           });
       }
 

@@ -3,7 +3,8 @@ export default class extends window.PageTemplate {
   show(path) {
     if (path == '') path = 'macros';
     super.show(path, 'extension-macrozilla-view')
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
         if (document.getElementById('extension-macrozilla-content'))
           window.showNotification('error', 'An internal error occured!', document.getElementById('extension-macrozilla-content'));
         else
