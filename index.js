@@ -13,10 +13,21 @@ module.exports = (addonManager) => {
   db.open().then(() => {
     return db.loadConfig();
   }).then((config) => {
+    let confchange = false;
     if (!('variables' in config)) {
       config.variables = {};
-      db.saveConfig(config);
+      confchange = true;
     }
+    if (!('macros' in config)) {
+      config.macros = {};
+      confchange = true;
+    }
+    if (!('macro_next_id' in config)) {
+      config.macro_next_id = 1;
+      confchange = true;
+    }
+    if (confchange) db.saveConfig(config);
+
     const adapter = new Adapter(addonManager, db, config);
     const apihandler = new APIHandler(addonManager, db, config);
     adapter.apihandler = apihandler;

@@ -173,15 +173,7 @@
 }
 
 #extension-macrozilla-variables div {
-    /*list-style: none;
-    background-color: #597285;
-    margin: 1rem auto;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    width: 60rem;
-    display: flex;*/
     align-items: center;
-    /* grid-auto-rows: minmax(100px, auto); */
     grid-template-columns: repeat(3, 1fr);
 }
 
@@ -201,4 +193,148 @@
     margin-left: auto;
     background: no-repeat center/100% url('../images/delete.svg');
     border-color: rgba(0,0,0,0);
+}
+
+#extension-macrozilla-macro {
+    width: 100%;
+    display: flex;
+}
+
+#extension-macrozilla-macro-left {
+    width: 40%;
+    margin-left: 9rem;
+}
+
+#extension-macrozilla-macro-left input {
+    width: 100%;
+    margin: 5px;
+    padding: 5px;
+}
+
+#extension-macrozilla-macro-left textarea {
+    width: 100%;
+    margin: 5px;
+    padding: 5px;
+}
+
+#extension-macrozilla-macro-left select {
+    width: 100%;
+    margin: 5px;
+    padding: 5px;
+}
+
+#extension-macrozilla-macro-triggers {
+    width: 100%;
+    height: 20rem;
+    background: #8a0000;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+#extension-macrozilla-macro-triggers::before {
+    content: "Triggers";
+}
+
+#extension-macrozilla-macro-triggers-create {
+    background: none;
+    position: absolute;
+    width: 3rem;
+    height: 3rem;
+    bottom: 1rem;
+    right: 1rem;
+    color: white;
+    font-size: 3rem;
+    background: #6d0000;
+}
+
+#extension-macrozilla-macro-conditions {
+    width: 100%;
+    height: 20rem;
+    background: #005b00;
+    margin: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+#extension-macrozilla-macro-conditions::before {
+    content: "Conditions";
+}
+
+#extension-macrozilla-macro-conditions-create {
+    background: none;
+    position: absolute;
+    width: 3rem;
+    height: 3rem;
+    bottom: 1rem;
+    right: 1rem;
+    color: white;
+    font-size: 3rem;
+    background: #004d00;
+}
+
+#extension-macrozilla-macro-right {
+    width: 40%;
+    margin-right: 9rem;
+    margin-left: auto;
+}
+
+#extension-macrozilla-macro-actions {
+    width: 100%;
+    height: 60rem;
+    background: #a86d00;
+    margin: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+#extension-macrozilla-macro-actions::before {
+    content: "Actions";
+}
+
+#extension-macrozilla-macro-actions-create {
+    background: none;
+    position: absolute;
+    width: 3rem;
+    height: 3rem;
+    bottom: 1rem;
+    right: 1rem;
+    color: white;
+    font-size: 3rem;
+    background-color: #8d5b00;
+}
+
+#extension-macrozilla-macros {
+    width: 60rem;
+}
+
+#extension-macrozilla-macros div {
+    height: 4rem;
+    display: flex;
+    flex-direction: row;
+    pointer-events: all;
+}
+
+#extension-macrozilla-macros div span {
+    width: auto;
+}
+
+#extension-macrozilla-macros div button {
+    height: 4rem;
+    width: 4rem;
+    margin: 0px;
+    margin-left: auto;
+    background: no-repeat center/100% url(../images/delete.svg);
+    border-color: rgba(0,0,0,0);
+}
+
+#extension-macrozilla-macro-save {
+    margin-left: auto;
+    margin-right: 8rem;
+    width: 15rem;
 }

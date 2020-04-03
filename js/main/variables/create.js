@@ -36,7 +36,7 @@ export default class extends window.PageTemplate {
               break;
           }
           window.API.postJson(
-            `/extensions/macrozilla/api/create-variable`,
+            '/extensions/macrozilla/api/create-variable',
             {name: name, datatype: datatype, value: value},
           ).then((res) => {
             if (res === true) {
