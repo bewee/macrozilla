@@ -1,0 +1,10 @@
+:host{
+    width: 500px;
+    position: fixed;
+    display: block;
+    background: #5A9AC9;
+    right: 0;
+    top: 10rem;
+    height: calc(100vh - 10rem);
+    box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.15);
+}

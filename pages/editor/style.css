@@ -1,0 +1,9 @@
+.top-bar{
+    width: 100vw;
+    height: 10rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background:#7f3939;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.15);
+}

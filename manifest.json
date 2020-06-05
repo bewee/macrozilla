@@ -29,7 +29,12 @@
   "web_accessible_resources": [
     "js/*.js",
     "css/*.css",
-    "views/*.html",
+    "pages/*.html",
+    "pages/*.js",
+    "pages/*.css",
+    "components/*.html",
+    "components/*.js",
+    "components/*.css",
     "images/*.svg"
   ],
 
