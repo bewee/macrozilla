@@ -39,5 +39,25 @@
   ],
 
   "options": {
+    "default": {
+      "pollscanIntervalInterval": 6000
+    },
+    "schema": {
+      "type": "object",
+      "required": [
+        "accessToken",
+        "scanInterval"
+      ],
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "title": "The access token for the gateway"
+        },
+        "scanInterval": {
+          "type": "number",
+          "title": "Interval in seconds that defines how often to scan for new devices"
+        }
+      }
+    }
   }
 }
