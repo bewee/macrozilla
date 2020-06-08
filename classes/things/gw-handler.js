@@ -9,6 +9,7 @@ class GWHandler extends EventEmitter {
   constructor(accessToken) {
     super();
     this.accessToken = accessToken;
+    this.sockets = {};
     this.devices = {};
   }
 
@@ -25,22 +26,26 @@ class GWHandler extends EventEmitter {
   listDevices() {
     return new Promise(((resolve) => {
       (async () => {
+        const sockets = {};
         const newdevices = {};
-        const scandevices = await this.webThingsClient.getDevices();
-        for (const device of scandevices) {
-          if (device.href in this.devices) {
-            newdevices[device.href] = this.devices[device.href];
+        const devices = await this.webThingsClient.getDevices();
+        for (const device of devices) {
+          newdevices[device.href] = device;
+          if (device.href in this.sockets) {
+            sockets[device.href] = this.sockets[device.href];
           } else {
-            newdevices[device.href] = this.connectDevice(device.href);
+            sockets[device.href] = await this.connectDevice(device);
           }
         }
         this.devices = newdevices;
+        this.sockets = sockets;
         resolve();
       })();
     }));
   }
 
-  connectDevice(href) {
+  connectDevice(device) {
+    const href = device.href;
     const thingUrl = `ws://localhost:8080${href}`;
     const webSocketClient = new WebSocketClient();
 
@@ -48,7 +53,8 @@ class GWHandler extends EventEmitter {
       console.error(`Could not connect to ${thingUrl}: ${error}`);
     });
 
-    webSocketClient.on('connect', (connection) => {
+    webSocketClient.on('connect', async (connection) => {
+      webSocketClient.connectionVar = connection;
       connection.on('error', (error) => {
         console.warn(`Connection to ${thingUrl} failed: ${error}`);
       });
@@ -57,17 +63,40 @@ class GWHandler extends EventEmitter {
         console.warn(`Connection to ${thingUrl} closed`);
       });
 
-      connection.on('message', async (message) => {
-        //console.log('gateway', message);
+      connection.on('message', (message) => {
+        //console.log('gateway message', message);
         if (message.type === 'utf8' && message.utf8Data) {
           const msg = JSON.parse(message.utf8Data);
-          this.emit('message', msg);
-          if (msg.messageType == 'propertyStatus' && msg.data) {
-            for (const key in msg.data)
-              this.emit('propertyChange', msg.id, key, msg.data[key]);
+          if (msg.id && msg.data) {
+            this.emit('message', msg);
+            switch (msg.messageType) {
+              case 'propertyStatus':
+                for (const key in msg.data)
+                  this.emit('propertyChanged', msg.id, key, msg.data[key]);
+                break;
+              case 'actionStatus':
+                for (const key in msg.data)
+                  this.emit('actionTriggered', msg.id, key, msg.data[key]);
+                break;
+              case 'event':
+                for (const key in msg.data)
+                  this.emit('eventTriggered', msg.id, key, msg.data[key]);
+                break;
+              case 'connected':
+                this.emit('connectStateChanged', msg.id, msg.data);
+                break;
+              default:
+                this.emit('unknown', msg.id, msg.data);
+                break;
+            }
           }
         }
       });
+
+      // subscribe all events
+      setTimeout(() => {
+        connection.send(JSON.stringify({messageType: 'addEventSubscription', data: device.events}));
+      }, 100);
     });
 
     webSocketClient.connect(`${thingUrl}?jwt=${this.accessToken}`);
