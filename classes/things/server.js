@@ -16,6 +16,10 @@ class ThingsClass {
     this.triggerClass = require('./trigger');
   }
 
+  async set(description, value) {
+    await this.gwhandler.setProperty(description.thing, description.property, value);
+  }
+
 }
 
 module.exports = ThingsClass;

@@ -11,7 +11,7 @@ class TriggerClass {
     const description = (await this.handler.apihandler.dbhandler.getMacro(macro_id)).description;
     const triggerBlock = description.find((block) => block.type == 'trigger');
     const callback = () => {
-      this.handler.exec(macro_id);
+      this.handler.execMacro(macro_id);
     };
     this.triggerInstances[macro_id] = [];
     if (triggerBlock && triggerBlock.list) {
@@ -27,6 +27,9 @@ class TriggerClass {
       if (instance.destruct) instance.destruct();
     }
     delete this.triggerInstances[macro_id];
+  }
+
+  async exec() {
   }
 
 }

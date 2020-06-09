@@ -104,6 +104,21 @@ class GWHandler extends EventEmitter {
     return webSocketClient;
   }
 
+  async setProperty(thing, property, value) {
+    if (!this.devices[`/things/${thing}`].properties[property]) {
+      console.log('Unknown property', thing, property);
+    }
+    switch (this.devices[`/things/${thing}`].properties[property].type) {
+      case 'boolean':
+        value = (value == 'true') || parseInt(value);
+        break;
+      case 'number': case 'integer':
+        value = parseInt(value);
+        break;
+    }
+    await this.webThingsClient.setProperty({links: [{rel: 'property', href: `/things/${thing}/properties/${property}`}]}, property, value);
+  }
+
 }
 
 module.exports = GWHandler;
