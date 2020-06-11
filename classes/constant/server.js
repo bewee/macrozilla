@@ -1,5 +1,7 @@
 'use strict';
 
+const assert = require('assert');
+
 class ConstantClass {
 
   constructor(handler) {
@@ -7,6 +9,8 @@ class ConstantClass {
   }
 
   async eval(description) {
+    assert(description && typeof description == 'object');
+    assert(description.value);
     return description.value;
   }
 

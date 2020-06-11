@@ -3,6 +3,7 @@
 const WebThingsClient = require('webthings-client').WebThingsClient;
 const WebSocketClient = require('websocket').client;
 const EventEmitter = require('events').EventEmitter;
+const assert = require('assert');
 
 class GWHandler extends EventEmitter {
 
@@ -50,21 +51,28 @@ class GWHandler extends EventEmitter {
     const webSocketClient = new WebSocketClient();
 
     webSocketClient.on('connectFailed', (error) => {
-      console.error(`Could not connect to ${thingUrl}: ${error}`);
+      console.error(`Could not connect to ${thingUrl}: ${error}; Reconnecting in 5s`);
+      setTimeout(connect, 5000);
     });
+
+    const connect = () => {
+      webSocketClient.connect(`${thingUrl}?jwt=${this.accessToken}`);
+    };
 
     webSocketClient.on('connect', async (connection) => {
       webSocketClient.connectionVar = connection;
       connection.on('error', (error) => {
-        console.warn(`Connection to ${thingUrl} failed: ${error}`);
+        console.warn(`Connection to ${thingUrl} failed: ${error}; Reconnecting in 5s`);
+        setTimeout(connect, 5000);
       });
 
       connection.on('close', () => {
-        console.warn(`Connection to ${thingUrl} closed`);
+        console.warn(`Connection to ${thingUrl} closed; Reconnecting in 5s`);
+        setTimeout(connect, 5000);
       });
 
       connection.on('message', (message) => {
-        //console.log('gateway message', message);
+        // console.log('gateway message', message);
         if (message.type === 'utf8' && message.utf8Data) {
           const msg = JSON.parse(message.utf8Data);
           if (msg.id && msg.data) {
@@ -99,24 +107,29 @@ class GWHandler extends EventEmitter {
       }, 100);
     });
 
-    webSocketClient.connect(`${thingUrl}?jwt=${this.accessToken}`);
+    connect();
 
     return webSocketClient;
   }
 
-  async setProperty(thing, property, value) {
-    if (!this.devices[`/things/${thing}`].properties[property]) {
-      console.log('Unknown property', thing, property);
-    }
-    switch (this.devices[`/things/${thing}`].properties[property].type) {
-      case 'boolean':
-        value = (value == 'true') || parseInt(value);
-        break;
-      case 'number': case 'integer':
-        value = parseInt(value);
-        break;
-    }
-    await this.webThingsClient.setProperty({links: [{rel: 'property', href: `/things/${thing}/properties/${property}`}]}, property, value);
+  getProperty(thing, property) {
+    assert(this.devices[`/things/${thing}`], `Unknown thing ${thing}`);
+    assert(this.devices[`/things/${thing}`].properties);
+    assert(this.devices[`/things/${thing}`].properties[property], `Unknown property ${thing}/${property}`);
+    return this.devices[`/things/${thing}`].properties[property];
+  }
+
+  async setPropertyValue(thing, property, value) {
+    const property_obj = this.getProperty(thing, property);
+    assert(property_obj, `Unknown property ${thing}/${property}`);
+    assert(property_obj.type == typeof value || property_obj.type == 'integer' && typeof value == 'number', `Invalid value for ${thing}/${property}`);
+    await this.webThingsClient.setProperty(property_obj, property, value);
+  }
+
+  async getPropertyValue(thing, property) {
+    const property_obj = this.getProperty(thing, property);
+    assert(property_obj, `Unknown property ${thing}/${property}`);
+    return await this.webThingsClient.getProperty(property_obj, property);
   }
 
 }

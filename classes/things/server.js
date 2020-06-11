@@ -1,5 +1,6 @@
 'use strict';
 
+const assert = require('assert');
 const GWHandler = require('./gw-handler');
 
 class ThingsClass {
@@ -17,7 +18,32 @@ class ThingsClass {
   }
 
   async set(description, value) {
-    await this.gwhandler.setProperty(description.thing, description.property, value);
+    assert(description && typeof description == 'object');
+    assert(description.thing && description.property);
+    let val;
+    const property = this.gwhandler.getProperty(description.thing, description.property);
+    switch (property.type) {
+      case 'boolean':
+        val = this.handler.decodeBoolean(value);
+        break;
+      case 'number': case 'integer':
+        val = this.handler.decodeNumber(value);
+        break;
+      case 'string':
+        val = this.handler.decodeString(value);
+        break;
+      default:
+        val = null;
+        break;
+    }
+    await this.gwhandler.setPropertyValue(description.thing, description.property, val);
+  }
+
+  async eval(description) {
+    assert(description && typeof description == 'object');
+    assert(description.thing && description.property);
+    const val = await this.gwhandler.getPropertyValue(description.thing, description.property);
+    return this.handler.encode(val);
   }
 
 }
