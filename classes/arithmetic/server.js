@@ -37,7 +37,7 @@ class ArithmeticClass {
       case 'round':
         return await this.round(description.left, description.right);
       case '=': case '>': case '<': case '>=': case '<=': case '!=':
-        return await this.cmp(description.left, description.right, description.operator);
+        return await this.cmp(description.left, description.right, description.operation);
     }
     return '';
   }
@@ -155,16 +155,15 @@ class ArithmeticClass {
     const lraw = await this.handler.callClass(left.type, 'eval', left);
     const rraw = await this.handler.callClass(right.type, 'eval', right);
     const lval = this.handler.decode(lraw), rval = this.handler.decode(rraw);
-    const cmp = (a, b) => {
-      switch (comparator) {
-        case '=': return a == b;
-        case '>': return a > b;
-        case '<': return a < b;
-        case '>=': return a >= b;
-        case '<=': return a <= b;
-        case '!=': return a != b;
-      }
-    };
+    let cmp;
+    switch (comparator) {
+      case '=': cmp = (a, b) => a == b; break;
+      case '>': cmp = (a, b) => a > b; break;
+      case '<': cmp = (a, b) => a < b; break;
+      case '>=': cmp = (a, b) => a >= b; break;
+      case '<=': cmp = (a, b) => a <= b; break;
+      case '!=': cmp = (a, b) => a != b; break;
+    }
     if (typeof lval == typeof rval) {
       return this.handler.encodeBoolean(cmp(lval, rval));
     } else if (typeof lval == 'string' || typeof rval == 'string') {

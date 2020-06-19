@@ -126,6 +126,7 @@ module.exports = {
     'no-trailing-spaces': 'error',
     'no-undefined': 'error',
     'no-unmodified-loop-condition': 'error',
+    'no-constant-condition': ["error", { "checkLoops": false }],
     'no-unused-vars': [
       'error',
       {
