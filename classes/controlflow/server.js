@@ -24,6 +24,9 @@ class ControlflowClass {
       case 'wait':
         await this.execWait(description);
         break;
+      case 'async':
+        await this.execAsync(description);
+        break;
     }
   }
 
@@ -76,6 +79,11 @@ class ControlflowClass {
     const numseconds = this.handler.decodeNumber(seconds);
 
     await sleep(numseconds*1000);
+  }
+
+  async execAsync(description) {
+    const body = description.body;
+    this.handler.exec(body);
   }
 
 }
