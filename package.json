@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@babel/types": "^7.9.0",
+    "suncalc": "^1.8.0",
     "websocket": "^1.0.31",
     "webthings-client": "1.1.0"
   }

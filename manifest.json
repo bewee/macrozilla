@@ -40,22 +40,38 @@
 
   "options": {
     "default": {
-      "pollscanIntervalInterval": 6000
+      "pollscanIntervalInterval": 6000,
+      "latitude": 40.7128,
+      "longitude": 74.0060
     },
     "schema": {
       "type": "object",
       "required": [
         "accessToken",
-        "scanInterval"
+        "scanInterval",
+        "latitude",
+        "longitude"
       ],
       "properties": {
         "accessToken": {
           "type": "string",
-          "title": "The access token for the gateway"
+          "title": "Access token",
+          "description": "required in order to communicate with devices"
         },
         "scanInterval": {
           "type": "number",
-          "title": "Interval in seconds that defines how often to scan for new devices"
+          "title": "Interval",
+          "description": "in seconds; defines how often to scan for new devices"
+        },
+        "latitude": {
+          "type": "number",
+          "title": "Latitude",
+          "description": "e.g. used for sun events"
+        },
+        "longitude": {
+          "type": "number",
+          "title": "Longitude",
+          "description": "e.g. used for sun events"
         }
       }
     }
