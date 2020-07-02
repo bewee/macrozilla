@@ -1,6 +1,6 @@
 'use strict';
 
-class TriggerClass {
+class TriggersClass {
 
   constructor(handler) {
     this.handler = handler;
@@ -9,9 +9,9 @@ class TriggerClass {
 
   async onLoad(macro_id) {
     const description = (await this.handler.apihandler.dbhandler.getMacro(macro_id)).description;
-    const triggerBlock = description.find((block) => block.type == 'trigger');
+    const triggerBlock = description.find((block) => block.type == 'triggers');
     const callback = async () => {
-      if (await this.handler.callClass('condition', 'check', description)) {
+      if (await this.handler.callClass('conditions', 'check', description)) {
         this.handler.execMacro(macro_id);
       }
     };
@@ -36,4 +36,4 @@ class TriggerClass {
 
 }
 
-module.exports = TriggerClass;
+module.exports = TriggersClass;

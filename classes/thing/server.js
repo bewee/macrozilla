@@ -3,7 +3,7 @@
 const assert = require('assert');
 const GWHandler = require('./gw-handler');
 
-class ThingsClass {
+class ThingClass {
 
   constructor(handler) {
     this.handler = handler;
@@ -48,4 +48,4 @@ class ThingsClass {
 
 }
 
-module.exports = ThingsClass;
+module.exports = ThingClass;

@@ -1,13 +1,13 @@
 'use strict';
 
-class ConditionClass {
+class ConditionsClass {
 
   constructor(handler) {
     this.handler = handler;
   }
 
   async check(description) {
-    const conditionBlock = description.find((block) => block.type == 'condition');
+    const conditionBlock = description.find((block) => block.type == 'conditions');
     if (conditionBlock && conditionBlock.list) {
       for (const condition of conditionBlock.list) {
         const checkres = await this.handler.callClass(condition.type, 'eval', condition);
@@ -23,4 +23,4 @@ class ConditionClass {
 
 }
 
-module.exports = ConditionClass;
+module.exports = ConditionsClass;
