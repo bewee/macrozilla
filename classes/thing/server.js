@@ -46,6 +46,63 @@ class ThingClass {
     return this.handler.encode(val);
   }
 
+  async exec(description) {
+    assert(description && typeof description == 'object');
+    assert(description.thing && description.property && description.action);
+    switch (description.action) {
+      case 'next':
+        await this.next(description.thing, description.property);
+        break;
+      case 'prev':
+        await this.prev(description.thing, description.property);
+        break;
+    }
+  }
+
+  async next(thing, property) {
+    const prop = this.gwhandler.getProperty(thing, property);
+    let val = await this.gwhandler.getPropertyValue(thing, property);
+    switch (prop.type) {
+      case 'boolean':
+        val = !val;
+        break;
+      case 'number': case 'integer':
+        val = val + 1;
+        if (val > prop.maximum) val = prop.minimum;
+        break;
+      case 'string':
+        if (prop.enum) {
+          val = prop.enum.indexOf(val) + 1;
+          if (val >= prop.enum.length) val = 0;
+          val = prop.enum[val];
+        }
+        break;
+    }
+    this.gwhandler.setPropertyValue(thing, property, val);
+  }
+
+  async prev(thing, property) {
+    const prop = this.gwhandler.getProperty(thing, property);
+    let val = await this.gwhandler.getPropertyValue(thing, property);
+    switch (prop.type) {
+      case 'boolean':
+        val = !val;
+        break;
+      case 'number': case 'integer':
+        val = val - 1;
+        if (val < prop.minimum) val = prop.maximum;
+        break;
+      case 'string':
+        if (prop.enum) {
+          val = prop.enum.indexOf(val) - 1;
+          if (val < 0) val = prop.enum.length - 1;
+          val = prop.enum[val];
+        }
+        break;
+    }
+    this.gwhandler.setPropertyValue(thing, property, val);
+  }
+
 }
 
 module.exports = ThingClass;
