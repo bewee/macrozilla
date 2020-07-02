@@ -10,8 +10,10 @@ class TriggerClass {
   async onLoad(macro_id) {
     const description = (await this.handler.apihandler.dbhandler.getMacro(macro_id)).description;
     const triggerBlock = description.find((block) => block.type == 'trigger');
-    const callback = () => {
-      this.handler.execMacro(macro_id);
+    const callback = async () => {
+      if (await this.handler.callClass('condition', 'check', description)) {
+        this.handler.execMacro(macro_id);
+      }
     };
     this.triggerInstances[macro_id] = [];
     if (triggerBlock && triggerBlock.list) {
