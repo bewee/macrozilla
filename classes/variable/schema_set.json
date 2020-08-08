@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "variable_id": {
+      "type": "integer"
+    }
+  },
+  "required": ["variable_id"]
+}

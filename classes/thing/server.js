@@ -2,6 +2,9 @@
 
 const assert = require('assert');
 const GWHandler = require('./gw-handler');
+const schema_set = require('./schema_set.json');
+const schema_eval = require('./schema_eval.json');
+const schema_exec = require('./schema_exec.json');
 
 class ThingClass {
 
@@ -18,8 +21,7 @@ class ThingClass {
   }
 
   async set(description, value) {
-    assert(description && typeof description == 'object');
-    assert(description.thing && description.property);
+    assert(this.handler.validator.validate(description, schema_set).errors.length == 0);
     let val;
     const property = this.gwhandler.getProperty(description.thing, description.property);
     switch (property.type) {
@@ -40,16 +42,14 @@ class ThingClass {
   }
 
   async eval(description) {
-    assert(description && typeof description == 'object');
-    assert(description.thing && description.property);
+    assert(this.handler.validator.validate(description, schema_eval).errors.length == 0);
     const val = await this.gwhandler.getPropertyValue(description.thing, description.property);
     return this.handler.encode(val);
   }
 
   async exec(description) {
-    assert(description && typeof description == 'object');
-    assert(description.thing && description.property && description.action);
-    switch (description.action) {
+    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
+    switch (description.function) {
       case 'next':
         await this.next(description.thing, description.property);
         break;

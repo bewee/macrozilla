@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const schema_exec = require('./schema_exec.json');
 
 class SetterClass {
 
@@ -9,13 +10,9 @@ class SetterClass {
   }
 
   async exec(description) {
-    assert(description && typeof description == 'object');
+    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
     const left = description.left;
-    assert(left && typeof left == 'object');
-    assert(left.type && typeof left.type == 'string');
     const right = description.right;
-    assert(right && typeof right == 'object');
-    assert(right.type && typeof right.type == 'string');
 
     if ('speed' in description || 'time' in description) {
       const srcval = await this.handler.callClass(left.type, 'eval', left);

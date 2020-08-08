@@ -2,6 +2,8 @@
 
 const assert = require('assert');
 
+const schema_exec = require('./schema_exec.json');
+
 class ControlflowClass {
 
   constructor(handler) {
@@ -9,8 +11,7 @@ class ControlflowClass {
   }
 
   async exec(description) {
-    assert(description && typeof description == 'object');
-    assert(description.statement && typeof description.statement == 'string');
+    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
     switch (description.statement) {
       case 'if':
         await this.execIf(description);
@@ -32,8 +33,6 @@ class ControlflowClass {
 
   async execIf(description) {
     const condition = description.condition;
-    assert(condition && typeof condition == 'object');
-    assert(condition.type && typeof condition.type == 'string');
     const cond = await this.handler.callClass(condition.type, 'eval', condition);
     const boolcond = this.handler.decodeBoolean(cond);
     if (boolcond) {
@@ -48,8 +47,6 @@ class ControlflowClass {
   async execLoop(description) {
     const body = description.body;
     const iterations = description.iterations;
-    assert(iterations && typeof iterations == 'object');
-    assert(iterations.type && typeof iterations.type == 'string');
     const its = await this.handler.callClass(iterations.type, 'eval', iterations);
     const numits = this.handler.decodeNumber(its);
     for (let i = 0; i < numits; i++) {
@@ -60,8 +57,6 @@ class ControlflowClass {
   async execWhile(description) {
     const body = description.body;
     const condition = description.condition;
-    assert(condition && typeof left == 'object');
-    assert(condition.type && typeof condition.type == 'string');
 
     while (true) {
       const cond = await this.handler.callClass(condition.type, 'eval', condition);
@@ -73,8 +68,6 @@ class ControlflowClass {
 
   async execWait(description) {
     const time = description.time;
-    assert(time && typeof time == 'object');
-    assert(time.type && typeof time.type == 'string');
     const seconds = await this.handler.callClass(time.type, 'eval', time);
     const numseconds = this.handler.decodeNumber(seconds);
 

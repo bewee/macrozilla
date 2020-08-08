@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "operation": {
+      "type": "string",
+      "enum": ["not", "abs", "negate", "&", "|", "^", "+", "-", "*", "/", "%", "round", "=", ">", "<", ">=", "<=", "!="]
+    },
+    "operand": {"$ref": "/class"},
+    "left": {"$ref": "/class"},
+    "right": {"$ref": "/class"}
+  },
+  "required": ["operation"],
+  "oneOf": [
+    {
+      "properties": {
+        "operation": {"enum": ["not", "abs", "negate"]}
+      },
+      "required": ["operand"]
+    },
+    {
+      "properties": {
+        "operation": {"enum": ["&", "|", "^", "+", "-", "*", "/", "%", "round", "=", ">", "<", ">=", "<=", "!="]}
+      },
+      "required": ["left", "right"]
+    }
+  ]
+}

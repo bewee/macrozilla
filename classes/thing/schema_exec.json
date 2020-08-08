@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "thing": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
+    },
+    "function": {
+      "type": "string",
+      "enum": ["next", "prev"]
+    }
+  },
+  "required": ["thing", "property", "function"]
+}

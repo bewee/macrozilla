@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "trigger": {
+      "type": "string",
+      "enum": ["propertyChanged", "eventTriggered", "actionTriggered", "connectStateChanged"]
+    },
+    "thing": {
+      "type": "string"
+    },
+    "property": {
+      "type": "string"
+    },
+    "event": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string"
+    }
+  },
+  "required": ["trigger"],
+  "oneOf": [
+    {
+      "properties": {
+        "trigger": {"enum": ["propertyChanged"]}
+      },
+      "required": ["thing", "property"]
+    },
+    {
+      "properties": {
+        "trigger": {"enum": ["eventTriggered"]}
+      },
+      "required": ["thing", "event"]
+    },
+    {
+      "properties": {
+        "trigger": {"enum": ["actionTriggered"]}
+      },
+      "required": ["thing", "action"]
+    },
+    {
+      "properties": {
+        "trigger": {"enum": ["connectStateChanged"]}
+      },
+      "required": ["thing"]
+    }
+  ]
+}

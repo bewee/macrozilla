@@ -3,6 +3,7 @@
 const assert = require('assert');
 const SunEmitter = require('./sun-emitter');
 const SunCalc = require('suncalc');
+const schema_eval = require('./schema_eval.json');
 
 class SunClass {
 
@@ -15,8 +16,7 @@ class SunClass {
   }
 
   async eval(description) {
-    assert(description && typeof description == 'object');
-    assert(description.ev && typeof description.ev == 'string');
+    assert(this.handler.validator.validate(description, schema_eval).errors.length == 0);
 
     const suntimes = SunCalc.getTimes(new Date(), this.lat, this.lon);
 

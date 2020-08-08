@@ -1,6 +1,8 @@
 'use strict';
 
 const assert = require('assert');
+const schema_eval = require('./schema_eval.json');
+const schema_exec = require('./schema_exec.json');
 
 class ArithmeticClass {
 
@@ -9,8 +11,7 @@ class ArithmeticClass {
   }
 
   async eval(description) {
-    assert(description && typeof description == 'object');
-    assert(description.operation);
+    assert(this.handler.validator.validate(description, schema_eval).errors.length == 0);
     switch (description.operation) {
       case 'not':
         return await this.not(description.operand);
@@ -43,8 +44,7 @@ class ArithmeticClass {
   }
 
   async exec(description) {
-    assert(description && typeof description == 'object');
-    assert(description.operation);
+    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
     switch (description.operation) {
       case '++':
         await this.incdec(description.operand, +1);
@@ -59,31 +59,21 @@ class ArithmeticClass {
   }
 
   async not(operand) {
-    assert(operand && typeof operand == 'object');
-    assert(operand.type);
     const value = this.handler.decodeBoolean(await this.handler.callClass(operand.type, 'eval', operand));
     return this.handler.encode(!value);
   }
 
   async abs(operand) {
-    assert(operand && typeof operand == 'object');
-    assert(operand.type);
     const value = this.handler.decodeNumber(await this.handler.callClass(operand.type, 'eval', operand));
     return this.handler.encode(Math.abs(value));
   }
 
   async negate(operand) {
-    assert(operand && typeof operand == 'object');
-    assert(operand.type);
     const value = this.handler.decodeNumber(await this.handler.callClass(operand.type, 'eval', operand));
     return this.handler.encode(-value);
   }
 
   async boolparams(left, right) {
-    assert(left && typeof left == 'object');
-    assert(left.type);
-    assert(right && typeof right == 'object');
-    assert(right.type);
     const lvalue = this.handler.decodeBoolean(await this.handler.callClass(left.type, 'eval', left));
     const rvalue = this.handler.decodeBoolean(await this.handler.callClass(right.type, 'eval', right));
     return [lvalue, rvalue];
@@ -105,10 +95,6 @@ class ArithmeticClass {
   }
 
   async numparams(left, right) {
-    assert(left && typeof left == 'object');
-    assert(left.type);
-    assert(right && typeof right == 'object');
-    assert(right.type);
     const lvalue = this.handler.decodeNumber(await this.handler.callClass(left.type, 'eval', left));
     const rvalue = this.handler.decodeNumber(await this.handler.callClass(right.type, 'eval', right));
     return [lvalue, rvalue];
@@ -148,10 +134,6 @@ class ArithmeticClass {
   }
 
   async cmp(left, right, comparator) {
-    assert(left && typeof left == 'object');
-    assert(left.type);
-    assert(right && typeof right == 'object');
-    assert(right.type);
     const lraw = await this.handler.callClass(left.type, 'eval', left);
     const rraw = await this.handler.callClass(right.type, 'eval', right);
     const lval = this.handler.decode(lraw), rval = this.handler.decode(rraw);
@@ -176,15 +158,11 @@ class ArithmeticClass {
   }
 
   async incdec(operand, num) {
-    assert(operand && typeof operand == 'object');
-    assert(operand.type);
     const value = this.handler.decodeNumber(await this.handler.callClass(operand.type, 'eval', operand));
     await this.handler.callClass(operand.type, 'set', operand, this.handler.encode(value + num));
   }
 
   async invert(operand) {
-    assert(operand && typeof operand == 'object');
-    assert(operand.type);
     const value = this.handler.decodeBoolean(await this.handler.callClass(operand.type, 'eval', operand));
     await this.handler.callClass(operand.type, 'set', operand, this.handler.encode(!value));
   }

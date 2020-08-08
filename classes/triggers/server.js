@@ -1,5 +1,8 @@
 'use strict';
 
+const assert = require('assert');
+const schema_exec = require('./schema_exec.json');
+
 class TriggersClass {
 
   constructor(handler) {
@@ -9,7 +12,8 @@ class TriggersClass {
 
   async onLoad(macro_id) {
     const description = (await this.handler.apihandler.dbhandler.getMacro(macro_id)).description;
-    const triggerBlock = description.find((block) => block.type == 'triggers');
+    const triggerBlock = description.find((block) => block && block.type && block.type == 'triggers');
+    assert(this.handler.validator.validate(triggerBlock, schema_exec).errors.length == 0);
     const callback = async () => {
       if (await this.handler.callClass('conditions', 'check', description)) {
         this.handler.execMacro(macro_id);
@@ -31,7 +35,8 @@ class TriggersClass {
     delete this.triggerInstances[macro_id];
   }
 
-  async exec() {
+  async exec(description) {
+    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
   }
 
 }

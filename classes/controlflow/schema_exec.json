@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "statement": {
+      "type": "string",
+      "enum": ["if", "loop", "while", "wait", "async"]
+    },
+    "condition": {"$ref": "/class"},
+    "true": {"$ref": "/class"},
+    "false": {"$ref": "/class"},
+    "iterations": {"$ref": "/class"},
+    "body": {"$ref": "/class"},
+    "time": {"$ref": "/class"}
+  },
+  "required": ["statement"],
+  "oneOf": [
+    {
+      "properties": {
+        "statement": {"enum": ["if"]}
+      },
+      "required": ["condition", "true", "false"]
+    },
+    {
+      "properties": {
+        "statement": {"enum": ["loop"]}
+      },
+      "required": ["iterations", "body"]
+    },
+    {
+      "properties": {
+        "statement": {"enum": ["while"]}
+      },
+      "required": ["condition", "body"]
+    },
+    {
+      "properties": {
+        "statement": {"enum": ["wait"]}
+      },
+      "required": ["time"]
+    },
+    {
+      "properties": {
+        "statement": {"enum": ["async"]}
+      },
+      "required": ["body"]
+    }
+  ]
+}

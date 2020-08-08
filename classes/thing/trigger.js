@@ -1,9 +1,13 @@
 'use strict';
 
+const assert = require('assert');
+const schema_trigger = require('./schema_trigger.json');
+
 class ThingsTrigger {
 
   constructor(description, callback, classInstance) {
     let fn;
+    assert(this.handler.validator.validate(description, schema_trigger).errors.length == 0);
     switch (description.trigger) {
       case 'propertyChanged':
         fn = (thing_id, property) => {

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "left": {"$ref": "/class"},
+    "right": {"$ref": "/class"},
+    "speed": {"$ref": "/class"},
+    "time": {"$ref": "/class"},
+    "ups": {"$ref": "/class"}
+  },
+  "required": ["left", "right"],
+  "oneOf": [
+    {
+      "required": []
+    },
+    {
+      "required": ["speed"]
+    },
+    {
+      "required": ["time"]
+    },
+    {
+      "required": ["speed", "ups"]
+    },
+    {
+      "required": ["time", "ups"]
+    }
+  ]
+}

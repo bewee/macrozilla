@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "operation": {
+      "type": "string",
+      "enum": ["++","--","invert"]
+    },
+    "operand": {"$ref": "/class"}
+  },
+  "required": ["operation", "operand"]
+}

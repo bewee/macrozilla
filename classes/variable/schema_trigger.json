@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "trigger": {
+      "type": "string",
+      "enum": ["valueChanged"]
+    },
+    "variable_id": {
+      "type": "integer"
+    }
+  },
+  "required": ["trigger", "variable_id"]
+}

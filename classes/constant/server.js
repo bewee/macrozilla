@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const schema_eval = require('./schema_eval.json');
 
 class ConstantClass {
 
@@ -9,8 +10,7 @@ class ConstantClass {
   }
 
   async eval(description) {
-    assert(description && typeof description == 'object');
-    assert(description.value);
+    assert(this.handler.validator.validate(description, schema_eval).errors.length == 0);
     return description.value;
   }
 

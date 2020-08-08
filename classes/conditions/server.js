@@ -1,5 +1,8 @@
 'use strict';
 
+const assert = require('assert');
+const schema_exec = require('./schema_exec.json');
+
 class ConditionsClass {
 
   constructor(handler) {
@@ -7,18 +10,18 @@ class ConditionsClass {
   }
 
   async check(description) {
-    const conditionBlock = description.find((block) => block.type == 'conditions');
-    if (conditionBlock && conditionBlock.list) {
-      for (const condition of conditionBlock.list) {
-        const checkres = await this.handler.callClass(condition.type, 'eval', condition);
-        if (!this.handler.decodeBoolean(checkres))
-          return false;
-      }
+    const conditionBlock = description.find((block) => block && block.type && block.type == 'conditions');
+    assert(this.handler.validator.validate(conditionBlock, schema_exec).errors.length == 0);
+    for (const condition of conditionBlock.list) {
+      const checkres = await this.handler.callClass(condition.type, 'eval', condition);
+      if (!this.handler.decodeBoolean(checkres))
+        return false;
     }
     return true;
   }
 
-  async exec() {
+  async exec(description) {
+    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
   }
 
 }
