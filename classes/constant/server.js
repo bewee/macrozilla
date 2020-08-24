@@ -1,6 +1,5 @@
 'use strict';
 
-const assert = require('assert');
 const schema_eval = require('./schema_eval.json');
 
 class ConstantClass {
@@ -9,8 +8,12 @@ class ConstantClass {
     this.handler = handler;
   }
 
-  async eval(description) {
-    assert(this.handler.validator.validate(description, schema_eval).errors.length == 0);
+  async eval(description, ctx) {
+    const errors = this.handler.validator.validate(description, schema_eval).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for eval', message: errors[0]});
+      return '';
+    }
     return description.value;
   }
 

@@ -1,6 +1,5 @@
 'use strict';
 
-const assert = require('assert');
 const schema_set = require('./schema_set.json');
 const schema_eval = require('./schema_eval.json');
 
@@ -12,13 +11,21 @@ class VariableClass {
     this.triggerClass = require('./trigger');
   }
 
-  async set(description, value) {
-    assert(this.handler.validator.validate(description, schema_set).errors.length == 0);
-    await this.dbhandler.updateVariableValue(description.variable_id, this.handler.encode(value));
+  async set(description, value, ctx) {
+    const errors = this.handler.validator.validate(description, schema_set).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for set', message: errors[0]});
+      return '';
+    }
+    await this.dbhandler.updateVariableValue(description.variable_id, this.handler.encode(ctx, value));
   }
 
-  async eval(description) {
-    assert(this.handler.validator.validate(description, schema_eval).errors.length == 0);
+  async eval(description, ctx) {
+    const errors = this.handler.validator.validate(description, schema_eval).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for eval', message: errors[0]});
+      return '';
+    }
     const val = await this.dbhandler.getVariable(description.variable_id);
     return val.value;
   }
