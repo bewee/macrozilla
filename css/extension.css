@@ -1,0 +1,26 @@
+#extension-macrozilla-view.selected{
+    display: flex;
+    flex-direction: row;
+}
+
+#programarea{
+    flex-grow: 5;
+    flex-shrink: 2;
+    background: white;
+    position: relative;
+    overflow: auto;
+}
+
+.macrointerface{
+    background: url("/images/background.png");
+    background-size: 25px 25px;
+    min-width: 200%;
+    min-height: 200%;
+    position: absolute;
+}
+
+#macrosidebar{
+    flex-shrink: 2;
+    background: red;
+    min-width: 450px;
+}

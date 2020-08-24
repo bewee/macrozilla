@@ -42,8 +42,7 @@
     "lib/",
     "js/",
     "css/",
-    "pages/",
-    "components/",
+    "views/",
     "images/"
   ],
   "moziot": {

@@ -29,12 +29,9 @@
   "web_accessible_resources": [
     "js/*.js",
     "css/*.css",
-    "pages/*.html",
-    "pages/*.js",
-    "pages/*.css",
-    "components/*.html",
-    "components/*.js",
-    "components/*.css",
+    "views/*.html",
+    "views/*.js",
+    "views/*.css",
     "images/*.svg"
   ],
 

@@ -48,7 +48,6 @@
 .block[data-block-type="trigger"]{background: #5A9AC9;margin-bottom: 0;border-radius: 0.8rem 0.8rem 0 0;padding-top: 4rem;}
 .block[data-block-type="conditions"]{background: #7f3939; margin-top: 0;border-radius: 0 0 0.8rem 0.8rem;padding-top: 4rem;}
 .block[data-block-type="end"]{background: rgb(46, 86, 114);}
-.block[data-block-type="action"]{background: #fff;}
 .block[data-block-type="comment"]{background: rgb(238, 255, 179);color: black;border-radius: 0;font-size: 1.6rem;color: #336644;min-height: 25px;}
 
 
@@ -123,6 +122,11 @@
     display: inline-block;
 }
 
+.chip.empty{
+    background: none;
+    border: 3px dotted #555;
+}
+
 .chip[data-trigger-type="clock"]{background-image: url("/images/thing-icons/clock.svg");}
 .chip[data-trigger-type="button"]{background-image: url("/images/things-icon.png");}
 
@@ -144,4 +148,9 @@
     background: rgba(0,0,0,0.2);
     height: 85px;
     transform: translateY(-7.5px);
+}
+
+.block[data-block-type="action"]{
+    background: #fff;
+    color: black;
 }

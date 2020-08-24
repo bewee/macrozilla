@@ -10,13 +10,14 @@ s.addEventListener('load', () => {
       constructor() {
         super('macrozilla');
         this.addMenuEntry('Macros');
-        macrosec = document.querySelector("#extension-macrozilla-view").attachShadow({"mode": "closed"});
+        macrosec = document.querySelector("#extension-macrozilla-view");
       }
 
       show() {
-        window.loadPage("/extensions/macrozilla/pages/main.html").then((code) => {
+        window.loadPage("/extensions/macrozilla/views/editor.html").then((code) => {
           macrosec.innerHTML = code;
-          parseMacrozillaComponent(macrosec);
+
+          
         });
         
       }
