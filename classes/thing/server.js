@@ -1,6 +1,5 @@
 'use strict';
 
-const assert = require('assert');
 const GWHandler = require('./gw-handler');
 const schema_set = require('./schema_set.json');
 const schema_eval = require('./schema_eval.json');
@@ -20,19 +19,26 @@ class ThingClass {
     this.triggerClass = require('./trigger');
   }
 
-  async set(description, value) {
-    assert(this.handler.validator.validate(description, schema_set).errors.length == 0);
+  async set(description, value, ctx) {
+    const errors = this.handler.validator.validate(description, schema_set).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for set', message: errors[0]});
+      return '';
+    }
     let val;
     const property = this.gwhandler.getProperty(description.thing, description.property);
     switch (property.type) {
       case 'boolean':
-        val = this.handler.decodeBoolean(value);
+        val = this.handler.decodeBoolean(ctx, value);
         break;
-      case 'number': case 'integer':
-        val = this.handler.decodeNumber(value);
+      case 'number':
+        val = this.handler.decodeNumber(ctx, value);
+        break;
+      case 'integer':
+        val = this.handler.decodeInteger(ctx, value);
         break;
       case 'string':
-        val = this.handler.decodeString(value);
+        val = this.handler.decodeString(ctx, value);
         break;
       default:
         val = null;
@@ -41,14 +47,22 @@ class ThingClass {
     await this.gwhandler.setPropertyValue(description.thing, description.property, val);
   }
 
-  async eval(description) {
-    assert(this.handler.validator.validate(description, schema_eval).errors.length == 0);
+  async eval(description, ctx) {
+    const errors = this.handler.validator.validate(description, schema_eval).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for eval', message: errors[0]});
+      return '';
+    }
     const val = await this.gwhandler.getPropertyValue(description.thing, description.property);
-    return this.handler.encode(val);
+    return this.handler.encode(ctx, val);
   }
 
-  async exec(description) {
-    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
+  async exec(description, ctx) {
+    const errors = this.handler.validator.validate(description, schema_exec).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for exec', message: errors[0]});
+      return;
+    }
     switch (description.function) {
       case 'next':
         await this.next(description.thing, description.property);
@@ -66,7 +80,7 @@ class ThingClass {
       case 'boolean':
         val = !val;
         break;
-      case 'number': case 'integer':
+      case 'integer':
         val = val + 1;
         if (val > prop.maximum) val = prop.minimum;
         break;

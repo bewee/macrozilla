@@ -1,6 +1,5 @@
 'use strict';
 
-const assert = require('assert');
 const schema_exec = require('./schema_exec.json');
 
 class SetterClass {
@@ -9,37 +8,41 @@ class SetterClass {
     this.handler = handler;
   }
 
-  async exec(description) {
-    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
+  async exec(description, ctx) {
+    const errors = this.handler.validator.validate(description, schema_exec).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for exec', message: errors[0]});
+      return;
+    }
     const left = description.left;
     const right = description.right;
 
     if ('speed' in description || 'time' in description) {
-      const srcval = await this.handler.callClass(left.type, 'eval', left);
-      const srcvalnum = this.handler.decodeNumber(srcval);
-      const dstval = await this.handler.callClass(right.type, 'eval', right);
-      const dstvalnum = this.handler.decodeNumber(dstval);
+      const srcval = await this.handler.call(ctx, left, 'eval', left);
+      const srcvalnum = this.handler.decodeNumber(ctx, srcval);
+      const dstval = await this.handler.call(ctx, right, 'eval', right);
+      const dstvalnum = this.handler.decodeNumber(ctx, dstval);
       let time;
       if ('speed' in description) {
-        const speed = await this.handler.callClass(description.speed.type, 'eval', description.speed);
+        const speed = await this.handler.call(ctx, description.speed, 'eval', description.speed);
         time = Math.abs(dstvalnum-srcvalnum) / speed; // at speed 1, incrementing takes 1 second; at speed 10, incrementing takes 0.1 second
       } else {
-        time = await this.handler.callClass(description.time.type, 'eval', description.time);
+        time = await this.handler.call(ctx, description.time, 'eval', description.time);
       }
-      const ups = ('ups' in description) ? (await this.handler.callClass(description.ups.type, 'eval', description.ups)) : 5;
+      const ups = ('ups' in description) ? (await this.handler.call(ctx, description.ups, 'eval', description.ups)) : 5;
       const stepnum = time * ups;
       const stepsize = (dstvalnum-srcvalnum) / stepnum;
       for (let i = 0; i < stepnum; i++) {
-        await this.handler.callClass(left.type, 'set', left, this.handler.encodeNumber(srcvalnum+stepsize*i));
+        await this.handler.call(ctx, left, 'set', left, this.handler.encodeNumber(ctx, srcvalnum+stepsize*i));
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve();
           }, 1000/ups);
         });
       }
-      await this.handler.callClass(left.type, 'set', left, this.handler.encodeNumber(dstvalnum));
+      await this.handler.call(ctx, left, 'set', left, this.handler.encodeNumber(ctx, dstvalnum));
     } else {
-      await this.handler.callClass(left.type, 'set', left, await this.handler.callClass(right.type, 'eval', right));
+      await this.handler.call(ctx, left, 'set', left, await this.handler.call(ctx, right, 'eval', right));
     }
   }
 

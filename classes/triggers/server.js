@@ -1,7 +1,6 @@
 'use strict';
 
-const assert = require('assert');
-const schema_exec = require('./schema_exec.json');
+const schema_onload = require('./schema_onload.json');
 
 class TriggersClass {
 
@@ -10,33 +9,48 @@ class TriggersClass {
     this.triggerInstances = {};
   }
 
-  async onLoad(macro_id) {
-    const description = (await this.handler.apihandler.dbhandler.getMacro(macro_id)).description;
+  async onLoad(ctx) {
+    const description = (await this.handler.apihandler.dbhandler.getMacro(ctx.macro_id)).description;
     const triggerBlock = description.find((block) => block && block.type && block.type == 'triggers');
-    assert(this.handler.validator.validate(triggerBlock, schema_exec).errors.length == 0);
-    const callback = async () => {
-      if (await this.handler.callClass('conditions', 'check', description)) {
-        this.handler.execMacro(macro_id);
-      }
-    };
-    this.triggerInstances[macro_id] = [];
+    const errors = this.handler.validator.validate(triggerBlock, schema_onload).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse triggers block during onLoad', message: errors[0]});
+      return;
+    }
+    this.triggerInstances[ctx.macro_id] = [];
     if (triggerBlock && triggerBlock.list) {
       for (const trigger of triggerBlock.list) {
-        const instance = new this.handler.classInstances[trigger.type].triggerClass.prototype.constructor(trigger, callback, this.handler.classInstances[trigger.type]);
-        this.triggerInstances[macro_id].push(instance);
+        const callback = async () => {
+          const newctx = {}; Object.assign(newctx, ctx);
+          if (await this.handler.callClass(ctx, 'conditions', 'check', description, newctx)) {
+            this.handler.execMacro(ctx.macro_id, `trigger ${trigger.type}`);
+          }
+        };
+        const inst = this.handler.classInstances[trigger.type];
+        if (!inst) {
+          this.handler.log(ctx, 'fatal', {title: `Failed to load trigger`, message: `Unknown class ${trigger.type}`});
+          return;
+        }
+        const clazz = inst.triggerClass;
+        if (!clazz) {
+          this.handler.log(ctx, 'fatal', {title: `Failed to load trigger`, message: `Not available for ${trigger.type}`});
+          return;
+        }
+        const instance = new clazz.prototype.constructor(trigger, callback, this.handler.classInstances[trigger.type], ctx);
+        this.triggerInstances[ctx.macro_id].push(instance);
       }
     }
   }
 
   async onUnload(macro_id) {
+    if (Object.keys(this.triggerInstances).length == 0) return;
     for (const instance of this.triggerInstances[macro_id]) {
       if (instance.destruct) instance.destruct();
     }
     delete this.triggerInstances[macro_id];
   }
 
-  async exec(description) {
-    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
+  async exec() {
   }
 
 }

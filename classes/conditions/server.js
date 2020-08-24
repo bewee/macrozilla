@@ -1,7 +1,6 @@
 'use strict';
 
-const assert = require('assert');
-const schema_exec = require('./schema_exec.json');
+const schema_onload = require('./schema_onload.json');
 
 class ConditionsClass {
 
@@ -9,19 +8,23 @@ class ConditionsClass {
     this.handler = handler;
   }
 
-  async check(description) {
+  async check(description, ctx) {
     const conditionBlock = description.find((block) => block && block.type && block.type == 'conditions');
-    assert(this.handler.validator.validate(conditionBlock, schema_exec).errors.length == 0);
+    if (!conditionBlock) return true;
+    const errors = this.handler.validator.validate(conditionBlock, schema_onload).errors;
+    if (errors.length != 0) {
+      this.handler.log(ctx, 'fatal', {title: 'Cannot parse conditions block for check', message: errors[0]});
+      return false;
+    }
     for (const condition of conditionBlock.list) {
-      const checkres = await this.handler.callClass(condition.type, 'eval', condition);
-      if (!this.handler.decodeBoolean(checkres))
+      const checkres = await this.handler.call(ctx, condition, 'eval', condition);
+      if (!this.handler.decodeBoolean(ctx, checkres))
         return false;
     }
     return true;
   }
 
-  async exec(description) {
-    assert(this.handler.validator.validate(description, schema_exec).errors.length == 0);
+  async exec() {
   }
 
 }

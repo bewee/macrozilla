@@ -37,9 +37,13 @@
 
   "options": {
     "default": {
-      "pollscanIntervalInterval": 6000,
+      "scanInterval": 6000,
       "latitude": 40.7128,
-      "longitude": 74.0060
+      "longitude": 74.0060,
+      "log_limit_time": 86400,
+      "log_limit_num": 100,
+      "loglevel": "info",
+      "macrolog2console": false
     },
     "schema": {
       "type": "object",
@@ -47,7 +51,11 @@
         "accessToken",
         "scanInterval",
         "latitude",
-        "longitude"
+        "longitude",
+        "log_limit_time",
+        "log_limit_num",
+        "loglevel",
+        "macrolog2console"
       ],
       "properties": {
         "accessToken": {
@@ -69,6 +77,27 @@
           "type": "number",
           "title": "Longitude",
           "description": "e.g. used for sun events"
+        },
+        "log_limit_time": {
+          "type": "number",
+          "title": "Log limit (time)",
+          "description": "in seconds; defines the maximum amount of time that log entries are stored"
+        },
+        "log_limit_num": {
+          "type": "number",
+          "title": "Log limit (number)",
+          "description": "defines the maximum number of log entries that are stored (for each macro)"
+        },
+        "loglevel": {
+          "type": "string",
+          "enum": ["debug", "info", "warn", "error", "fatal", "none"],
+          "title": "Log level",
+          "description": "Log level"
+        },
+        "macrolog2console": {
+          "type": "boolean",
+          "title": "Add macro logs to log file",
+          "description": "Print macro's log entries to the global log file of the gateway as well"
         }
       }
     }

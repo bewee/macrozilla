@@ -10,21 +10,22 @@
     "ups": {"$ref": "/class"}
   },
   "required": ["left", "right"],
-  "oneOf": [
-    {
-      "required": []
+  "dependencies": {
+    "ups": {
+      "oneOf": [
+        {
+          "required": ["speed"]
+        },
+        {
+          "required": ["time"]
+        }
+      ]
     },
-    {
-      "required": ["speed"]
+    "speed": {
+      "not": {"required": ["time"]}
     },
-    {
-      "required": ["time"]
-    },
-    {
-      "required": ["speed", "ups"]
-    },
-    {
-      "required": ["time", "ups"]
+    "time": {
+      "not": {"required": ["speed"]}
     }
-  ]
+  }
 }

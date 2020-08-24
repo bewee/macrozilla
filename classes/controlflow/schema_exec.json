@@ -8,10 +8,19 @@
       "enum": ["if", "loop", "while", "wait", "async"]
     },
     "condition": {"$ref": "/class"},
-    "true": {"$ref": "/class"},
-    "false": {"$ref": "/class"},
+    "true": {
+      "type": "array",
+      "items": {"$ref": "/class"}
+    },
+    "false": {
+      "type": "array",
+      "items": {"$ref": "/class"}
+    },
     "iterations": {"$ref": "/class"},
-    "body": {"$ref": "/class"},
+    "body": {
+      "type": "array",
+      "items": {"$ref": "/class"}
+    },
     "time": {"$ref": "/class"}
   },
   "required": ["statement"],
