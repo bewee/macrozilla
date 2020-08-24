@@ -1,16 +1,9 @@
 'use strict';
 
-const schema_trigger = require('./schema_trigger.json');
-
 class ThingsTrigger {
 
-  constructor(description, callback, classInstance, ctx) {
+  constructor(description, callback, classInstance) {
     let fn;
-    const errors = classInstance.handler.validator.validate(description, schema_trigger).errors;
-    if (errors.length != 0) {
-      classInstance.handler.log(ctx, 'fatal', {title: 'Cannot parse block for trigger', message: errors[0]});
-      return;
-    }
     switch (description.trigger) {
       case 'propertyChanged':
         fn = (thing_id, property) => {

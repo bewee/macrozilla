@@ -1,8 +1,5 @@
 'use strict';
 
-const schema_eval = require('./schema_eval.json');
-const schema_exec = require('./schema_exec.json');
-
 class ArithmeticClass {
 
   constructor(handler) {
@@ -10,10 +7,6 @@ class ArithmeticClass {
   }
 
   async eval(description, ctx) {
-    const errors = this.handler.validator.validate(description, schema_eval).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for eval', message: errors[0]});
-    }
     switch (description.operation) {
       case 'not':
         return await this.not(description.operand, ctx);
@@ -46,10 +39,6 @@ class ArithmeticClass {
   }
 
   async exec(description, ctx) {
-    const errors = this.handler.validator.validate(description, schema_exec).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for exec', message: errors[0]});
-    }
     switch (description.operation) {
       case '++':
         await this.incdec(description.operand, +1, ctx);

@@ -1,9 +1,6 @@
 'use strict';
 
 const GWHandler = require('./gw-handler');
-const schema_set = require('./schema_set.json');
-const schema_eval = require('./schema_eval.json');
-const schema_exec = require('./schema_exec.json');
 
 class ThingClass {
 
@@ -20,11 +17,6 @@ class ThingClass {
   }
 
   async set(description, value, ctx) {
-    const errors = this.handler.validator.validate(description, schema_set).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for set', message: errors[0]});
-      return '';
-    }
     let val;
     const property = this.gwhandler.getProperty(description.thing, description.property);
     switch (property.type) {
@@ -48,21 +40,11 @@ class ThingClass {
   }
 
   async eval(description, ctx) {
-    const errors = this.handler.validator.validate(description, schema_eval).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for eval', message: errors[0]});
-      return '';
-    }
     const val = await this.gwhandler.getPropertyValue(description.thing, description.property);
     return this.handler.encode(ctx, val);
   }
 
-  async exec(description, ctx) {
-    const errors = this.handler.validator.validate(description, schema_exec).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for exec', message: errors[0]});
-      return;
-    }
+  async exec(description) {
     switch (description.function) {
       case 'next':
         await this.next(description.thing, description.property);

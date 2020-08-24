@@ -2,7 +2,6 @@
 
 const SunEmitter = require('./sun-emitter');
 const SunCalc = require('suncalc');
-const schema_eval = require('./schema_eval.json');
 
 class SunClass {
 
@@ -15,12 +14,6 @@ class SunClass {
   }
 
   async eval(description, ctx) {
-    const errors = this.handler.validator.validate(description, schema_eval).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for eval', message: errors[0]});
-      return '';
-    }
-
     const suntimes = SunCalc.getTimes(new Date(), this.lat, this.lon);
 
     if (description.ev.startsWith('sun_after_')) {

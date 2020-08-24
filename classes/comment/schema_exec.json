@@ -1,5 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "allOf": [{"$ref": "/class"}]
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "text": {
+      "type": "string"
+    }
+  },
+  "required": ["text"]
 }
