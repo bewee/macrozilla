@@ -1,7 +1,5 @@
 'use strict';
 
-const schema_exec = require('./schema_exec.json');
-
 class ControlflowClass {
 
   constructor(handler) {
@@ -9,11 +7,6 @@ class ControlflowClass {
   }
 
   async exec(description, ctx) {
-    const errors = this.handler.validator.validate(description, schema_exec).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse block for exec', message: errors[0]});
-      return;
-    }
     switch (description.statement) {
       case 'if':
         await this.execIf(description, ctx);

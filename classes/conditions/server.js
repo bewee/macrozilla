@@ -1,6 +1,6 @@
 'use strict';
 
-const schema_onload = require('./schema_onload.json');
+const schema_check = require('./schema_check.json');
 
 class ConditionsClass {
 
@@ -11,7 +11,7 @@ class ConditionsClass {
   async check(description, ctx) {
     const conditionBlock = description.find((block) => block && block.type && block.type == 'conditions');
     if (!conditionBlock) return true;
-    const errors = this.handler.validator.validate(conditionBlock, schema_onload).errors;
+    const errors = this.handler.validator.validate(conditionBlock, schema_check).errors;
     if (errors.length != 0) {
       this.handler.log(ctx, 'fatal', {title: 'Cannot parse conditions block for check', message: errors[0]});
       return false;
