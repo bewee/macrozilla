@@ -17,7 +17,8 @@ s.addEventListener('load', () => {
         window.loadPage("/extensions/macrozilla/views/editor.html").then((code) => {
           macrosec.innerHTML = code;
 
-          
+          initSideBar();
+
         });
         
       }

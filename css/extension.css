@@ -1,6 +1,8 @@
 #extension-macrozilla-view.selected{
     display: flex;
     flex-direction: row;
+    top: 10rem;
+    height: calc(100% - 10rem);
 }
 
 #programarea{
@@ -21,6 +23,109 @@
 
 #macrosidebar{
     flex-shrink: 2;
-    background: red;
-    min-width: 450px;
+    background:#7f3939;
+    width: 400px;
+    padding: 2rem;
+}
+
+.macroblock{
+    position: relative;
+    display: flex;
+    float: left;
+    justify-content: center;
+    align-items: center;
+    min-width: 100px;
+    max-width: calc(50% - 12px);
+    min-height: 50px;
+    padding: 5px;
+    border: 1px solid #a5a5a5;
+    background: #5A9AC9;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);
+    margin: 1rem;
+}
+
+.macroblock:hover{
+    cursor: grab;
+}
+
+.macroblock#currentdrag:hover{
+    cursor: move;
+}
+
+.blockdescr{
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    color: white;
+    text-align: center;
+}
+
+.macroblock#currentdrag{
+    position: absolute;
+    opacity: 0.8;
+    animation: flare 1s infinite;
+}
+
+.macroblock.placed{
+    position: absolute;
+}
+
+@keyframes flare{
+    0% {opacity: 0.8;}
+    50% {opacity: 0.6;}
+    100% {opacity: 0.8;}
+}
+
+.macroblock.placeholder{
+    min-width: 0px;
+    min-height: 0px;
+    border: 2px dotted #a5a5a5;
+    background: transparent;
+}
+
+.macroblock.preview{
+    background: rgba(0,0,0,0.25);
+    position: absolute;
+    border: none;
+}
+
+.macroblock.idling:not(.placeholder):not(#currentdrag):not(.preview){
+    animation: idlemacroblocks 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes idlemacroblocks{
+    0% {transform: translate(0px, 0px);}
+    25% {transform: translate(-2px, 1px);}
+    50% {transform: translate(1px, 1px);}
+    75% {transform: translate(1px, -1px);}
+    100% {transform: translate(0px, 0px);}
+}
+
+button#playmacro{
+    width: 9rem;
+    height: 9rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    bottom: 4rem;
+    right: calc(400px + 10rem);
+    position: fixed;
+    border-radius: 4.5rem;
+    background: #5d9bc7;
+    z-index: 999;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+    cursor: pointer;
+    outline: none !important;
+}
+
+#playmacro svg{
+    width: 100%;
+    height: 100%;
+    transform: translateX(0.2rem);
+    pointer-events: none;
 }
