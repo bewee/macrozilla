@@ -43,7 +43,8 @@
     "js/",
     "css/",
     "views/",
-    "images/"
+    "images/",
+    "classes/"
   ],
   "moziot": {
     "api": {

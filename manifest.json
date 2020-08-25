@@ -32,7 +32,10 @@
     "views/*.html",
     "views/*.js",
     "views/*.css",
-    "images/*.svg"
+    "images/*.svg",
+    "images/*.png",
+    "classes/*/client.js",
+    "classes/*/schema_*.json"
   ],
 
   "options": {
