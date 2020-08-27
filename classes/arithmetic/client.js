@@ -31,11 +31,11 @@ class ArithmeticAdapter{
         // ...
         g2.assign(handler.addBlock("Increment", ["Basics", "Maths"], (instance) => {
             let left = instance.addParameter("x");
-            instance.setText("%p ++", left);
+            instance.setText("Increment %p", left);
         }));
         g2.assign(handler.addBlock("Decrement", ["Basics", "Maths"], (instance) => {
             let left = instance.addParameter("x");
-            instance.setText("%p --", left);
+            instance.setText("Decrement %p", left);
         }));
     }
 
