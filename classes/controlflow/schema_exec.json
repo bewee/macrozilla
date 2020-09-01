@@ -1,4 +1,5 @@
 {
+  "title": "exec",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "allOf": [{"$ref": "/class"}],
@@ -20,6 +21,13 @@
     "body": {
       "type": "array",
       "items": {"$ref": "/class"}
+    },
+    "bodies": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {"$ref": "/class"}
+      }
     },
     "time": {"$ref": "/class"}
   },
@@ -53,7 +61,7 @@
       "properties": {
         "statement": {"enum": ["async"]}
       },
-      "required": ["body"]
+      "required": ["bodies"]
     }
   ]
 }

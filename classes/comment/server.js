@@ -1,14 +1,9 @@
 'use strict';
 
-class CommentClass {
+module.exports = {
 
-  constructor(handler) {
-    this.handler = handler;
-  }
+  exec: function() {
 
-  async exec() {
-  }
+  },
 
-}
-
-module.exports = CommentClass;
+};

@@ -1,32 +1,23 @@
 'use strict';
 
-const schema_check = require('./schema_check.json');
+const schema_conditionsblock = require('./schema_conditionsblock.json');
 
-class ConditionsClass {
+module.exports = {
 
-  constructor(handler) {
-    this.handler = handler;
-  }
-
-  async check(description, ctx) {
-    const conditionBlock = description.find((block) => block && block.type && block.type == 'conditions');
-    if (!conditionBlock) return true;
-    const errors = this.handler.validator.validate(conditionBlock, schema_check).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse conditions block for check', message: errors[0]});
+  check: async function() {
+    const conditionsBlock = this.params.macro_description.find((block) => block && block.type && block.type == 'conditions');
+    if (!conditionsBlock) return true;
+    if (!this.validate(conditionsBlock, schema_conditionsblock))
       return false;
-    }
-    for (const condition of conditionBlock.list) {
-      const checkres = await this.handler.call(ctx, condition, 'eval', condition);
-      if (!this.handler.decodeBoolean(ctx, checkres))
+    for (const condition of conditionsBlock.list) {
+      const checkres = await this.call(condition, 'eval');
+      if (!this.decodeBoolean(checkres))
         return false;
     }
     return true;
-  }
+  },
 
-  async exec() {
-  }
+  exec: async function() {
+  },
 
-}
-
-module.exports = ConditionsClass;
+};

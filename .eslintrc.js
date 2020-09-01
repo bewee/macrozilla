@@ -109,6 +109,7 @@ module.exports = {
     'no-implicit-globals': 'error',
     'no-implied-eval': 'error',
     'no-lonely-if': 'warn',
+    'no-async-promise-executor': 'warn',
     'no-multi-spaces': [
       'warn',
       {

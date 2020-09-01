@@ -1,83 +1,94 @@
 'use strict';
 
-class ControlflowClass {
-
-  constructor(handler) {
-    this.handler = handler;
-  }
-
-  async exec(description, ctx) {
-    switch (description.statement) {
-      case 'if':
-        await this.execIf(description, ctx);
-        break;
-      case 'loop':
-        await this.execLoop(description, ctx);
-        break;
-      case 'while':
-        await this.execWhile(description, ctx);
-        break;
-      case 'wait':
-        await this.execWait(description, ctx);
-        break;
-      case 'async':
-        await this.execAsync(description);
-        break;
-    }
-  }
-
-  async execIf(description, ctx) {
-    const condition = description.condition;
-    const cond = await this.handler.call(ctx, condition, 'eval', condition);
-    const boolcond = this.handler.decodeBoolean(ctx, cond);
-    if (boolcond) {
-      if (!('true' in description)) return;
-      await this.handler.exec(ctx, description.true);
-    } else {
-      if (!('false' in description)) return;
-      await this.handler.exec(ctx, description.false);
-    }
-  }
-
-  async execLoop(description, ctx) {
-    const body = description.body;
-    const iterations = description.iterations;
-    const its = await this.handler.call(ctx, iterations, 'eval', iterations);
-    const numits = this.handler.decodeNumber(ctx, its);
-    for (let i = 0; i < numits; i++) {
-      await this.handler.exec(ctx, body);
-    }
-  }
-
-  async execWhile(description, ctx) {
-    const body = description.body;
-    const condition = description.condition;
-
-    while (true) {
-      const cond = await this.handler.call(ctx, condition, 'eval', condition);
-      const boolcond = this.handler.decodeBoolean(ctx, cond);
-      if (!boolcond) break;
-      await this.handler.exec(ctx, body);
-    }
-  }
-
-  async execWait(description, ctx) {
-    const time = description.time;
-    const seconds = await this.handler.call(ctx, time, 'eval', time);
-    const numseconds = this.handler.decodeNumber(ctx, seconds);
-
-    await sleep(numseconds*1000);
-  }
-
-  async execAsync(description, ctx) {
-    const body = description.body;
-    this.handler.exec(ctx, body);
-  }
-
-}
-
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-module.exports = ControlflowClass;
+async function execIf() {
+  const condition = this.params.description.condition;
+  const cond = await this.call(condition, 'eval');
+  const boolcond = this.decodeBoolean(cond);
+  if (boolcond) {
+    if (!('true' in this.params.description)) return;
+    for (const block of this.params.description.true) {
+      await this.call(block, 'exec');
+    }
+  } else {
+    if (!('false' in this.params.description)) return;
+    for (const block of this.params.description.false) {
+      await this.call(block, 'exec');
+    }
+  }
+}
+
+async function execLoop() {
+  const body = this.params.description.body;
+  const iterations = this.params.description.iterations;
+  const its = await this.call(iterations, 'eval');
+  const numits = this.decodeNumber(its);
+  for (let i = 0; i < numits; i++) {
+    for (const block of body) {
+      await this.call(block, 'exec');
+    }
+  }
+}
+
+async function execWhile() {
+  const body = this.params.description.body;
+  const condition = this.params.description.condition;
+
+  while (true) {
+    const cond = await this.call(condition, 'eval');
+    const boolcond = this.decodeBoolean(cond);
+    if (!boolcond) break;
+    for (const block of body) {
+      await this.call(block, 'exec');
+    }
+  }
+}
+
+async function execWait() {
+  const time = this.params.description.time;
+  const seconds = await this.call(time, 'eval');
+  const numseconds = this.decodeNumber(seconds);
+
+  await sleep(numseconds*1000);
+}
+
+async function execAsync() {
+  const bodies = this.params.description.bodies;
+  const promises = [];
+  for (const body of bodies) {
+    promises.push(new Promise(async (resolve) => {
+      for (const block of body) {
+        await this.call(block, 'exec');
+      }
+      resolve();
+    }));
+  }
+  await Promise.all(promises);
+}
+
+module.exports = {
+
+  exec: async function() {
+    switch (this.params.description.statement) {
+      case 'if':
+        await execIf.call(this);
+        break;
+      case 'loop':
+        await execLoop.call(this);
+        break;
+      case 'while':
+        await execWhile.call(this);
+        break;
+      case 'wait':
+        await execWait.call(this);
+        break;
+      case 'async':
+        await execAsync.call(this);
+        break;
+    }
+  },
+
+};

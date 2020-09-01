@@ -1,22 +1,31 @@
 'use strict';
 
-class VariableClass {
+module.exports = {
 
-  constructor(handler) {
-    this.handler = handler;
-    this.dbhandler = this.handler.apihandler.dbhandler;
-    this.triggerClass = require('./trigger');
-  }
+  set: async function() {
+    await this.handler.apihandler.dbhandler.updateVariableValue(this.params.description.variable_id, this.encode(this.params.value));
+  },
 
-  async set(description, value, ctx) {
-    await this.dbhandler.updateVariableValue(description.variable_id, this.handler.encode(ctx, value));
-  }
-
-  async eval(description) {
-    const val = await this.dbhandler.getVariable(description.variable_id);
+  eval: async function() {
+    const val = await this.handler.apihandler.dbhandler.getVariable(this.params.description.variable_id);
     return val.value;
-  }
+  },
 
-}
+  trigger: function() {
+    let fn;
 
-module.exports = VariableClass;
+    switch (this.params.description.trigger) {
+      case 'valueChanged':
+        fn = (variable_id, _value) => {
+          if (variable_id == this.params.description.variable_id)
+            this.params.callback();
+        };
+        this.handler.apihandler.dbhandler.on(`variableValueChanged`, fn);
+        this.params.destruct = () => {
+          this.handler.apihandler.dbhandler.removeListener(`variableValueChanged`, fn);
+        };
+        break;
+    }
+  },
+
+};

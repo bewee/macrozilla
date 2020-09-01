@@ -1,66 +1,38 @@
 'use strict';
 
-const schema_onload = require('./schema_onload.json');
+const schema_triggersblock = require('./schema_triggersblock.json');
 
-class TriggersClass {
+const triggerInstances = {};
 
-  constructor(handler) {
-    this.handler = handler;
-    this.triggerInstances = {};
-  }
+module.exports = {
 
-  async onLoad(ctx) {
-    const description = (await this.handler.apihandler.dbhandler.getMacro(ctx.macro_id)).description;
-    const triggerBlock = description.find((block) => block && block.type && block.type == 'triggers');
-    if (!triggerBlock) return;
-    const errors = this.handler.validator.validate(triggerBlock, schema_onload).errors;
-    if (errors.length != 0) {
-      this.handler.log(ctx, 'fatal', {title: 'Cannot parse triggers block during onLoad', message: errors[0]});
+  onload: async function() {
+    const macro_description = (await this.handler.apihandler.dbhandler.getMacro(this.inf.macro_id)).description;
+    const triggersBlock = macro_description.find((block) => block && block.type && block.type == 'triggers');
+    if (!triggersBlock || !this.validate(triggersBlock, schema_triggersblock))
       return;
-    }
-    ctx.block_id = triggerBlock.id;
-    this.triggerInstances[ctx.macro_id] = [];
-    for (const trigger of triggerBlock.list) {
-      const newctx = {}; Object.assign(newctx, ctx);
-      newctx.block_id = trigger.id;
+    triggerInstances[this.inf.macro_id] = [];
+    for (const trigger of triggersBlock.list) {
       const callback = async () => {
-        const newctx = {}; Object.assign(newctx, ctx);
-        delete newctx.block_id;
-        if (await this.handler.callClass(ctx, 'conditions', 'check', description, newctx)) {
-          this.handler.execMacro(ctx.macro_id, `trigger ${trigger.type}`);
+        if (await this.call({type: 'conditions'}, 'check', {macro_description: macro_description})) {
+          this.handler.execMacro(this.inf.macro_id, `trigger ${trigger.type}`);
         }
       };
-      const inst = this.handler.classInstances[trigger.type];
-      if (!inst) {
-        this.handler.log(ctx, 'fatal', {title: `Failed to load trigger`, message: `Unknown class ${trigger.type}`});
-        return;
-      }
-      const clazz = inst.triggerClass;
-      if (!clazz) {
-        this.handler.log(ctx, 'fatal', {title: `Failed to load trigger`, message: `Not available for ${trigger.type}`});
-        return;
-      }
-      const instance = new clazz.prototype.constructor(trigger, callback, this.handler.classInstances[trigger.type], ctx);
-      const errors = this.handler.validator.validate(trigger, require(`../${trigger.type}/schema_trigger.json`)).errors;
-      if (errors.length != 0) {
-        this.handler.log(newctx, 'fatal', {title: 'Cannot parse block for trigger', message: errors[0]});
-        return;
-      }
-      this.triggerInstances[ctx.macro_id].push(instance);
+      const params = {description: trigger, callback: callback};
+      this.call(trigger, 'trigger', params);
+      triggerInstances[this.inf.macro_id].push(params);
     }
-  }
+  },
 
-  async onUnload(macro_id) {
-    if (Object.keys(this.triggerInstances).length == 0) return;
-    for (const instance of this.triggerInstances[macro_id]) {
-      if (instance.destruct) instance.destruct();
+  onunload: async function() {
+    if (Object.keys(triggerInstances).length == 0) return;
+    for (const trigger of triggerInstances[this.inf.macro_id]) {
+      if (trigger.destruct) trigger.destruct();
     }
-    delete this.triggerInstances[macro_id];
-  }
+    delete triggerInstances[this.inf.macro_id];
+  },
 
-  async exec() {
-  }
+  exec: function() {
+  },
 
-}
-
-module.exports = TriggersClass;
+};
