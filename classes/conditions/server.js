@@ -9,6 +9,7 @@ module.exports = {
     if (!conditionsBlock) return true;
     if (!this.validate(conditionsBlock, schema_conditionsblock))
       return false;
+    this.inf.block_id = conditionsBlock.id;
     for (const condition of conditionsBlock.list) {
       const checkres = await this.call(condition, 'eval');
       if (!this.decodeBoolean(checkres))

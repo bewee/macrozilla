@@ -11,6 +11,7 @@ module.exports = {
     const triggersBlock = macro_description.find((block) => block && block.type && block.type == 'triggers');
     if (!triggersBlock || !this.validate(triggersBlock, schema_triggersblock))
       return;
+    this.inf.block_id = triggersBlock.id;
     triggerInstances[this.inf.macro_id] = [];
     for (const trigger of triggersBlock.list) {
       const callback = async () => {
@@ -27,7 +28,7 @@ module.exports = {
   onunload: async function() {
     if (Object.keys(triggerInstances).length == 0) return;
     for (const trigger of triggerInstances[this.inf.macro_id]) {
-      if (trigger.destruct) trigger.destruct();
+      if (trigger.destruct) trigger.destruct.call();
     }
     delete triggerInstances[this.inf.macro_id];
   },
