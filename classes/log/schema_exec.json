@@ -1,0 +1,19 @@
+{
+  "title": "exec",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "level": {
+      "type": "string",
+      "enum": ["debug","info","warn","error","fatal"]
+    },
+    "title": {
+      "$ref": "/class"
+    },
+    "message": {
+      "$ref": "/class"
+    }
+  },
+  "required": ["level", "title"]
+}
