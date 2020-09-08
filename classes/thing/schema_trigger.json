@@ -6,7 +6,7 @@
   "properties": {
     "trigger": {
       "type": "string",
-      "enum": ["propertyChanged", "eventTriggered", "actionTriggered", "connectStateChanged"]
+      "enum": ["propertyChanged", "eventRaised", "actionTriggered", "connectStateChanged"]
     },
     "thing": {
       "type": "string"
@@ -27,19 +27,19 @@
       "properties": {
         "trigger": {"enum": ["propertyChanged"]}
       },
-      "required": ["thing", "property"]
+      "required": ["thing"]
     },
     {
       "properties": {
-        "trigger": {"enum": ["eventTriggered"]}
+        "trigger": {"enum": ["eventRaised"]}
       },
-      "required": ["thing", "event"]
+      "required": ["thing"]
     },
     {
       "properties": {
         "trigger": {"enum": ["actionTriggered"]}
       },
-      "required": ["thing", "action"]
+      "required": ["thing"]
     },
     {
       "properties": {

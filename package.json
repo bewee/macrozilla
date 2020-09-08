@@ -60,6 +60,6 @@
     "jsonschema": "^1.2.6",
     "suncalc": "^1.8.0",
     "websocket": "^1.0.31",
-    "webthings-client": "1.1.0"
+    "webthings-client": "^2.0.0"
   }
 }
