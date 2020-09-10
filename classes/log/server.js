@@ -4,8 +4,9 @@ module.exports = {
 
   exec: async function() {
     const title = this.decodeString(await this.call(this.params.description.title, 'eval'));
-    const message = this.decodeString(await this.call(this.params.description.message, 'eval'));
-    const logobj = {title: title, message: message};
+    const logobj = {title: title};
+    if ('message' in this.params.description)
+      logobj.message = this.decodeString(await this.call(this.params.description.message, 'eval'));
     switch (this.params.description.level) {
       case 'debug': this.log.d(logobj); break;
       case 'info': this.log.i(logobj); break;
