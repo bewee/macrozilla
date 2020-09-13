@@ -14,13 +14,7 @@ s.addEventListener('load', () => {
       }
 
       show() {
-        window.loadPage("/extensions/macrozilla/views/editor.html").then((code) => {
-          macrosec.innerHTML = code;
-
-          initSideBar();
-
-        });
-        
+        showMacroOverview();
       }
 
     }
@@ -28,4 +22,22 @@ s.addEventListener('load', () => {
     new MacrozillaExtension();
   })();
 });
+
+function showMacroEditor(macroid){        
+  window.loadPage("/extensions/macrozilla/views/editor.html").then((code) => {
+    macrosec.innerHTML = code;
+
+    initSideBar();
+
+  });
+}
+
+function showMacroOverview(){
+  window.loadPage("/extensions/macrozilla/views/macrolist.html").then((code) => {
+    macrosec.innerHTML = code;
+
+    listAllMacros();
+  });
+}
+
 document.body.appendChild(s);

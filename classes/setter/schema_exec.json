@@ -3,13 +3,13 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "left": {"$ref": "/class"},
-    "right": {"$ref": "/class"},
+    "attribute": {"$ref": "/class"},
+    "value": {"$ref": "/class"},
     "speed": {"$ref": "/class"},
     "time": {"$ref": "/class"},
     "ups": {"$ref": "/class"}
   },
-  "required": ["left", "right"],
+  "required": ["attribute", "value"],
   "dependencies": {
     "ups": {
       "oneOf": [

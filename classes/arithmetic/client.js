@@ -1,42 +1,85 @@
 class ArithmeticAdapter{
 
     constructor(handler){
-        let g = handler.addGroup("Binary Operations");
-        let g2 = handler.addGroup("Binary Operations");
+        let g = handler.addGroup("Binary Operations", ["Maths"]);
+        let g2 = handler.addGroup("Other Operations", ["Maths"]);
 
-        g.assign(handler.addCard("Plus", ["Basics", "Maths"], (instance) => {
-            let left = instance.addParameter("x");
-            let right = instance.addParameter("y");
-            instance.setText("%p + %p", left, right);
-        }));        
-        g.assign(handler.addCard("Minus", ["Basics", "Maths"], (instance) => {
-            let left = instance.addParameter("x");
-            let right = instance.addParameter("y");
-            instance.setText("%p - %p", left, right);
-        }));
-        g.assign(handler.addCard("Multiply", ["Basics", "Maths"], (instance) => {
-            let left = instance.addParameter("x");
-            let right = instance.addParameter("y");
-            instance.setText("%p * %p", left, right);
-        }));
-        g.assign(handler.addCard("Divide", ["Basics", "Maths"], (instance) => {
-            let left = instance.addParameter("x");
-            let right = instance.addParameter("y");
-            instance.setText("%p / %p", left, right);
-        }));
-        handler.addCard("Negate", ["Basics", "Maths"], (instance) => {
-            let left = instance.addParameter("x");
-            instance.setText("Not %p", left);
-        });
+        {
+            let card = handler.addCard("Plus");
+            let left = card.addParameter("left", ["evaluable"]);
+            let right = card.addParameter("right", ["evaluable"]);
+            left.setText("x");
+            right.setText("y");
+            card.setText("%p + %p", left, right);
+            card.setJSONAttribute("operation", "+");
+            card.addAbility("evaluable");
+            g.assign(card);
+        }
+
+        {
+            let card = handler.addCard("Minus");
+            let left = card.addParameter("left", ["evaluable"]);
+            let right = card.addParameter("right", ["evaluable"]);
+            left.setText("x");
+            right.setText("y");
+            card.setText("%p - %p", left, right);
+            card.setJSONAttribute("operation", "-");
+            card.addAbility("evaluable");
+            g.assign(card);
+        }
+
+        {
+            let card = handler.addCard("Multiply");
+            let left = card.addParameter("left", ["evaluable"]);
+            let right = card.addParameter("right", ["evaluable"]);
+            left.setText("x");
+            right.setText("y");
+            card.setText("%p * %p", left, right);
+            card.setJSONAttribute("operation", "*");
+            card.addAbility("evaluable");
+            g.assign(card);
+        }
+
+        {
+            let card = handler.addCard("Divide");
+            let left = card.addParameter("left", ["evaluable"]);
+            let right = card.addParameter("right", ["evaluable"]);
+            left.setText("x");
+            right.setText("y");
+            card.setText("%p / %p", left, right);
+            card.setJSONAttribute("operation", "/");
+            card.addAbility("evaluable");
+            g.assign(card);
+        }
+
+        {
+            let card = handler.addCard("Not", ["Maths"]);
+            let left = card.addParameter("operand", ["evaluable"]);
+            left.setText("x");
+            card.setText("Not %p", left);
+            card.addAbility("evaluable");
+            card.setJSONAttribute("operation", "not");
+        }
+
         // ...
-        g2.assign(handler.addBlock("Increment", ["Basics", "Maths"], (instance) => {
-            let left = instance.addParameter("x");
-            instance.setText("Increment %p", left);
-        }));
-        g2.assign(handler.addBlock("Decrement", ["Basics", "Maths"], (instance) => {
-            let left = instance.addParameter("x");
-            instance.setText("Decrement %p", left);
-        }));
+
+        {
+            let block = handler.addBlock("Increment");
+            let left = block.addParameter("operand", ["settable"]);
+            left.setText("x");
+            block.setText("Increment %p", left);
+            block.setJSONAttribute("operation", "++");
+            g2.assign(block);
+        }
+
+        {
+            let block = handler.addBlock("Decrement");
+            let left = block.addParameter("operand", ["settable"]);
+            left.setText("x");
+            block.setText("Decrement %p", left);
+            block.setJSONAttribute("operation", "--");
+            g2.assign(block);
+        }
     }
 
 }

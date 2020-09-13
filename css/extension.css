@@ -1,3 +1,7 @@
+#main-menu #extension-macrozilla-menu-item {
+    background-image: url('../images/menu-icon.svg');
+}
+
 #extension-macrozilla-view.selected{
     display: flex;
     flex-direction: row;
@@ -75,13 +79,14 @@
 }
 
 .blockdescr{
+    color: white;
+    text-align: center;
+    display: flex;
+    align-items: center;
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    pointer-events: none;
-    color: white;
-    text-align: center;
 }
 
 .macroblock#currentdrag{
@@ -205,6 +210,10 @@ div#throwtrashhere:hover{
     font-weight: 200;
 }
 
+.cardplaceholder#hovering{
+    border: 2px solid #7f3939;
+}
+
 .macrocard .cardplaceholder, .blockgroup .macroblock .cardplaceholder{
     color: #353535;
 }
@@ -275,7 +284,7 @@ div#throwtrashhere:hover{
     flex-basis: 100%;
 }
 
-.macrointerface.ready .macroblock:not(.preview)::after{
+.macrointerface.ready .macroblock:not(.preview):not(.macrocard)::after{
     content: "";
     display: block;
     position: absolute;
@@ -297,4 +306,67 @@ div#throwtrashhere:hover{
     width: 100%;
     height: 100%;
     pointer-events: none;
+}
+
+.cardplaceholder .macrocard.placed{
+    position: relative;
+    margin: 0;
+}
+
+.cardplaceholder.filled{
+    background: transparent;
+    border-color: transparent;
+    padding: 0;
+}
+
+.macroblock.macrocard.placed{
+    cursor: initial;
+}
+
+macro-constant-card input{
+    text-align: center;
+    width: 75px;
+}
+
+#macrozilla-macro-list{
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 0;
+}
+
+#macrozilla-macro-list{
+    color: white;
+    user-select: none;
+    font-size: 2rem;
+}
+
+#macrozilla-macro-list .macrolistel{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    background-color: #5288af;
+    border-radius: 0.5rem;
+    background-image: url(/images/right-arrow.png);
+    background-size: auto 2rem;
+    background-repeat: no-repeat;
+    background-position: right 2.8rem center;
+    color: white;
+    cursor: pointer;
+}
+
+#macrozilla-macro-list span{
+    display: block;
+    margin: 1rem 0;
+    padding: 2rem 2rem 2rem 5.5rem;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.8rem;
+    background-position: 1rem;
+    background-size: 3.2rem;
+    background-repeat: no-repeat;
+    outline: 0;
+    background-image: url(/extensions/macrozilla/images/menu-icon.svg);
 }
