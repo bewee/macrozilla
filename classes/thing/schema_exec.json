@@ -1,4 +1,5 @@
 {
+  "title": "exec",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "allOf": [{"$ref": "/class"}],
@@ -9,10 +10,27 @@
     "property": {
       "type": "string"
     },
+    "action": {
+      "type": "string"
+    },
     "function": {
       "type": "string",
-      "enum": ["next", "prev"]
+      "enum": ["next", "prev", "action"]
     }
   },
-  "required": ["thing", "property", "function"]
+  "required": ["thing", "function"],
+  "oneOf": [
+    {
+      "properties": {
+        "function": {"enum": ["next", "prev"]}
+      },
+      "required": ["property"]
+    },
+    {
+      "properties": {
+        "function": {"enum": ["action"]}
+      },
+      "required": ["action"]
+    }
+  ]
 }

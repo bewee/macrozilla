@@ -1,44 +1,38 @@
 'use strict';
 
-class SetterClass {
+module.exports = {
 
-  constructor(handler) {
-    this.handler = handler;
-  }
+  exec: async function() {
+    const left = this.params.description.left;
+    const right = this.params.description.right;
 
-  async exec(description, ctx) {
-    const left = description.left;
-    const right = description.right;
-
-    if ('speed' in description || 'time' in description) {
-      const srcval = await this.handler.call(ctx, left, 'eval', left);
-      const srcvalnum = this.handler.decodeNumber(ctx, srcval);
-      const dstval = await this.handler.call(ctx, right, 'eval', right);
-      const dstvalnum = this.handler.decodeNumber(ctx, dstval);
+    if ('speed' in this.params.description || 'time' in this.params.description) {
+      const srcval = await this.call(left, 'eval');
+      const srcvalnum = this.decodeNumber(srcval);
+      const dstval = await this.call(right, 'eval');
+      const dstvalnum = this.decodeNumber(dstval);
       let time;
-      if ('speed' in description) {
-        const speed = await this.handler.call(ctx, description.speed, 'eval', description.speed);
+      if ('speed' in this.params.description) {
+        const speed = await this.call(this.params.description.speed, 'eval');
         time = Math.abs(dstvalnum-srcvalnum) / speed; // at speed 1, incrementing takes 1 second; at speed 10, incrementing takes 0.1 second
       } else {
-        time = await this.handler.call(ctx, description.time, 'eval', description.time);
+        time = await this.call(this.params.description.time, 'eval');
       }
-      const ups = ('ups' in description) ? (await this.handler.call(ctx, description.ups, 'eval', description.ups)) : 5;
+      const ups = ('ups' in this.params.description) ? this.params.description.ups : 5;
       const stepnum = time * ups;
       const stepsize = (dstvalnum-srcvalnum) / stepnum;
       for (let i = 0; i < stepnum; i++) {
-        await this.handler.call(ctx, left, 'set', left, this.handler.encodeNumber(ctx, srcvalnum+stepsize*i));
+        await this.call(left, 'set', {description: left, value: this.encodeNumber(srcvalnum+stepsize*i)});
         await new Promise((resolve) => {
           setTimeout(() => {
             resolve();
           }, 1000/ups);
         });
       }
-      await this.handler.call(ctx, left, 'set', left, this.handler.encodeNumber(ctx, dstvalnum));
+      await this.call(left, 'set', {description: left, value: this.encodeNumber(dstvalnum)});
     } else {
-      await this.handler.call(ctx, left, 'set', left, await this.handler.call(ctx, right, 'eval', right));
+      await this.call(left, 'set', {description: left, value: await this.call(right, 'eval')});
     }
-  }
+  },
 
-}
-
-module.exports = SetterClass;
+};

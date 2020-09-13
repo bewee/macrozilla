@@ -3,29 +3,35 @@
 const SunEmitter = require('./sun-emitter');
 const SunCalc = require('suncalc');
 
-class SunClass {
+let lat, lon;
+let emitter;
 
-  constructor(handler) {
-    this.handler = handler;
-    this.triggerClass = require('./trigger');
-    this.lat = this.handler.apihandler.config.latitude;
-    this.lon = this.handler.apihandler.config.longitude;
-    this.emitter = new SunEmitter(this.lat, this.lon);
-  }
+module.exports = {
 
-  async eval(description, ctx) {
-    const suntimes = SunCalc.getTimes(new Date(), this.lat, this.lon);
+  init: function(handler) {
+    lat = handler.apihandler.config.latitude;
+    lon = handler.apihandler.config.longitude;
+    emitter = new SunEmitter(lat, lon);
+  },
 
-    if (description.ev.startsWith('sun_after_')) {
-      return this.handler.encode(ctx, new Date() > suntimes[description.ev.substr('sun_after_'.length)]);
+  eval: function() {
+    const suntimes = SunCalc.getTimes(new Date(), lat, lon);
+
+    if (this.params.description.ev.startsWith('sun_after_')) {
+      return this.encode(new Date() > suntimes[this.params.description.ev.substr('sun_after_'.length)]);
     }
-    if (description.ev.startsWith('sun_before_')) {
-      return this.handler.encode(ctx, new Date() < suntimes[description.ev.substr('sun_before_'.length)]);
+    if (this.params.description.ev.startsWith('sun_before_')) {
+      return this.encode(new Date() < suntimes[this.params.description.ev.substr('sun_before_'.length)]);
     }
 
-    return this.handler.encode(ctx, null);
-  }
+    return this.encode(null);
+  },
 
-}
+  trigger: function() {
+    emitter.on(this.params.description.trigger, this.params.callback);
+    this.params.destruct = () => {
+      emitter.removeEventListener(this.params.description.trigger, this.params.callback);
+    };
+  },
 
-module.exports = SunClass;
+};

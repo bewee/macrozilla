@@ -1,15 +1,9 @@
 'use strict';
 
-class ConstantClass {
+module.exports = {
 
-  constructor(handler) {
-    this.handler = handler;
-  }
+  eval: function() {
+    return this.params.description.value;
+  },
 
-  async eval(description) {
-    return description.value;
-  }
-
-}
-
-module.exports = ConstantClass;
+};

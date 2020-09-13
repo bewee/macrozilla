@@ -58,8 +58,9 @@
   "dependencies": {
     "@babel/types": "^7.11.0",
     "jsonschema": "^1.2.6",
+    "node-cron": "^2.0.3",
     "suncalc": "^1.8.0",
     "websocket": "^1.0.31",
-    "webthings-client": "1.1.0"
+    "webthings-client": "^2.0.0"
   }
 }

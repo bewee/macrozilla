@@ -1,12 +1,13 @@
 {
-  "title": "set",
+  "title": "conditionsblock",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "variable_id": {
-      "type": "integer"
+    "list": {
+      "type": "array",
+      "items": {"$ref": "/class"}
     }
   },
-  "required": ["variable_id"]
+  "required": ["list"]
 }

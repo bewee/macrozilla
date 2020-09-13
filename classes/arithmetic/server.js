@@ -1,166 +1,171 @@
 'use strict';
 
-class ArithmeticClass {
-
-  constructor(handler) {
-    this.handler = handler;
-  }
-
-  async eval(description, ctx) {
-    switch (description.operation) {
-      case 'not':
-        return await this.not(description.operand, ctx);
-      case 'abs':
-        return await this.abs(description.operand, ctx);
-      case 'negate':
-        return await this.negate(description.operand, ctx);
-      case '&':
-        return await this.and(description.left, description.right, ctx);
-      case '|':
-        return await this.or(description.left, description.right, ctx);
-      case '^':
-        return await this.xor(description.left, description.right, ctx);
-      case '+':
-        return await this.add(description.left, description.right, ctx);
-      case '-':
-        return await this.sub(description.left, description.right, ctx);
-      case '*':
-        return await this.mul(description.left, description.right, ctx);
-      case '/':
-        return await this.div(description.left, description.right, ctx);
-      case '%':
-        return await this.mod(description.left, description.right, ctx);
-      case 'round':
-        return await this.round(description.left, description.right, ctx);
-      case '=': case '>': case '<': case '>=': case '<=': case '!=':
-        return await this.cmp(description.left, description.right, description.operation, ctx);
-    }
-    return '';
-  }
-
-  async exec(description, ctx) {
-    switch (description.operation) {
-      case '++':
-        await this.incdec(description.operand, +1, ctx);
-        break;
-      case '--':
-        await this.incdec(description.operand, -1, ctx);
-        break;
-      case 'invert':
-        await this.invert(description.operand, ctx);
-        break;
-    }
-  }
-
-  async not(operand, ctx) {
-    const value = this.handler.decodeBoolean(ctx, await this.handler.call(ctx, operand, 'eval', operand));
-    return this.handler.encode(ctx, !value);
-  }
-
-  async abs(operand, ctx) {
-    const value = this.handler.decodeNumber(ctx, await this.handler.call(ctx, operand, 'eval', operand));
-    return this.handler.encode(ctx, Math.abs(value));
-  }
-
-  async negate(operand, ctx) {
-    const value = this.handler.decodeNumber(ctx, await this.handler.call(ctx, operand, 'eval', operand));
-    return this.handler.encode(ctx, -value);
-  }
-
-  async boolparams(left, right, ctx) {
-    const lvalue = this.handler.decodeBoolean(ctx, await this.handler.call(ctx, left, 'eval', left));
-    const rvalue = this.handler.decodeBoolean(ctx, await this.handler.call(ctx, right, 'eval', right));
-    return [lvalue, rvalue];
-  }
-
-  async and(left, right, ctx) {
-    const val = await this.boolparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] && val[1]);
-  }
-
-  async or(left, right, ctx) {
-    const val = await this.boolparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] || val[1]);
-  }
-
-  async xor(left, right, ctx) {
-    const val = await this.boolparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] ^ val[1]);
-  }
-
-  async numparams(left, right, ctx) {
-    const lvalue = this.handler.decodeNumber(ctx, await this.handler.call(ctx, left, 'eval', left));
-    const rvalue = this.handler.decodeNumber(ctx, await this.handler.call(ctx, right, 'eval', right));
-    return [lvalue, rvalue];
-  }
-
-  async add(left, right, ctx) {
-    const val = await this.numparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] + val[1]);
-  }
-
-  async sub(left, right, ctx) {
-    const val = await this.numparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] - val[1]);
-  }
-
-  async mul(left, right, ctx) {
-    const val = await this.numparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] * val[1]);
-  }
-
-  async div(left, right, ctx) {
-    const val = await this.numparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] / val[1]);
-  }
-
-  async mod(left, right, ctx) {
-    const val = await this.numparams(left, right, ctx);
-    return this.handler.encode(ctx, val[0] % val[1]);
-  }
-
-  async round(left, right, ctx) {
-    const val = await this.numparams(left, right, ctx);
-    let v = Math.round(val[0] / val[1]) * val[1];
-    if (Math.floor(Math.log10(val[1])) < 0)
-      v = v.toFixed(-Math.floor(Math.log10(val[1])));
-    return this.handler.encode(ctx, v);
-  }
-
-  async cmp(left, right, comparator, ctx) {
-    const lraw = await this.handler.call(ctx, left, 'eval', left);
-    const rraw = await this.handler.call(ctx, right, 'eval', right);
-    const lval = this.handler.decode(ctx, lraw), rval = this.handler.decode(ctx, rraw);
-    let cmp;
-    switch (comparator) {
-      case '=': cmp = (a, b) => a == b; break;
-      case '>': cmp = (a, b) => a > b; break;
-      case '<': cmp = (a, b) => a < b; break;
-      case '>=': cmp = (a, b) => a >= b; break;
-      case '<=': cmp = (a, b) => a <= b; break;
-      case '!=': cmp = (a, b) => a != b; break;
-    }
-    if (typeof lval == typeof rval) {
-      return this.handler.encodeBoolean(ctx, cmp(lval, rval));
-    } else if (typeof lval == 'string' || typeof rval == 'string') {
-      return this.handler.encodeBoolean(ctx, cmp(this.handler.decodeString(ctx, lraw), this.handler.decodeString(ctx, rraw)));
-    } else if (typeof lval == 'number' || typeof rval == 'number') {
-      return this.handler.encodeBoolean(ctx, cmp(this.handler.decodeNumber(ctx, lraw), this.handler.decodeNumber(ctx, rraw)));
-    } else if (typeof lval == 'boolean' || typeof rval == 'boolean') {
-      return this.handler.encodeBoolean(ctx, cmp(this.handler.decodeBoolean(ctx, lraw), this.handler.decodeBoolean(ctx, rraw)));
-    }
-  }
-
-  async incdec(operand, num, ctx) {
-    const value = this.handler.decodeNumber(ctx, await this.handler.call(ctx, operand, 'eval', operand));
-    await this.handler.call(ctx, operand, 'set', operand, this.handler.encode(ctx, value + num));
-  }
-
-  async invert(operand, ctx) {
-    const value = this.handler.decodeBoolean(ctx, await this.handler.call(ctx, operand, 'eval', operand));
-    await this.handler.call(ctx, operand, 'set', operand, this.handler.encode(ctx, !value));
-  }
-
+async function not() {
+  const operand = this.params.description.operand;
+  const value = this.decodeBoolean(await this.call(operand, 'eval'));
+  return this.encode(!value);
 }
 
-module.exports = ArithmeticClass;
+async function abs() {
+  const operand = this.params.description.operand;
+  const value = this.decodeNumber(await this.call(operand, 'eval'));
+  return this.encode(Math.abs(value));
+}
+
+async function negate() {
+  const operand = this.params.description.operand;
+  const value = this.decodeNumber(await this.call(operand, 'eval'));
+  return this.encode(-value);
+}
+
+async function boolparams() {
+  const left = this.params.description.left;
+  const right = this.params.description.right;
+  const lvalue = this.decodeBoolean(await this.call(left, 'eval'));
+  const rvalue = this.decodeBoolean(await this.call(right, 'eval'));
+  return [lvalue, rvalue];
+}
+
+async function and() {
+  const val = await boolparams.call(this);
+  return this.encode(val[0] && val[1]);
+}
+
+async function or() {
+  const val = await boolparams.call(this);
+  return this.encode(val[0] || val[1]);
+}
+
+async function xor() {
+  const val = await boolparams.call(this);
+  return this.encode(val[0] ^ val[1]);
+}
+
+async function numparams() {
+  const left = this.params.description.left;
+  const right = this.params.description.right;
+  const lvalue = this.decodeNumber(await this.call(left, 'eval'));
+  const rvalue = this.decodeNumber(await this.call(right, 'eval'));
+  return [lvalue, rvalue];
+}
+
+async function add() {
+  const val = await numparams.call(this);
+  return this.encode(val[0] + val[1]);
+}
+
+async function sub() {
+  const val = await numparams.call(this);
+  return this.encode(val[0] - val[1]);
+}
+
+async function mul() {
+  const val = await numparams.call(this);
+  return this.encode(val[0] * val[1]);
+}
+
+async function div() {
+  const val = await numparams.call(this);
+  return this.encode(val[0] / val[1]);
+}
+
+async function mod() {
+  const val = await numparams.call(this);
+  return this.encode(val[0] % val[1]);
+}
+
+async function round() {
+  const val = await numparams.call(this);
+  let v = Math.round(val[0] / val[1]) * val[1];
+  if (Math.floor(Math.log10(val[1])) < 0)
+    v = v.toFixed(-Math.floor(Math.log10(val[1])));
+  return this.encode(v);
+}
+
+async function cmp() {
+  const left = this.params.description.left, right = this.params.description.right;
+  const comparator = this.params.description.operation;
+  const lraw = await this.call(left, 'eval');
+  const rraw = await this.call(right, 'eval');
+  const lval = this.decode(lraw), rval = this.decode(rraw);
+  let cmp;
+  switch (comparator) {
+    case '=': cmp = (a, b) => a == b; break;
+    case '>': cmp = (a, b) => a > b; break;
+    case '<': cmp = (a, b) => a < b; break;
+    case '>=': cmp = (a, b) => a >= b; break;
+    case '<=': cmp = (a, b) => a <= b; break;
+    case '!=': cmp = (a, b) => a != b; break;
+  }
+  if (typeof lval == typeof rval) {
+    return this.encodeBoolean(cmp(lval, rval));
+  } else if (typeof lval == 'string' || typeof rval == 'string') {
+    return this.encodeBoolean(cmp(this.decodeString(lraw), this.decodeString(rraw)));
+  } else if (typeof lval == 'number' || typeof rval == 'number') {
+    return this.encodeBoolean(cmp(this.decodeNumber(lraw), this.decodeNumber(rraw)));
+  } else if (typeof lval == 'boolean' || typeof rval == 'boolean') {
+    return this.encodeBoolean(cmp(this.decodeBoolean(lraw), this.decodeBoolean(rraw)));
+  }
+}
+
+async function incdec(num) {
+  const operand = this.params.description.operand;
+  const value = this.decodeNumber(await this.call(operand, 'eval'));
+  await this.call(operand, 'set', {description: operand, value: this.encode(value + num)});
+}
+
+async function invert() {
+  const operand = this.params.description.operand;
+  const value = this.decodeBoolean(await this.call(operand, 'eval'));
+  await this.call(operand, 'set', {description: operand, value: this.encode(!value)});
+}
+
+module.exports = {
+
+  eval: async function() {
+    switch (this.params.description.operation) {
+      case 'not':
+        return await not.call(this);
+      case 'abs':
+        return await abs.call(this);
+      case 'negate':
+        return await negate.call(this);
+      case '&':
+        return await and.call(this);
+      case '|':
+        return await or.call(this);
+      case '^':
+        return await xor.call(this);
+      case '+':
+        return await add.call(this);
+      case '-':
+        return await sub.call(this);
+      case '*':
+        return await mul.call(this);
+      case '/':
+        return await div.call(this);
+      case '%':
+        return await mod.call(this);
+      case 'round':
+        return await round.call(this);
+      case '=': case '>': case '<': case '>=': case '<=': case '!=':
+        return await cmp.call(this);
+    }
+    return '';
+  },
+
+  exec: async function() {
+    switch (this.params.description.operation) {
+      case '++':
+        await incdec.call(this, +1);
+        break;
+      case '--':
+        await incdec.call(this, -1);
+        break;
+      case 'invert':
+        await invert.call(this);
+        break;
+    }
+  },
+
+};

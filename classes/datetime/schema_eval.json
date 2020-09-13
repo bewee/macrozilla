@@ -1,0 +1,57 @@
+{
+  "title": "eval",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "function": {
+      "type": "string",
+      "enum": [ "get", "before", "after" ]
+    },
+    "property": {
+      "type": "string",
+      "enum": [ "seconds", "minutes", "hours", "dayw", "daym", "month", "year", "time", "date", "datetime" ]
+    },
+    "tvalue": {
+      "type": "string",
+      "enum": [ "time", "dayw", "date" ]
+    },
+    "value": {
+      "type": "string"
+    }
+  },
+  "oneOf":[
+    {
+      "properties": {
+        "function": { "enum": [ "get" ] }
+      },
+      "required": [ "property" ]
+    },
+    {
+      "properties": {
+        "function": { "enum": [ "before", "after" ] }
+      },
+      "required": [ "tvalue", "value" ],
+      "oneOf":[
+        { 
+          "properties": { 
+            "tvalue": { "enum": [ "time" ] },
+            "value": { "pattern": "^\\d{2}\\d{2}\\d{2}$" }
+          }
+        },
+        {
+          "properties": { 
+            "tvalue": { "enum": [ "dayw" ] },
+            "value": { "pattern": "^[0-7]$" }
+          }
+        },
+        {
+          "properties": { 
+            "tvalue": { "enum": [ "date" ] },
+            "value": { "pattern": "^\\d{4}\\d{2}\\d{2}$" }
+          }
+        }
+      ]
+    }
+  ]
+}
