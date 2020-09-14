@@ -35,7 +35,13 @@ function showMacroEditor(macroid){
 function showMacroOverview(){
   window.loadPage("/extensions/macrozilla/views/macrolist.html").then((code) => {
     macrosec.innerHTML = code;
-
+    document.querySelector('#macrozilla-add-macropath').addEventListener('click', () => {
+      console.log('TODO: Add macropath');
+      let name = prompt('Name');
+      window.API.postJson('/extensions/macrozilla/api/create-macropath', {name: name}).then(() => {
+        showMacroOverview();
+      });
+    });
     listAllMacros();
   });
 }

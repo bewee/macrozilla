@@ -114,14 +114,50 @@ function macroToJSON(){
 }
 
 function listAllMacros(){
-    const macrolist = document.querySelector("#macrozilla-macro-list");
+    let macrolist = document.querySelector("#macrozilla-macro-list");
     window.API.postJson("/extensions/macrozilla/api/list-macropaths", {}).then(async e => {
         for (let el of e.list){
-            macrolist.innerHTML += "<h2>"+el.name+"</h2>";
+            const title = document.createElement("H2");
+            title.innerHTML = el.name;
+            macrolist.appendChild(title);
+            if (el.id != 1) {
+                let delbttn = document.createElement('DIV');
+                delbttn.className = 'macropathdelel';
+                delbttn.addEventListener('click', () => {
+                    window.API.postJson('/extensions/macrozilla/api/remove-macropath', {id: el.id}).then(() => {
+                        showMacroOverview();
+                    });
+                })
+                macrolist.appendChild(delbttn);
+            }
             let macros = await window.API.postJson("/extensions/macrozilla/api/list-macros", {"path_id": el.id})
             macros.list.forEach(macro => {
-                macrolist.innerHTML += "<div class='macrolistel' onclick='showMacroEditor("+macro.id+")'><span>"+macro.name+"</span></div>";
+                let macrolistel = document.createElement("DIV");
+                macrolistel.innerHTML = "<span>"+macro.name+"</span>";
+                macrolistel.className = "macrolistel";
+                macrolistel.addEventListener("click", () => {
+                    showMacroEditor(macro.id);
+                })
+                macrolist.appendChild(macrolistel);
+                let delbttn = document.createElement('DIV');
+                delbttn.className = 'macrodelel';
+                delbttn.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    window.API.postJson('/extensions/macrozilla/api/remove-macro', {id: macro.id}).then(() => {
+                        showMacroOverview();
+                    });
+                });
+                macrolistel.appendChild(delbttn);
             });
+            let addbttn = document.createElement('DIV');
+            addbttn.className = 'macroaddel';
+            addbttn.addEventListener('click', () => {
+                const name = prompt('Name');
+                window.API.postJson('/extensions/macrozilla/api/create-macro', {path_id: el.id, name: name}).then(() => {
+                    showMacroOverview();
+                });
+            })
+            macrolist.appendChild(addbttn);
         }
     });
 }
