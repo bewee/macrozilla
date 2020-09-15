@@ -2,47 +2,47 @@
 const s = document.createElement('SCRIPT');
 s.type = 'text/javascript';
 s.src = '/extensions/macrozilla/js/helpers.js';
-var macrosec = null;
+let macrosec = null;
 s.addEventListener('load', () => {
-  (function() {
-    class MacrozillaExtension extends window.Extension {
+  class MacrozillaExtension extends window.Extension {
 
-      constructor() {
-        super('macrozilla');
-        this.addMenuEntry('Macros');
-        macrosec = document.querySelector("#extension-macrozilla-view");
-      }
-
-      show() {
-        showMacroOverview();
-      }
-
+    constructor() {
+      super('macrozilla');
+      this.addMenuEntry('Macros');
+      macrosec = document.querySelector('#extension-macrozilla-view');
     }
 
-    new MacrozillaExtension();
-  })();
+    show() {
+      showMacroOverview();
+    }
+
+  }
+
+  new MacrozillaExtension();
 });
 
-function showMacroEditor(macroid){        
-  window.loadPage("/extensions/macrozilla/views/editor.html").then((code) => {
+window.showMacroEditor = function(_macroid) {
+  window.loadPage('/extensions/macrozilla/views/editor.html').then((code) => {
     macrosec.innerHTML = code;
-
-    initSideBar();
-
+    window.executePath = document.querySelector('#macro-execute-path');
+    window.programArea = document.querySelector('#programarea');
+    window.macroInterface = document.querySelector('#programarea .macrointerface');
+    window.macroSidebar = document.querySelector('#macrosidebar');
+    window.throwTrashHere = document.querySelector('#throwtrashhere');
+    window.initSideBar();
   });
-}
+};
 
-function showMacroOverview(){
-  window.loadPage("/extensions/macrozilla/views/macrolist.html").then((code) => {
+function showMacroOverview() {
+  window.loadPage('/extensions/macrozilla/views/macrolist.html').then((code) => {
     macrosec.innerHTML = code;
     document.querySelector('#macrozilla-add-macropath').addEventListener('click', () => {
-      console.log('TODO: Add macropath');
-      let name = prompt('Name');
+      const name = prompt('Name');
       window.API.postJson('/extensions/macrozilla/api/create-macropath', {name: name}).then(() => {
         showMacroOverview();
       });
     });
-    listAllMacros();
+    window.listAllMacros();
   });
 }
 

@@ -104,7 +104,7 @@ module.exports = {
     'no-ex-assign': 'warn',
     'no-console': 0,
     'no-duplicate-imports': 'error',
-    'no-eval': 'error',
+    'no-eval': 'warn',
     'no-floating-decimal': 'error',
     'no-implicit-globals': 'error',
     'no-implied-eval': 'error',
