@@ -1,4 +1,4 @@
-class MacrozillaBuildingGroup extends HTMLElement {
+class MacroBuildingGroup extends HTMLElement {
 
   constructor(identifier) {
     super();
@@ -28,5 +28,5 @@ class MacrozillaBuildingGroup extends HTMLElement {
   }
 }
 
-customElements.define('macro-building-group', MacrozillaBuildingGroup);
-window.MacrozillaBuildingGroup = MacrozillaBuildingGroup;
+customElements.define('macro-building-group', MacroBuildingGroup);
+window.exports = MacroBuildingGroup;

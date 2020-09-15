@@ -2,7 +2,7 @@
 
 class MacroBuildingElement extends HTMLElement {
 
-  constructor(name, classname, _elgroup = null) {
+  constructor(name, classname, editor, _elgroup = null) {
     super();
 
     this.parameters = [];
@@ -11,6 +11,7 @@ class MacroBuildingElement extends HTMLElement {
     this.abilities = [];
     this.name = name;
     this.classname = classname;
+    this.editor = editor;
     this.setAttribute('title', name);
     this.setAttribute('alt', name);
     this.className = 'macroblock';
@@ -18,7 +19,7 @@ class MacroBuildingElement extends HTMLElement {
   }
 
   addParameter(name, accepts = []) {
-    const p = new window.Parameter(name);
+    const p = new this.editor.Parameter(name, this.editor);
     p.setAccepted(accepts);
     //this.parameters.push(p);
     return p;
@@ -56,6 +57,7 @@ class MacroBuildingElement extends HTMLElement {
   copy() {
     const copyinstance = new this.constructor(this.name, this.classname, this.group);
     copyinstance.parameters = this.parameters;
+    copyinstance.editor = this.editor;
     copyinstance.internal_attributes = this.internal_attributes;
     copyinstance.classname = this.classname;
     copyinstance.abilities = this.abilities;
@@ -96,8 +98,8 @@ class MacroBuildingElement extends HTMLElement {
 
 class MacroBlock extends MacroBuildingElement {
 
-  constructor(name, classname, elgroup = null) {
-    super(name, classname, elgroup);
+  constructor(name, classname, editor, elgroup = null) {
+    super(name, classname, editor, elgroup);
     this.abilities = ['executable'];
   }
 
@@ -114,8 +116,8 @@ class MacroBlock extends MacroBuildingElement {
 
 class MacroCard extends MacroBuildingElement {
 
-  constructor(name, classname, elgroup = null) {
-    super(name, classname, elgroup);
+  constructor(name, classname, editor, elgroup = null) {
+    super(name, classname, editor, elgroup);
     this.className = 'macroblock macrocard';
   }
 
@@ -123,8 +125,8 @@ class MacroCard extends MacroBuildingElement {
 
 class MacroCardBlock extends MacroCard {
 
-  constructor(name, classname, elgroup) {
-    super(name, classname, elgroup);
+  constructor(name, classname, editor, elgroup) {
+    super(name, classname, editor, elgroup);
     this.successor = null;
     this.predecessor = null;
   }
@@ -139,8 +141,11 @@ class MacroCardBlock extends MacroCard {
 }
 
 customElements.define('macro-block', MacroBlock);
-window.MacroBlock = MacroBlock;
 customElements.define('macro-card', MacroCard);
-window.MacroCard = MacroCard;
 customElements.define('macro-card-block', MacroCardBlock);
-window.MacroCardBlock = MacroCardBlock;
+window.exports = {
+  MacroBuildingElement: MacroBuildingElement,
+  MacroCard: MacroCard,
+  MacroBlock: MacroBlock,
+  MacroCardBlock: MacroCardBlock,
+};

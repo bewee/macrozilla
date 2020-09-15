@@ -1,4 +1,4 @@
-class Triggers {
+class TriggersClass {
 
   constructor(handler) {
     const block = handler.addBlock('Triggers', ['Basics']);
@@ -9,4 +9,4 @@ class Triggers {
 
 }
 
-window.exportMacroModule(Triggers);
+window.exports = TriggersClass;

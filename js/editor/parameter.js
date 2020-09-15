@@ -1,10 +1,9 @@
-'use strict';
-
 class Parameter extends HTMLElement {
 
-  constructor(name) {
+  constructor(name, editor) {
     super();
     this.name = name;
+    this.editor = editor;
     this.cards = [];
     this.multicards = false;
     this.accepts = [];
@@ -27,7 +26,7 @@ class Parameter extends HTMLElement {
     this.appendChild(cardel);
     cardel.style.top = '';
     cardel.style.left = '';
-    window.cardpholder = null;
+    this.editor.cardpholder = null;
     this.cards.push(cardel);
   }
 
@@ -36,7 +35,7 @@ class Parameter extends HTMLElement {
   }
 
   copy() {
-    const copyinstance = new this.constructor(this.name);
+    const copyinstance = new this.constructor(this.name, this.editor);
     copyinstance.multicards = this.multicards;
     for (let i = this.attributes.length - 1; i > -1; --i) {
       copyinstance.setAttribute(this.attributes[i].name, this.attributes[i].value);
@@ -77,4 +76,4 @@ class Parameter extends HTMLElement {
 }
 
 customElements.define('macro-param', Parameter);
-window.Parameter = Parameter;
+window.exports = Parameter;

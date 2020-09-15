@@ -19,4 +19,4 @@ class SunClass {
 
 }
 
-window.exportMacroModule(SunClass);
+window.exports = SunClass;

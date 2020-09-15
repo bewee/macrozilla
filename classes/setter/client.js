@@ -1,4 +1,4 @@
-class Setter {
+class SetterClass {
 
   constructor(handler) {
     const block = handler.addBlock('Set', ['Basics']);
@@ -9,4 +9,4 @@ class Setter {
 
 }
 
-window.exportMacroModule(Setter);
+window.exports = SetterClass;

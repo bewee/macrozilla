@@ -1,34 +1,37 @@
 class Handler {
 
-  constructor(classname) {
+  constructor(classname, editor) {
+    this.editor = editor;
     this.groups = [];
     this.classname = classname;
+    this.allcards = [];
+    this.categories_ = {};
   }
 
   addElement(c, categories) {
-    c.addEventListener('mousedown', window.handleDragStart);
-    c.addEventListener('mouseup', window.handleDragEnd);
+    c.addEventListener('mousedown', this.editor.dragndrophandler.handleDragStart.bind(this.editor.dragndrophandler));
+    c.addEventListener('mouseup', this.editor.dragndrophandler.handleDragEnd.bind(this.editor.dragndrophandler));
 
     document.querySelector('#macrosidebar').appendChild(c);
 
     this.assignCategory(categories[0], c);
-    window.allcards.push(c);
+    this.allcards.push(c);
   }
 
   addCardBlock(name, categories = []) {
-    const c = new window.MacroCardBlock(name, this.classname);
+    const c = new this.editor.MacroCardBlock(name, this.classname, this.editor);
     this.addElement(c, categories);
     return c;
   }
 
   addBlock(name, categories = []) {
-    const c = new window.MacroBlock(name, this.classname);
+    const c = new this.editor.MacroBlock(name, this.classname, this.editor);
     this.addElement(c, categories);
     return c;
   }
 
   addCard(name, categories = []) {
-    const c = new window.MacroCard(name, this.classname);
+    const c = new this.editor.MacroCard(name, this.classname, this.editor);
     if (categories[0] == '_hidden')
       return c;
     this.addElement(c, categories);
@@ -36,7 +39,7 @@ class Handler {
   }
 
   addGroup(identifier, categories = []) {
-    const g = new window.MacrozillaBuildingGroup(identifier);
+    const g = new this.editor.MacroBuildingGroup(identifier);
     this.groups[identifier] = g;
     document.querySelector('#macrosidebar').appendChild(g);
     this.assignCategory(categories[0], g);
@@ -46,19 +49,19 @@ class Handler {
   assignCategory(cat, element) {
     if (!cat)
       return;
-    if (!Object.keys(window._categories).includes(cat)) {
+    if (!Object.keys(this.categories_).includes(cat)) {
       const title = document.createElement('H2');
       title.innerHTML = cat;
       document.querySelector('#macrosidebar').appendChild(title);
       const container = document.createElement('DIV');
       document.querySelector('#macrosidebar').appendChild(container);
-      window._categories[cat] = container;
+      this.categories_[cat] = container;
     }
-    window._categories[cat].appendChild(element);
+    this.categories_[cat].appendChild(element);
   }
 
   getCardByName(query) {
-    for (const c of window.allcards) {
+    for (const c of this.allcards) {
       if (c.name == query) {
         return c;
       }
@@ -68,4 +71,4 @@ class Handler {
 
 }
 
-window.Handler = Handler;
+window.exports = Handler;

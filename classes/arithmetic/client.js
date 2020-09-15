@@ -1,4 +1,4 @@
-class ArithmeticAdapter {
+class ArithmeticClass {
 
   constructor(handler) {
     const g = handler.addGroup('Binary Operations', ['Maths']);
@@ -84,4 +84,4 @@ class ArithmeticAdapter {
 
 }
 
-window.exportMacroModule(ArithmeticAdapter);
+window.exports = ArithmeticClass;
