@@ -37,15 +37,65 @@ class EditorView {
         });
       });
     });
+
+    // for debugging
+    window.macroToJSON = this.macroToJSON.bind(this);
   }
 
-  show() {
+  changes() {
+    if (!this.changes_)
+      document.querySelector('#macrotoolbar h1').innerHTML += '*';
+    this.changes_ = true;
+  }
+
+  show(macro) {
+    this.loadMacro(macro.id);
+    this.changes_ = false;
     this.executePath = document.querySelector('#macro-execute-path');
     this.programArea = document.querySelector('#programarea');
     this.macroInterface = document.querySelector('#programarea .macrointerface');
     this.macroSidebar = document.querySelector('#macrosidebar');
     this.throwTrashHere = document.querySelector('#throwtrashhere');
+    document.querySelector('#macrotoolbar h1').innerHTML = macro.name;
+    document.querySelector('#macro-back-button').addEventListener('click', async () => {
+      if (this.changes_ && window.confirm('Save Changes?'))
+        await this.saveMacro(macro.id);
+      this.extension.views.macrolist.show(macro.id);
+    })
+    document.querySelector('#playmacro').addEventListener('click', async () => {
+      this.executeMacro(macro.id);
+    })
     this.initSideBar();
+  }
+
+  async executeMacro(macro_id) {
+    if (this.changes_) {
+      if(window.confirm('Save Changes?')) {
+        await this.saveMacro(macro_id);
+        const titleel = document.querySelector('#macrotoolbar h1');
+        titleel.innerHTML = titleel.innerHTML.slice(0, -1);
+        this.changes_ = false;
+      } else {
+        return;
+      }
+    }
+    console.log('executing');
+    await window.API.postJson('/extensions/macrozilla/api/exec-macro', {id: macro_id});
+  }
+
+  async loadMacro(macro_id) {
+    const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: macro_id});
+    console.log('loading', JSON.stringify(res.macro.description));
+    for (const block of res.macro.description) {
+      // TODO
+    }
+  }
+
+  async saveMacro(macro_id) {
+    const json = this.macroToJSON();
+    console.log('saving', JSON.stringify(json));
+    const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: macro_id, description: json});
+    console.log('result', res);
   }
 
   initSideBar() {
@@ -75,8 +125,6 @@ class EditorView {
     if (document.querySelector(`.macro_arr_${node1.getAttribute('macro-block-no')}.macro_arr_${node2.getAttribute('macro-block-no')}`) != null) {
       return;
     }
-    node1.successor = node2;
-    node2.predecessor = node1;
     const connection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     connection.setAttribute('marker-mid', 'url(#arrowhead)');
     connection.setAttribute('fill', 'none');
@@ -91,12 +139,14 @@ class EditorView {
 
   macroToJSON() {
     let startblock = document.querySelector('.macroblock.placed');
+    console.log(startblock);
+    if (!startblock) return [];
     while (startblock.predecessor)
       startblock = startblock.predecessor;
     const buffer = [];
-    const i = {id: 1};
+    console.log(startblock);
     while (startblock) {
-      const cblock = startblock.toJSON(i);
+      const cblock = startblock.toJSON();
       buffer.push(cblock);
       startblock = startblock.successor;
     }

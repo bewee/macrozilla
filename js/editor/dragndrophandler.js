@@ -49,19 +49,23 @@ class DragndropHandler {
 
   handleDragStart(e) {
     e.stopPropagation();
+    this.editor.changes();
+
+    // following code only relevant when dragged from a parameter
     if (e.target instanceof this.editor.Parameter)
       return;
 
+    // determine dragel
     this.macro_dragel = e.target;
     while (!this.macro_dragel.className.includes('macroblock')) {
       this.macro_dragel = this.macro_dragel.parentNode;
     }
-
     this.macro_dragel.id = 'currentdrag';
+
     const rect = this.macro_dragel.getBoundingClientRect();
     const rect2 = document.getElementById('extension-macrozilla-view').getBoundingClientRect();
 
-    // create placeholder
+    // dragged from sidebar -> create placeholder
     if (!this.macro_dragel.className.split(' ').includes('placed')) {
       const ph = document.createElement('DIV');
       ph.className = 'macroblock placeholder';
@@ -99,20 +103,18 @@ class DragndropHandler {
     });
 
     this.editor.macroInterface.className += ' ready';
-    this.hd = this.handleDrag.bind(this);
-    document.addEventListener('mousemove', this.hd, true);
+    this.handleDragInstance = this.handleDrag.bind(this);
+    document.addEventListener('mousemove', this.handleDragInstance, true);
     this.editor.throwTrashHere.className = 'active';
     this.handleDrag(e);
   }
 
   handleDragEnd(e) {
-    document.removeEventListener('mousemove', this.hd, true);
-    const area = this.editor.programArea.getBoundingClientRect();
+    if (!this.macro_dragel)
+      return;
 
-    if (this.macro_dragel.successor)
-      this.macro_dragel.successor.predecessor = null;
-    if (this.macro_dragel.predecessor)
-      this.macro_dragel.predecessor.successor = null;
+    document.removeEventListener('mousemove', this.handleDragInstance, true);
+    const area = this.editor.programArea.getBoundingClientRect();
 
     // dropped over program area -> create copy at the same location
     if (e.clientX > area.left && e.clientX < area.right && e.clientY > area.top && e.clientY < area.bottom && this.legalmove) {
@@ -123,23 +125,25 @@ class DragndropHandler {
       pnode.style.top = this.prev.style.top;
       pnode.addEventListener('mousedown', this.handleDragStart.bind(this));
       pnode.addEventListener('mouseup', this.handleDragEnd.bind(this));
-      if (this.macro_dragel.successor)
-        pnode.successor.predecessor = pnode;
-      if (this.macro_dragel.predecessor)
-        pnode.predecessor.successor = pnode;
+
       if (!this.macro_dragel.className.split(' ').includes('placed'))
         pnode.setAttribute('macro-block-no', this.editor.nextid++);
+
       this.editor.programArea.children[0].appendChild(pnode);
       if (!pnode.className.split(' ').includes('macrocard')) {
         this.editor.connect(this.editor.connectionnode, pnode);
       } else {
         this.editor.cardpholder.placeCard(pnode);
+        this.editor.cardpholder = null;
       }
+    } else { // dragged over sidebar -> delete connections of dragel
+      if (this.macro_dragel.successor)
+        this.macro_dragel.successor.predecessor = null;
+      if (this.macro_dragel.predecessor)
+        this.macro_dragel.predecessor.successor = null;
+      if (!(e.clientX > area.left && e.clientX < area.right && e.clientY > area.top && e.clientY < area.bottom && this.legalmove))
+        document.querySelectorAll(`.macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`).forEach((el) => el.remove());
     }
-
-    this.macro_dragel.id = '';
-    this.macro_dragel.style.top = '';
-    this.macro_dragel.style.left = '';
 
     // stop idling
     document.querySelectorAll('.macroblock').forEach((el) => {
@@ -147,13 +151,14 @@ class DragndropHandler {
       el.style.animationDelay = '';
     });
 
-    if (!this.macro_dragel.className.includes('placed')) { // dragged from sidebar -> remove placeholder
+    if (!this.macro_dragel.className.includes('placed')) { // dragged from sidebar -> insert dragel and remove placeholder
+      this.macro_dragel.id = '';
+      this.macro_dragel.style.top = '';
+      this.macro_dragel.style.left = '';
       document.querySelector('.macroblock.placeholder').parentNode.insertBefore(this.macro_dragel, document.querySelector('.macroblock.placeholder'));
       document.querySelector('.macroblock.placeholder').remove();
-    } else { // dragged from program area to sidebar -> delete arrows
-      if (!(e.clientX > area.left && e.clientX < area.right && e.clientY > area.top && e.clientY < area.bottom && this.legalmove))
-        document.querySelectorAll(`.macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`).forEach((el) => el.remove());
-      document.querySelector('#macrosidebar .placed').remove();
+    } else { // dragged from program area -> delete dragel
+      this.macro_dragel.remove();
     }
 
     // remove previews

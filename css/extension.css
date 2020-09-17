@@ -445,3 +445,28 @@ macro-constant-card input{
     cursor: default;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
 }
+
+#macro-back-button{
+    background-color: #7aadd1;
+    top: 2rem;
+    left: 2rem;
+    background: no-repeat center/100% url(/images/back.png);
+    position: fixed;
+    width: 5.6rem;
+    height: 5.6rem;
+    border-radius: 2.8rem;
+    padding: 0;
+    background-color: #5d9bc7;
+    border: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 1;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: 0;
+    z-index: 100;
+    cursor: default;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
+}

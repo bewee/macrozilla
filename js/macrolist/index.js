@@ -33,7 +33,7 @@ class MacrolistView {
           macrolistel.innerHTML = `<span>${macro.name}</span>`;
           macrolistel.className = 'macrolistel';
           macrolistel.addEventListener('click', () => {
-            this.extension.views.editor.show();
+            this.extension.views.editor.show(macro);
           });
           macrolist.appendChild(macrolistel);
           const delbttn = document.createElement('DIV');

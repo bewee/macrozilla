@@ -73,13 +73,12 @@ class MacroBuildingElement extends HTMLElement {
     this.group = group;
   }
 
-  toJSON(idobj) {
-    const jsonobj = {id: idobj.id, type: this.classname};
+  toJSON() {
+    const jsonobj = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
     Object.assign(jsonobj, this.internal_attributes);
-    idobj.id++;
     for (const param of this.children[0].children) {
       if (param.tagName == 'MACRO-PARAM') {
-        jsonobj[param.name] = param.toJSON(idobj);
+        jsonobj[param.name] = param.toJSON();
       }
     }
     return jsonobj;
@@ -101,14 +100,20 @@ class MacroBlock extends MacroBuildingElement {
   constructor(name, classname, editor, elgroup = null) {
     super(name, classname, editor, elgroup);
     this.abilities = ['executable'];
+    this.successor = null;
+    this.predecessor = null;
   }
 
   copy() {
-    this.successor = null;
-    this.predecessor = null;
     const copyinstance = super.copy();
     copyinstance.successor = this.successor;
+    if (copyinstance.successor)
+      copyinstance.successor.predecessor = copyinstance;
     copyinstance.predecessor = this.predecessor;
+    if (copyinstance.predecessor)
+      copyinstance.predecessor.successor = copyinstance;
+    this.successor = null;
+    this.predecessor = null;
     return copyinstance;
   }
 
@@ -134,7 +139,13 @@ class MacroCardBlock extends MacroCard {
   copy() {
     const copyinstance = super.copy();
     copyinstance.successor = this.successor;
+    if (copyinstance.successor)
+      copyinstance.successor.predecessor = copyinstance;
     copyinstance.predecessor = this.predecessor;
+    if (copyinstance.predecessor)
+      copyinstance.predecessor.successor = copyinstance;
+    this.successor = null;
+    this.predecessor = null;
     return copyinstance;
   }
 

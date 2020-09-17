@@ -26,7 +26,6 @@ class Parameter extends HTMLElement {
     this.appendChild(cardel);
     cardel.style.top = '';
     cardel.style.left = '';
-    this.editor.cardpholder = null;
     this.cards.push(cardel);
   }
 
@@ -52,25 +51,25 @@ class Parameter extends HTMLElement {
     return copyinstance;
   }
 
-  toJSON(idobj) {
+  toJSON() {
     if (this.cards.length <= 0)
-      return {};
+      return null;
     if (this.multicards) {
       const l = [];
       this.cards.forEach((card) => {
-        l.push(card.toJSON(idobj));
+        l.push(card.toJSON());
       });
       return l;
     } else {
-      return this.cards[0].toJSON(idobj);
+      return this.cards[0].toJSON();
     }
   }
 
   reset(cardobj) {
-    this.className = this.className.split(' ').filter((x) => x !== 'filled').join(' ');
     this.cards = this.cards.filter((x) => x !== cardobj);
     if (this.cards.length <= 0) {
       this.innerHTML = (this.text ? this.text : this.name);
+      this.className = this.className.split(' ').filter((x) => x !== 'filled').join(' ');
     }
   }
 }

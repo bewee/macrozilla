@@ -66,10 +66,10 @@ window.importMacroModule = function(code, classname) {
         this.views[v].extension = this;
         this.views[v].macrosec = document.querySelector('#extension-macrozilla-view');
         const originalshow = this.views[v].show;
-        this.views[v].show = () => {
+        this.views[v].show = (...args) => {
           this.loadFile(`views/${v}.html`).then((content) => {
             document.querySelector('#extension-macrozilla-view').innerHTML = content;
-            originalshow.call(this.views[v]);
+            originalshow.call(this.views[v], ...args);
           });
         };
       });
