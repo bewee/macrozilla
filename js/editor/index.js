@@ -139,14 +139,15 @@ class EditorView {
 
   macroToJSON() {
     let startblock = document.querySelector('.macroblock.placed');
-    console.log(startblock);
     if (!startblock) return [];
     while (startblock.predecessor)
       startblock = startblock.predecessor;
     const buffer = [];
-    console.log(startblock);
     while (startblock) {
       const cblock = startblock.toJSON();
+      cblock.ui = {};
+      cblock.ui.px = parseInt(startblock.style.left);
+      cblock.ui.py = parseInt(startblock.style.top);
       buffer.push(cblock);
       startblock = startblock.successor;
     }

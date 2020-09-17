@@ -66,7 +66,10 @@ class Parameter extends HTMLElement {
   }
 
   reset(cardobj) {
-    this.cards = this.cards.filter((x) => x !== cardobj);
+    if (cardobj === true && !this.multicards)
+      this.cards = [];
+    else
+      this.cards = this.cards.filter((x) => x !== cardobj);
     if (this.cards.length <= 0) {
       this.innerHTML = (this.text ? this.text : this.name);
       this.className = this.className.split(' ').filter((x) => x !== 'filled').join(' ');

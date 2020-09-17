@@ -17,18 +17,7 @@ class DragndropHandler {
     this.macro_dragel.style.top = `${py}px`;
 
     // update arrows when one of its blocks has been moved
-    const arrows = document.querySelectorAll(`.macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`);
-    for (const arrow of arrows) {
-      let theotherblock = arrow.getAttribute('class').split(' ')[0];
-      if (theotherblock == `macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`) {
-        theotherblock = arrow.getAttribute('class').split(' ')[1];
-        theotherblock = theotherblock.substr(10);
-        this.editor.updateConnection(arrow, this.macro_dragel, document.querySelector(`[macro-block-no='${theotherblock}']`));
-      } else {
-        theotherblock = theotherblock.substr(10);
-        this.editor.updateConnection(arrow, document.querySelector(`[macro-block-no='${theotherblock}']`), this.macro_dragel);
-      }
-    }
+    this.updateArrows();
 
     // move preview
     const area = this.editor.programArea;
@@ -61,6 +50,9 @@ class DragndropHandler {
       this.macro_dragel = this.macro_dragel.parentNode;
     }
     this.macro_dragel.id = 'currentdrag';
+
+    this.startx = this.macro_dragel.style.left;
+    this.starty = this.macro_dragel.style.top;
 
     const rect = this.macro_dragel.getBoundingClientRect();
     const rect2 = document.getElementById('extension-macrozilla-view').getBoundingClientRect();
@@ -116,33 +108,51 @@ class DragndropHandler {
     document.removeEventListener('mousemove', this.handleDragInstance, true);
     const area = this.editor.programArea.getBoundingClientRect();
 
-    // dropped over program area -> create copy at the same location
-    if (e.clientX > area.left && e.clientX < area.right && e.clientY > area.top && e.clientY < area.bottom && this.legalmove) {
-      const pnode = this.macro_dragel.copy();
-      pnode.className = pnode.className.split(' ').includes('macrocard') ? 'macroblock macrocard placed' : 'macroblock placed';
-      pnode.id = '';
-      pnode.style.left = this.prev.style.left;
-      pnode.style.top = this.prev.style.top;
-      pnode.addEventListener('mousedown', this.handleDragStart.bind(this));
-      pnode.addEventListener('mouseup', this.handleDragEnd.bind(this));
+    this.macro_dragel.id = '';
+    this.macro_dragel.style.left = this.prev.style.left;
+    this.macro_dragel.style.top = this.prev.style.top;
 
-      if (!this.macro_dragel.className.split(' ').includes('placed'))
+    if (!this.legalmove && !this.macro_dragel.className.split(' ').includes('macrocard') && this.macro_dragel.className.split(' ').includes('placed')) {
+      // illegal move but is card and dragged from program area -> just reset location
+      this.macro_dragel.style.left = this.startx;
+      this.macro_dragel.style.top = this.starty;
+      this.editor.programArea.children[0].appendChild(this.macro_dragel);
+      this.updateArrows();
+    } else if (e.clientX > area.left && e.clientX < area.right && e.clientY > area.top && e.clientY < area.bottom && this.legalmove) {
+      // legally dropped over program area...
+      if (!this.macro_dragel.className.split(' ').includes('placed')) {
+        // ...from sidebar -> create identical copy
+        const pnode = this.macro_dragel.copy();
+        pnode.className = pnode.className.split(' ').includes('macrocard') ? 'macroblock macrocard placed' : 'macroblock placed';
+        pnode.addEventListener('mousedown', this.handleDragStart.bind(this));
+        pnode.addEventListener('mouseup', this.handleDragEnd.bind(this));
         pnode.setAttribute('macro-block-no', this.editor.nextid++);
-
-      this.editor.programArea.children[0].appendChild(pnode);
-      if (!pnode.className.split(' ').includes('macrocard')) {
-        this.editor.connect(this.editor.connectionnode, pnode);
+        this.editor.programArea.children[0].appendChild(pnode);
+        if (!pnode.className.split(' ').includes('macrocard')) {
+          this.editor.connect(this.editor.connectionnode, pnode);
+        } else {
+          this.editor.cardpholder.reset(true);
+          this.editor.cardpholder.placeCard(pnode);
+        }
       } else {
-        this.editor.cardpholder.placeCard(pnode);
-        this.editor.cardpholder = null;
+        // ...from program area -> just drop it down as it is
+        this.editor.programArea.children[0].appendChild(this.macro_dragel);
+        if (!this.macro_dragel.className.split(' ').includes('macrocard')) {
+          this.editor.connect(this.editor.connectionnode, this.macro_dragel);
+        } else {
+          this.editor.cardpholder.reset(true);
+          this.editor.cardpholder.placeCard(this.macro_dragel);
+        }
       }
-    } else { // dragged over sidebar -> delete connections of dragel
+    } else {
+      // dragged over sidebar or illegal -> delete dragel + its connections
       if (this.macro_dragel.successor)
         this.macro_dragel.successor.predecessor = null;
       if (this.macro_dragel.predecessor)
         this.macro_dragel.predecessor.successor = null;
       if (!(e.clientX > area.left && e.clientX < area.right && e.clientY > area.top && e.clientY < area.bottom && this.legalmove))
         document.querySelectorAll(`.macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`).forEach((el) => el.remove());
+      this.macro_dragel.remove();
     }
 
     // stop idling
@@ -151,14 +161,12 @@ class DragndropHandler {
       el.style.animationDelay = '';
     });
 
-    if (!this.macro_dragel.className.includes('placed')) { // dragged from sidebar -> insert dragel and remove placeholder
-      this.macro_dragel.id = '';
+    if (!this.macro_dragel.className.split(' ').includes('placed')) {
+      // dragged from sidebar -> insert dragel and remove placeholder
       this.macro_dragel.style.top = '';
       this.macro_dragel.style.left = '';
       document.querySelector('.macroblock.placeholder').parentNode.insertBefore(this.macro_dragel, document.querySelector('.macroblock.placeholder'));
       document.querySelector('.macroblock.placeholder').remove();
-    } else { // dragged from program area -> delete dragel
-      this.macro_dragel.remove();
     }
 
     // remove previews
@@ -169,7 +177,24 @@ class DragndropHandler {
     document.querySelectorAll('#programarea .macroblock').forEach((e) => {
       e.style.opacity = '';
     });
+    this.editor.cardpholder = null;
+    this.startx = this.starty = null;
     this.macro_dragel = null;
+  }
+
+  updateArrows() {
+    const arrows = document.querySelectorAll(`.macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`);
+    for (const arrow of arrows) {
+      let theotherblock = arrow.getAttribute('class').split(' ')[0];
+      if (theotherblock == `macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`) {
+        theotherblock = arrow.getAttribute('class').split(' ')[1];
+        theotherblock = theotherblock.substr(10);
+        this.editor.updateConnection(arrow, this.macro_dragel, document.querySelector(`[macro-block-no='${theotherblock}']`));
+      } else {
+        theotherblock = theotherblock.substr(10);
+        this.editor.updateConnection(arrow, document.querySelector(`[macro-block-no='${theotherblock}']`), this.macro_dragel);
+      }
+    }
   }
 
   checkDropLegality() {
