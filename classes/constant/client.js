@@ -6,23 +6,31 @@ class ConstantClass {
       this.defineConstantCard();
     }
 
-    const block = this.addConstantCard('NumberConstant', handler);
-    const num = block.addInput('value', 'number', null);
-    block.setText('%p', num);
+    {
+      const block = this.addConstantCard('NumberConstant', handler);
+      const num = block.addInput('number', 'number', null);
+      block.setText('%p', num);
+    }
+
+    {
+      const block = this.addConstantCard('TextConstant', handler);
+      const num = block.addInput('text', 'text', null);
+      block.setText('%p', num);
+    }
 
     const tf = handler.addGroup('True / False', ['Constants']);
 
     {
       const card = this.addConstantCard('TrueConstant', handler);
       card.setText('true');
-      card.setAttribute('value', 'true');
+      card.setJSONAttribute('value', 'true');
       tf.assign(card);
     }
 
     {
       const card = this.addConstantCard('FalseConstant', handler);
       card.setText('false');
-      card.setAttribute('value', 'false');
+      card.setJSONAttribute('value', 'false');
       tf.assign(card);
     }
   }
@@ -59,12 +67,15 @@ class ConstantClass {
         return copyinstance;
       }
 
-      toJSON(idobj) {
-        const jsonobj = {id: idobj.id, type: this.classname};
+      toJSON() {
+        const jsonobj = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
         Object.assign(jsonobj, this.internal_attributes);
-        idobj.id++;
-        if (this.inputElement)
-          jsonobj.value = this.inputElement.value;
+        if (this.inputElement) {
+          if (this.inputElement.type == 'number')
+            jsonobj.value = this.inputElement.value;
+          else
+            jsonobj.value = JSON.stringify(this.inputElement.value);
+        }
         return jsonobj;
       }
     }
