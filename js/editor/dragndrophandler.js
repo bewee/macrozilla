@@ -129,7 +129,11 @@ class DragndropHandler {
         pnode.setAttribute('macro-block-no', this.editor.nextid++);
         this.editor.programArea.children[0].appendChild(pnode);
         if (!pnode.className.split(' ').includes('macrocard')) {
-          this.editor.connect(this.editor.connectionnode, pnode);
+          if (this.editor.connectionnode) {
+            this.editor.connect(this.editor.connectionnode, pnode);
+            this.editor.connectionnode.style.opacity = '';
+            this.editor.connectionnode = null;
+          }
         } else {
           this.editor.cardpholder.reset(true);
           this.editor.cardpholder.placeCard(pnode);
@@ -138,7 +142,11 @@ class DragndropHandler {
         // ...from program area -> just drop it down as it is
         this.editor.programArea.children[0].appendChild(this.macro_dragel);
         if (!this.macro_dragel.className.split(' ').includes('macrocard')) {
-          this.editor.connect(this.editor.connectionnode, this.macro_dragel);
+          if (this.editor.connectionnode) {
+            this.editor.connect(this.editor.connectionnode, this.macro_dragel);
+            this.editor.connectionnode.style.opacity = '';
+            this.editor.connectionnode = null;
+          }
         } else {
           this.editor.cardpholder.reset(true);
           this.editor.cardpholder.placeCard(this.macro_dragel);

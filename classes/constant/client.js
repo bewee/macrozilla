@@ -38,8 +38,8 @@ class ConstantClass {
   defineConstantCard() {
     class ConstantCard extends this.handler.editor.MacroCard {
 
-      constructor(name, classname, elgroup = null) {
-        super(name, classname, elgroup);
+      constructor(name, classname, editor, elgroup = null) {
+        super(name, classname, editor, elgroup);
         this.inputElement = null;
         this.addAbility('evaluable');
       }
@@ -52,6 +52,9 @@ class ConstantClass {
         inp.addEventListener('mousedown', (e) => {
           e.stopPropagation();
         });
+        inp.addEventListener('input', (_e) => {
+          this.editor.changes();
+        });
         this.inputElement = inp;
         return inp;
       }
@@ -63,13 +66,15 @@ class ConstantClass {
           copyinstance.inputElement.addEventListener('mousedown', (e) => {
             e.stopPropagation();
           });
+          copyinstance.addEventListener('input', (_e) => {
+            this.editor.changes();
+          });
         }
         return copyinstance;
       }
 
       toJSON() {
-        const jsonobj = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
-        Object.assign(jsonobj, this.internal_attributes);
+        const jsonobj = super.toJSON();
         if (this.inputElement) {
           if (this.inputElement.type == 'number')
             jsonobj.value = this.inputElement.value;
@@ -78,13 +83,20 @@ class ConstantClass {
         }
         return jsonobj;
       }
+
+      copyFromJSON(json, maxid) {
+        const copy = super.copyFromJSON(json, maxid);
+        if (copy.inputElement)
+          copy.inputElement.value = JSON.parse(json.value);
+        return copy;
+      }
     }
     customElements.define('macro-constant-card', ConstantCard);
     this.handler.editor.ConstantCard = ConstantCard;
   }
 
   addConstantCard = function(name, handler) {
-    const c = new this.handler.editor.ConstantCard(name, 'constant');
+    const c = new this.handler.editor.ConstantCard(name, 'constant', handler.editor);
     handler.addElement(c, ['Constants']);
     return c;
   }

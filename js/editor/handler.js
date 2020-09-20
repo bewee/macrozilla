@@ -4,8 +4,7 @@ class Handler {
     this.editor = editor;
     this.groups = [];
     this.classname = classname;
-    this.allcards = [];
-    this.categories_ = {};
+    this.buildingelements = [];
   }
 
   addElement(c, categories) {
@@ -15,7 +14,7 @@ class Handler {
     document.querySelector('#macrosidebar').appendChild(c);
 
     this.assignCategory(categories[0], c);
-    this.allcards.push(c);
+    this.buildingelements.push(c);
   }
 
   addCardBlock(name, categories = []) {
@@ -49,19 +48,19 @@ class Handler {
   assignCategory(cat, element) {
     if (!cat)
       return;
-    if (!Object.keys(this.categories_).includes(cat)) {
+    if (!Object.keys(this.editor.categories).includes(cat)) {
       const title = document.createElement('H2');
       title.innerHTML = cat;
       document.querySelector('#macrosidebar').appendChild(title);
       const container = document.createElement('DIV');
       document.querySelector('#macrosidebar').appendChild(container);
-      this.categories_[cat] = container;
+      this.editor.categories[cat] = container;
     }
-    this.categories_[cat].appendChild(element);
+    this.editor.categories[cat].appendChild(element);
   }
 
   getCardByName(query) {
-    for (const c of this.allcards) {
+    for (const c of this.buildingelements) {
       if (c.name == query) {
         return c;
       }

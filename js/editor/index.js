@@ -3,8 +3,6 @@ class EditorView {
   constructor(extension) {
     this.extension = extension;
     this.gridsize = 25;
-    this.connectionnode = null;
-    this.nextid = 1;
 
     // import helper files
     this.extension.loadModule('js/editor/dragndrophandler.js').then((mod) => {
@@ -37,9 +35,6 @@ class EditorView {
         });
       });
     });
-
-    // for debugging
-    window.macroToJSON = this.macroToJSON.bind(this);
   }
 
   changes() {
@@ -49,8 +44,10 @@ class EditorView {
   }
 
   show(macro) {
-    this.loadMacro(macro.id);
     this.changes_ = false;
+    this.connectionnode = null;
+    this.nextid = 1;
+    this.categories = {};
     this.executePath = document.querySelector('#macro-execute-path');
     this.programArea = document.querySelector('#programarea');
     this.macroInterface = document.querySelector('#programarea .macrointerface');
@@ -61,16 +58,17 @@ class EditorView {
       if (this.changes_ && window.confirm('Save Changes?'))
         await this.saveMacro(macro.id);
       this.extension.views.macrolist.show(macro.id);
-    })
+    });
     document.querySelector('#playmacro').addEventListener('click', async () => {
       this.executeMacro(macro.id);
-    })
+    });
     this.initSideBar();
+    this.loadMacro(macro.id);
   }
 
   async executeMacro(macro_id) {
     if (this.changes_) {
-      if(window.confirm('Save Changes?')) {
+      if (window.confirm('Save Changes?')) {
         await this.saveMacro(macro_id);
         const titleel = document.querySelector('#macrotoolbar h1');
         titleel.innerHTML = titleel.innerHTML.slice(0, -1);
@@ -86,9 +84,38 @@ class EditorView {
   async loadMacro(macro_id) {
     const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: macro_id});
     console.log('loading', JSON.stringify(res.macro.description));
+    const nodes = [];
+    const maxid = {i: 1};
     for (const block of res.macro.description) {
-      // TODO
+      if (!(block.type in this.classHandlers)) {
+        console.warn('Unknown class', block.type);
+        continue;
+      }
+      const handler = this.classHandlers[block.type];
+      if (!block.ui) {
+        console.warn('Missing UI information', block.type);
+        continue;
+      }
+      const blockel = handler.buildingelements.find((x) => x.name === block.ui.name);
+      if (!blockel) {
+        console.warn('Cannot find matching building element');
+        continue;
+      }
+      // add nodes
+      const pnode = blockel.copyFromJSON(block, maxid);
+      pnode.style.left = `${block.ui.px}px`;
+      pnode.style.top = `${block.ui.py}px`;
+      this.programArea.children[0].appendChild(pnode);
+      nodes.push(pnode);
     }
+    // add arrows
+    for (let i = 1; i < nodes.length; i++) {
+      nodes[i].predecessor = nodes[i-1];
+      nodes[i-1].successor = nodes[i];
+      this.connect(nodes[i-1], nodes[i]);
+    }
+    // set nextid
+    this.nextid = maxid.i+1;
   }
 
   async saveMacro(macro_id) {
@@ -99,10 +126,12 @@ class EditorView {
   }
 
   initSideBar() {
+    this.classHandlers = {};
     Object.keys(this.classes).forEach((classname) => {
       if (!this.classes[classname])
         return;
-      new this.classes[classname].prototype.constructor(new this.Handler.prototype.constructor(classname, this));
+      this.classHandlers[classname] = new this.Handler.prototype.constructor(classname, this);
+      new this.classes[classname].prototype.constructor(this.classHandlers[classname]);
     });
   }
 
@@ -133,8 +162,6 @@ class EditorView {
     connection.setAttribute('class', `macro_arr_${node1.getAttribute('macro-block-no')} macro_arr_${node2.getAttribute('macro-block-no')}`);
     this.updateConnection(connection, node1, node2);
     this.executePath.appendChild(connection);
-    this.connectionnode.style.opacity = '';
-    this.connectionnode = null;
   }
 
   macroToJSON() {
@@ -145,7 +172,6 @@ class EditorView {
     const buffer = [];
     while (startblock) {
       const cblock = startblock.toJSON();
-      cblock.ui = {};
       cblock.ui.px = parseInt(startblock.style.left);
       cblock.ui.py = parseInt(startblock.style.top);
       buffer.push(cblock);
