@@ -15,15 +15,6 @@ window.importMacroModule = function(code, classname) {
 (() => {
   class MacrozillaExtension extends window.Extension {
 
-    constructor() {
-      super('macrozilla');
-      this.addMenuEntry('Macros');
-
-      this.views = {};
-      this.loadView('macrolist');
-      this.loadView('editor');
-    }
-
     loadFile(path) {
       return new Promise((resolve, reject) => {
         fetch(`/extensions/macrozilla/${path}`).then((res) => {
@@ -64,15 +55,27 @@ window.importMacroModule = function(code, classname) {
       this.loadModule(`js/${v}/index.js`).then((mod) => {
         this.views[v] = new mod.prototype.constructor(this);
         this.views[v].extension = this;
-        this.views[v].macrosec = document.querySelector('#extension-macrozilla-view');
+        this.views[v].macrosec = document.querySelector(`#extension-${this.id}-view`);
         const originalshow = this.views[v].show;
         this.views[v].show = (...args) => {
           this.loadFile(`views/${v}.html`).then((content) => {
-            document.querySelector('#extension-macrozilla-view').innerHTML = content;
+            document.querySelector(`#extension-${this.id}-view`).innerHTML = content;
             originalshow.call(this.views[v], ...args);
           });
         };
       });
+    }
+  }
+
+  class MacrozillaMacrosExtension extends MacrozillaExtension {
+
+    constructor() {
+      super('macrozilla');
+      this.addMenuEntry('Macros');
+
+      this.views = {};
+      this.loadView('macrolist');
+      this.loadView('editor');
     }
 
     show() {
@@ -81,5 +84,23 @@ window.importMacroModule = function(code, classname) {
 
   }
 
-  new MacrozillaExtension();
+  class MacrozillaVariablesExtension extends MacrozillaExtension {
+
+    constructor() {
+      super('macrozilla-variables');
+      this.addMenuEntry('Variables');
+
+      this.views = {};
+      this.loadView('variablelist');
+      this.loadView('variableeditor');
+    }
+
+    show() {
+      this.views.variablelist.show();
+    }
+
+  }
+
+  new MacrozillaMacrosExtension();
+  new MacrozillaVariablesExtension();
 })();
