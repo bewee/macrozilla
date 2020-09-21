@@ -18,20 +18,17 @@ class ConstantClass {
       block.setText('%p', num);
     }
 
-    const tf = handler.addGroup('True / False', ['Constants']);
-
     {
-      const card = this.addConstantCard('TrueConstant', handler);
-      card.setText('true');
-      card.setJSONAttribute('value', 'true');
-      tf.assign(card);
+      const block = this.addConstantCard('BooleanConstant', handler);
+      const num = block.addInput(null, 'checkbox', null);
+      num.checked = true;
+      block.setText('%p', num);
     }
 
     {
-      const card = this.addConstantCard('FalseConstant', handler);
-      card.setText('false');
-      card.setJSONAttribute('value', 'false');
-      tf.assign(card);
+      const card = this.addConstantCard('NullConstant', handler);
+      card.setText('none');
+      card.setJSONAttribute('value', '');
     }
   }
 
@@ -44,10 +41,11 @@ class ConstantClass {
         this.addAbility('evaluable');
       }
 
-      addInput(name, type, def) {
+      addInput(placeholder, type, def) {
         const inp = document.createElement('INPUT');
         inp.value = def;
-        inp.placeholder = name;
+        if (placeholder)
+          inp.placeholder = placeholder;
         inp.type = type;
         inp.addEventListener('mousedown', (e) => {
           e.stopPropagation();
@@ -66,7 +64,7 @@ class ConstantClass {
           copyinstance.inputElement.addEventListener('mousedown', (e) => {
             e.stopPropagation();
           });
-          copyinstance.addEventListener('input', (_e) => {
+          copyinstance.inputElement.addEventListener('input', (_e) => {
             this.editor.changes();
           });
         }
@@ -78,6 +76,8 @@ class ConstantClass {
         if (this.inputElement) {
           if (this.inputElement.type == 'number')
             jsonobj.value = this.inputElement.value;
+          else if (this.inputElement.type == 'checkbox')
+            jsonobj.value = JSON.stringify(this.inputElement.checked);
           else
             jsonobj.value = JSON.stringify(this.inputElement.value);
         }
@@ -86,8 +86,12 @@ class ConstantClass {
 
       copyFromJSON(json, maxid) {
         const copy = super.copyFromJSON(json, maxid);
-        if (copy.inputElement)
-          copy.inputElement.value = JSON.parse(json.value);
+        if (copy.inputElement) {
+          if (copy.inputElement.type == 'checkbox')
+            copy.inputElement.checked = JSON.parse(json.value);
+          else
+            copy.inputElement.value = JSON.parse(json.value);
+        }
         return copy;
       }
     }

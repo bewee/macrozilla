@@ -660,3 +660,11 @@ macro-constant-card input{
 .macrozilla-select-datatype li.active {
     background-color: rgba(0, 0, 0, 0.12);
 }
+
+.blockdescr input[type='checkbox'] {
+    content: "";
+    height: 3rem;
+    width: 3rem;
+    background: url(/images/checkbox-sprite.png) no-repeat 0 0;
+    background-size: 3rem auto;
+}
