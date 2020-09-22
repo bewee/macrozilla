@@ -4,7 +4,7 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "function": {
+    "qualifier": {
       "type": "string",
       "enum": [ "get", "before", "after" ]
     },
@@ -20,16 +20,17 @@
       "type": "string"
     }
   },
+  "required": ["qualifier"], 
   "oneOf":[
     {
       "properties": {
-        "function": { "enum": [ "get" ] }
+        "qualifier": { "enum": [ "get" ] }
       },
       "required": [ "property" ]
     },
     {
       "properties": {
-        "function": { "enum": [ "before", "after" ] }
+        "qualifier": { "enum": [ "before", "after" ] }
       },
       "required": [ "tvalue", "value" ],
       "oneOf":[

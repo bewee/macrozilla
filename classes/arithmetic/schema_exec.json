@@ -4,11 +4,10 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "operation": {
-      "type": "string",
+    "qualifier": {
       "enum": ["++","--","invert"]
     },
     "operand": {"$ref": "/class"}
   },
-  "required": ["operation", "operand"]
+  "required": ["qualifier", "operand"]
 }

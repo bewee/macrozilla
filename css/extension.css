@@ -54,6 +54,8 @@
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .macroblock{
@@ -277,6 +279,11 @@ div#throwtrashhere:hover{
 
 .blockgroup .otheroptions .macroblock:hover{
     transform: scale(1.2) translate(0%, -3.5rem);
+}
+
+.blockgroup .otheroptions .macroblock .blockdescr span{
+    margin-left: 2pt;
+    margin-right: 2pt;
 }
 
 #macrosidebar h2{

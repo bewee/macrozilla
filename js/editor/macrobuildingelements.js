@@ -2,20 +2,24 @@
 
 class MacroBuildingElement extends HTMLElement {
 
-  constructor(name, classname, editor, _elgroup = null) {
+  constructor(qualifier, classname, editor, _elgroup = null) {
     super();
 
     this.parameters = {};
     this.group = null;
     this.internal_attributes = {};
     this.abilities = [];
-    this.name = name;
+    this.qualifier = qualifier;
     this.classname = classname;
     this.editor = editor;
-    this.setAttribute('title', name);
-    this.setAttribute('alt', name);
+    this.setAttribute('title', qualifier);
+    this.setAttribute('alt', qualifier);
     this.className = 'macroblock';
-    this.innerHTML = `<span class='blockdescr'><span>${name}</span></span>`;
+    this.innerHTML = `<span class='blockdescr'><span>${qualifier}</span></span>`;
+  }
+
+  setTooltipText(tooltip) {
+    this.setAttribute('title', tooltip);
   }
 
   addParameter(name, accepts = []) {
@@ -56,7 +60,7 @@ class MacroBuildingElement extends HTMLElement {
   }
 
   copy() {
-    const copyinstance = new this.constructor(this.name, this.classname, this.group);
+    const copyinstance = new this.constructor(this.qualifier, this.classname, this.group);
     copyinstance.parameters = this.parameters;
     copyinstance.editor = this.editor;
     copyinstance.internal_attributes = this.internal_attributes;
@@ -76,13 +80,14 @@ class MacroBuildingElement extends HTMLElement {
 
   toJSON() {
     const jsonobj = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
+    if (this.qualifier !== null)
+      jsonobj.qualifier = this.qualifier;
     Object.assign(jsonobj, this.internal_attributes);
     for (const param of this.children[0].children) {
       if (param.tagName == 'MACRO-PARAM') {
         jsonobj[param.name] = param.toJSON();
       }
     }
-    jsonobj.ui = {name: this.name};
     return jsonobj;
   }
 
@@ -108,13 +113,17 @@ class MacroBuildingElement extends HTMLElement {
       if (Array.isArray(json[paramname])) {
         for (const el of json[paramname]) {
           const paramhandler = this.editor.classHandlers[el.type];
-          const param = paramhandler.buildingelements.find((x) => x.name == el.ui.name);
+          let param = paramhandler.buildingelements[0];
+          if (el.qualifier)
+            param = paramhandler.buildingelements.find((x) => x.qualifier == el.qualifier);
           const cparam = param.copyFromJSON(el, maxid);
           pholder.placeCard(cparam);
         }
       } else {
         const paramhandler = this.editor.classHandlers[json[paramname].type];
-        const param = paramhandler.buildingelements.find((x) => x.name == json[paramname].ui.name);
+        let param = paramhandler.buildingelements[0];
+        if (json[paramname].qualifier)
+          param = paramhandler.buildingelements.find((x) => x.qualifier == json[paramname].qualifier);
         const cparam = param.copyFromJSON(json[paramname], maxid);
         pholder.placeCard(cparam);
       }
@@ -126,8 +135,8 @@ class MacroBuildingElement extends HTMLElement {
 
 class MacroBlock extends MacroBuildingElement {
 
-  constructor(name, classname, editor, elgroup = null) {
-    super(name, classname, editor, elgroup);
+  constructor(qualifier, classname, editor, elgroup = null) {
+    super(qualifier, classname, editor, elgroup);
     this.abilities = ['executable'];
     this.successor = null;
     this.predecessor = null;
@@ -150,8 +159,8 @@ class MacroBlock extends MacroBuildingElement {
 
 class MacroCard extends MacroBuildingElement {
 
-  constructor(name, classname, editor, elgroup = null) {
-    super(name, classname, editor, elgroup);
+  constructor(qualifier, classname, editor, elgroup = null) {
+    super(qualifier, classname, editor, elgroup);
     this.className = 'macroblock macrocard';
   }
 
@@ -159,8 +168,8 @@ class MacroCard extends MacroBuildingElement {
 
 class MacroCardBlock extends MacroCard {
 
-  constructor(name, classname, editor, elgroup) {
-    super(name, classname, editor, elgroup);
+  constructor(qualifier, classname, editor, elgroup) {
+    super(qualifier, classname, editor, elgroup);
     this.successor = null;
     this.predecessor = null;
   }

@@ -4,9 +4,12 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
+    "qualifier": {
+      "enum": ["null", "boolean", "number", "string"]
+    },
     "value": {
       "type": "string"
     }
   },
-  "required": ["value"]
+  "required": ["qualifier", "value"]
 }

@@ -4,10 +4,9 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "ev": {
-      "type": "string",
+    "qualifier": {
       "enum": ["sun_after_solarNoon", "sun_before_solarNoon", "sun_after_nadir", "sun_before_nadir", "sun_after_sunrise", "sun_before_sunrise", "sun_after_sunset", "sun_before_sunset", "sun_after_sunriseEnd", "sun_before_sunriseEnd", "sun_after_sunsetStart", "sun_before_sunsetStart", "sun_after_dawn", "sun_before_dawn", "sun_after_dusk", "sun_before_dusk", "sun_after_nauticalDawn", "sun_before_nauticalDawn", "sun_after_nauticalDusk", "sun_before_nauticalDusk", "sun_after_nightEnd", "sun_before_nightEnd", "sun_after_night", "sun_before_night", "sun_after_goldenHourEnd", "sun_before_goldenHourEnd", "sun_after_goldenHour", "sun_before_goldenHour"]
     }
   },
-  "required": ["ev"]
+  "required": ["qualifier"]
 }

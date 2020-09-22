@@ -7,26 +7,30 @@ class ConstantClass {
     }
 
     {
-      const block = this.addConstantCard('NumberConstant', handler);
-      const num = block.addInput('number', 'number', null);
-      block.setText('%p', num);
+      const card = this.addConstantCard('number', handler);
+      card.setTooltipText('Number');
+      const num = card.addInput('number', 'number', null);
+      card.setText('%p', num);
     }
 
     {
-      const block = this.addConstantCard('TextConstant', handler);
-      const num = block.addInput('text', 'text', null);
-      block.setText('%p', num);
+      const card = this.addConstantCard('string', handler);
+      card.setTooltipText('Text');
+      const num = card.addInput('text', 'text', null);
+      card.setText('%p', num);
     }
 
     {
-      const block = this.addConstantCard('BooleanConstant', handler);
-      const num = block.addInput(null, 'checkbox', null);
+      const card = this.addConstantCard('boolean', handler);
+      card.setTooltipText('True/False');
+      const num = card.addInput(null, 'checkbox', null);
       num.checked = true;
-      block.setText('%p', num);
+      card.setText('%p', num);
     }
 
     {
-      const card = this.addConstantCard('NullConstant', handler);
+      const card = this.addConstantCard('null', handler);
+      card.setTooltipText('None');
       card.setText('none');
       card.setJSONAttribute('value', '');
     }
@@ -99,9 +103,9 @@ class ConstantClass {
     this.handler.editor.ConstantCard = ConstantCard;
   }
 
-  addConstantCard = function(name, handler) {
-    const c = new this.handler.editor.ConstantCard(name, 'constant', handler.editor);
-    handler.addElement(c, ['Constants']);
+  addConstantCard(name) {
+    const c = new this.handler.editor.ConstantCard(name, 'constant', this.handler.editor);
+    this.handler.addElement(c, ['Constants']);
     return c;
   }
 

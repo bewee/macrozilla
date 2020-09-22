@@ -8,7 +8,10 @@
     },
     "id": {
       "type": "integer"
-    }      
+    },
+    "qualifier": {
+      "type": "integer"
+    }
   },
   "required": ["type", "id"]
 }

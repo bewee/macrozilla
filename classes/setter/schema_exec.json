@@ -4,29 +4,39 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
+    "qualifier": {"enum": ["set", "set_w_speed", "set_w_time"]},
     "attribute": {"$ref": "/class"},
     "value": {"$ref": "/class"},
     "speed": {"$ref": "/class"},
     "time": {"$ref": "/class"},
     "ups": {"type": "integer"}
   },
-  "required": ["attribute", "value"],
+  "required": ["qualifier", "attribute", "value"],
   "dependencies": {
     "ups": {
-      "oneOf": [
-        {
-          "required": ["speed"]
-        },
-        {
-          "required": ["time"]
+      "properties": {
+        "qualifier": {
+          "enum": ["set_w_speed", "set_w_time"]
         }
-      ]
-    },
-    "speed": {
-      "not": {"required": ["time"]}
-    },
-    "time": {
-      "not": {"required": ["speed"]}
+      }
     }
-  }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "qualifier": {
+          "enum": ["set_w_speed"]
+        }
+      },
+      "required": ["speed"]
+    },
+    {
+      "properties": {
+        "qualifier": {
+          "enum": ["set_w_time"]
+        }
+      },
+      "required": ["time"]
+    }
+  ]
 }

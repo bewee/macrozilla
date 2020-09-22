@@ -69,6 +69,11 @@ async function div() {
   return this.encode(val[0] / val[1]);
 }
 
+async function pow() {
+  const val = await numparams.call(this);
+  return this.encode(Math.pow(val[0], val[1]));
+}
+
 async function mod() {
   const val = await numparams.call(this);
   return this.encode(val[0] % val[1]);
@@ -84,7 +89,7 @@ async function round() {
 
 async function cmp() {
   const left = this.params.description.left, right = this.params.description.right;
-  const comparator = this.params.description.operation;
+  const comparator = this.params.description.qualifier;
   const lraw = await this.call(left, 'eval');
   const rraw = await this.call(right, 'eval');
   const lval = this.decode(lraw), rval = this.decode(rraw);
@@ -123,7 +128,7 @@ async function invert() {
 module.exports = {
 
   eval: async function() {
-    switch (this.params.description.operation) {
+    switch (this.params.description.qualifier) {
       case 'not':
         return await not.call(this);
       case 'abs':
@@ -144,6 +149,8 @@ module.exports = {
         return await mul.call(this);
       case '/':
         return await div.call(this);
+      case 'pow':
+        return await pow.call(this);
       case '%':
         return await mod.call(this);
       case 'round':
@@ -155,7 +162,7 @@ module.exports = {
   },
 
   exec: async function() {
-    switch (this.params.description.operation) {
+    switch (this.params.description.qualifier) {
       case '++':
         await incdec.call(this, +1);
         break;

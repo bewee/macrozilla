@@ -11,7 +11,7 @@ class EditorView {
     this.extension.loadModule('js/editor/parameter.js').then((mod) => {
       this.Parameter = mod;
     });
-    this.extension.loadModule('js/editor/macrobuildingblocks.js').then((mod) => {
+    this.extension.loadModule('js/editor/macrobuildingelements.js').then((mod) => {
       this.MacroBuildingElement = mod.MacroBuildingElement;
       this.MacroBlock = mod.MacroBlock;
       this.MacroCard = mod.MacroCard;
@@ -96,7 +96,9 @@ class EditorView {
         console.warn('Missing UI information', block.type);
         continue;
       }
-      const blockel = handler.buildingelements.find((x) => x.name === block.ui.name);
+      let blockel = handler.buildingelements[0];
+      if ('qualifier' in block && block.qualifier !== null)
+        blockel = handler.buildingelements.find((x) => x.qualifier === block.qualifier);
       if (!blockel) {
         console.warn('Cannot find matching building element');
         continue;
@@ -172,6 +174,7 @@ class EditorView {
     const buffer = [];
     while (startblock) {
       const cblock = startblock.toJSON();
+      cblock.ui = {};
       cblock.ui.px = parseInt(startblock.style.left);
       cblock.ui.py = parseInt(startblock.style.top);
       buffer.push(cblock);

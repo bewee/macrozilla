@@ -163,12 +163,6 @@ class DragndropHandler {
       this.macro_dragel.remove();
     }
 
-    // stop idling
-    document.querySelectorAll('.macroblock').forEach((el) => {
-      el.className = el.className.split(' ').filter((x) => x !== 'idling').join(' ');
-      el.style.animationDelay = '';
-    });
-
     if (!this.macro_dragel.className.split(' ').includes('placed')) {
       // dragged from sidebar -> insert dragel and remove placeholder
       this.macro_dragel.style.top = '';
@@ -179,6 +173,12 @@ class DragndropHandler {
 
     // remove previews
     document.querySelectorAll('.macroblock.preview').forEach((prev) => prev.remove());
+
+    // stop idling
+    document.querySelectorAll('.macroblock').forEach((el) => {
+      el.className = el.className.split(' ').filter((x) => x !== 'idling').join(' ');
+      el.style.animationDelay = '';
+    });
 
     this.editor.macroInterface.className = this.editor.macroInterface.className.split(' ').filter((x) => x !== 'ready').join(' ');
     this.editor.throwTrashHere.className = '';

@@ -6,13 +6,13 @@ module.exports = {
     const left = this.params.description.left;
     const right = this.params.description.right;
 
-    if ('speed' in this.params.description || 'time' in this.params.description) {
+    if (this.params.description.qualifier == 'set_w_speed' || this.params.description.qualifier == 'set_w_time') {
       const srcval = await this.call(left, 'eval');
       const srcvalnum = this.decodeNumber(srcval);
       const dstval = await this.call(right, 'eval');
       const dstvalnum = this.decodeNumber(dstval);
       let time;
-      if ('speed' in this.params.description) {
+      if (this.params.description.qualifier == 'set_w_speed') {
         const speed = await this.call(this.params.description.speed, 'eval');
         time = Math.abs(dstvalnum-srcvalnum) / speed; // at speed 1, incrementing takes 1 second; at speed 10, incrementing takes 0.1 second
       } else {

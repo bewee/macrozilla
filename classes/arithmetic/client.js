@@ -1,85 +1,75 @@
 class ArithmeticClass {
 
   constructor(handler) {
-    const g = handler.addGroup('Binary Operations', ['Maths']);
-    const g2 = handler.addGroup('Other Operations', ['Maths']);
+    this.handler = handler;
 
-    {
-      const card = handler.addCard('Plus');
-      const left = card.addParameter('left', ['evaluable']);
-      const right = card.addParameter('right', ['evaluable']);
-      left.setText('x');
-      right.setText('y');
-      card.setText('%p + %p', left, right);
-      card.setJSONAttribute('operation', '+');
-      card.addAbility('evaluable');
-      g.assign(card);
-    }
+    const g_arith_b = handler.addGroup('Arithmetic Operations', ['Maths']);
+    const g_logic_b = handler.addGroup('Logic Operations', ['Maths']);
+    const g_cmp = handler.addGroup('Comparison Operations', ['Maths']);
+    const g_crement = handler.addGroup('Increment/Decrement Operations', ['Maths']);
 
-    {
-      const card = handler.addCard('Minus');
-      const left = card.addParameter('left', ['evaluable']);
-      const right = card.addParameter('right', ['evaluable']);
-      left.setText('x');
-      right.setText('y');
-      card.setText('%p - %p', left, right);
-      card.setJSONAttribute('operation', '-');
-      card.addAbility('evaluable');
-      g.assign(card);
-    }
+    g_arith_b.assign(this.binaryCard('+', 'Plus'));
+    g_arith_b.assign(this.binaryCard('-', 'Minus'));
+    g_arith_b.assign(this.binaryCard('*', 'Multiply'));
+    g_arith_b.assign(this.binaryCard('/', 'Divide'));
+    g_arith_b.assign(this.binaryCard('pow', 'Power'));
+    g_arith_b.assign(this.binaryCard('%', 'Modulo'));
 
-    {
-      const card = handler.addCard('Multiply');
-      const left = card.addParameter('left', ['evaluable']);
-      const right = card.addParameter('right', ['evaluable']);
-      left.setText('x');
-      right.setText('y');
-      card.setText('%p * %p', left, right);
-      card.setJSONAttribute('operation', '*');
-      card.addAbility('evaluable');
-      g.assign(card);
-    }
+    this.binaryCard('round', 'Round', 'Round %p to %ps');
+    this.unaryCard('negate', 'Negate', '-%p');
+    this.unaryCard('abs', 'Absolute', '|%p|');
 
-    {
-      const card = handler.addCard('Divide');
-      const left = card.addParameter('left', ['evaluable']);
-      const right = card.addParameter('right', ['evaluable']);
-      left.setText('x');
-      right.setText('y');
-      card.setText('%p / %p', left, right);
-      card.setJSONAttribute('operation', '/');
-      card.addAbility('evaluable');
-      g.assign(card);
-    }
+    g_cmp.assign(this.binaryCard('=', 'Equal'));
+    g_cmp.assign(this.binaryCard('>', 'Greater'));
+    g_cmp.assign(this.binaryCard('<', 'Less'));
+    g_cmp.assign(this.binaryCard('>=', 'Greater or equal'));
+    g_cmp.assign(this.binaryCard('<=', 'Less or equal'));
+    g_cmp.assign(this.binaryCard('!=', 'Unequal'));
 
-    {
-      const card = handler.addCard('Not', ['Maths']);
-      const left = card.addParameter('operand', ['evaluable']);
-      left.setText('x');
-      card.setText('Not %p', left);
-      card.addAbility('evaluable');
-      card.setJSONAttribute('operation', 'not');
-    }
+    g_logic_b.assign(this.binaryCard('&', 'And', '%p and %p'));
+    g_logic_b.assign(this.binaryCard('|', 'Or', '%p or %p'));
+    g_logic_b.assign(this.binaryCard('^', 'Exclusive or', '%p xor %p'));
 
-    // ...
+    this.unaryCard('not', 'Not', 'not %p');
 
-    {
-      const block = handler.addBlock('Increment');
-      const left = block.addParameter('operand', ['settable']);
-      left.setText('x');
-      block.setText('Increment %p', left);
-      block.setJSONAttribute('operation', '++');
-      g2.assign(block);
-    }
+    g_crement.assign(this.unaryBlock('++', 'Increment', '%p++'));
+    g_crement.assign(this.unaryBlock('--', 'Decrement', '%p--'));
+    this.unaryBlock('invert', 'Invert', 'Invert %p');
+  }
 
-    {
-      const block = handler.addBlock('Decrement');
-      const left = block.addParameter('operand', ['settable']);
-      left.setText('x');
-      block.setText('Decrement %p', left);
-      block.setJSONAttribute('operation', '--');
-      g2.assign(block);
-    }
+  binaryCard(qualifier, tooltip_text, card_text) {
+    const card = this.handler.addCard(qualifier);
+    card.setTooltipText(tooltip_text);
+    const left = card.addParameter('left', ['evaluable']);
+    const right = card.addParameter('right', ['evaluable']);
+    left.setText('x');
+    right.setText('y');
+    if (card_text)
+      card.setText(card_text, left, right);
+    else
+      card.setText(`%p ${qualifier} %p`, left, right);
+    card.addAbility('evaluable');
+    return card;
+  }
+
+  unaryCard(qualifier, tooltip_text, card_text) {
+    const card = this.handler.addCard(qualifier);
+    card.setTooltipText(tooltip_text);
+    const operand = card.addParameter('operand', ['evaluable']);
+    operand.setText('x');
+    card.setText(card_text, operand);
+    card.addAbility('evaluable');
+    return card;
+  }
+
+  unaryBlock(qualifier, tooltip_text, card_text) {
+    const block = this.handler.addBlock(qualifier);
+    block.setTooltipText(tooltip_text);
+    const operand = block.addParameter('operand', ['settable']);
+    operand.setText('x');
+    block.setText(card_text, operand);
+    block.addAbility('evaluable');
+    return block;
   }
 
 }

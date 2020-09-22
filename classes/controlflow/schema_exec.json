@@ -4,8 +4,7 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "statement": {
-      "type": "string",
+    "qualifier": {
       "enum": ["if", "loop", "while", "wait", "async"]
     },
     "condition": {"$ref": "/class"},
@@ -31,35 +30,35 @@
     },
     "time": {"$ref": "/class"}
   },
-  "required": ["statement"],
+  "required": ["qualifier"],
   "oneOf": [
     {
       "properties": {
-        "statement": {"enum": ["if"]}
+        "qualifier": {"enum": ["if"]}
       },
       "required": ["condition", "true", "false"]
     },
     {
       "properties": {
-        "statement": {"enum": ["loop"]}
+        "qualifier": {"enum": ["loop"]}
       },
       "required": ["iterations", "body"]
     },
     {
       "properties": {
-        "statement": {"enum": ["while"]}
+        "qualifier": {"enum": ["while"]}
       },
       "required": ["condition", "body"]
     },
     {
       "properties": {
-        "statement": {"enum": ["wait"]}
+        "qualifier": {"enum": ["wait"]}
       },
       "required": ["time"]
     },
     {
       "properties": {
-        "statement": {"enum": ["async"]}
+        "qualifier": {"enum": ["async"]}
       },
       "required": ["bodies"]
     }

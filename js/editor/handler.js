@@ -17,20 +17,20 @@ class Handler {
     this.buildingelements.push(c);
   }
 
-  addCardBlock(name, categories = []) {
-    const c = new this.editor.MacroCardBlock(name, this.classname, this.editor);
+  addCardBlock(qualifier, categories = []) {
+    const c = new this.editor.MacroCardBlock(qualifier, this.classname, this.editor);
     this.addElement(c, categories);
     return c;
   }
 
-  addBlock(name, categories = []) {
-    const c = new this.editor.MacroBlock(name, this.classname, this.editor);
+  addBlock(qualifier, categories = []) {
+    const c = new this.editor.MacroBlock(qualifier, this.classname, this.editor);
     this.addElement(c, categories);
     return c;
   }
 
-  addCard(name, categories = []) {
-    const c = new this.editor.MacroCard(name, this.classname, this.editor);
+  addCard(qualifier, categories = []) {
+    const c = new this.editor.MacroCard(qualifier, this.classname, this.editor);
     if (categories[0] == '_hidden')
       return c;
     this.addElement(c, categories);

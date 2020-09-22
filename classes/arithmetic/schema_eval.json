@@ -4,25 +4,24 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "operation": {
-      "type": "string",
-      "enum": ["not", "abs", "negate", "&", "|", "^", "+", "-", "*", "/", "%", "round", "=", ">", "<", ">=", "<=", "!="]
+    "qualifier": {
+      "enum": ["not", "abs", "negate", "&", "|", "^", "+", "-", "*", "/", "pow", "%", "round", "=", ">", "<", ">=", "<=", "!="]
     },
     "operand": {"$ref": "/class"},
     "left": {"$ref": "/class"},
     "right": {"$ref": "/class"}
   },
-  "required": ["operation"],
+  "required": ["qualifier"], 
   "oneOf": [
     {
       "properties": {
-        "operation": {"enum": ["not", "abs", "negate"]}
+        "qualifier": {"enum": ["not", "abs", "negate"]}
       },
       "required": ["operand"]
     },
     {
       "properties": {
-        "operation": {"enum": ["&", "|", "^", "+", "-", "*", "/", "%", "round", "=", ">", "<", ">=", "<=", "!="]}
+        "qualifier": {"enum": ["&", "|", "^", "+", "-", "*", "/", "pow", "%", "round", "=", ">", "<", ">=", "<=", "!="]}
       },
       "required": ["left", "right"]
     }
