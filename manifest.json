@@ -3,10 +3,10 @@
   "content_scripts": [
     {
       "js": [
-        "js/extension.js"
+        "static/extension.js"
       ],
       "css": [
-        "css/extension.css"
+        "static/extension.css"
       ]
     }
   ],
@@ -27,14 +27,7 @@
   "short_name": "Macros",
   "version": "0.1.0",
   "web_accessible_resources": [
-    "js/*.js",
-    "js/*.json",
-    "css/*.css",
-    "views/*.html",
-    "views/*.js",
-    "views/*.css",
-    "images/*.svg",
-    "images/*.png",
+    "static/*",
     "classes/*/client.js",
     "classes/*/schema_*.json"
   ],

@@ -40,10 +40,7 @@
     "index.js",
     "manifest.json",
     "lib/",
-    "js/",
-    "css/",
-    "views/",
-    "images/",
+    "static/",
     "classes/"
   ],
   "moziot": {

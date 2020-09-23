@@ -52,13 +52,13 @@ window.importMacroModule = function(code, classname) {
     }
 
     loadView(v) {
-      this.loadModule(`js/${v}/index.js`).then((mod) => {
+      this.loadModule(`static/views/${v}/index.js`).then((mod) => {
         this.views[v] = new mod.prototype.constructor(this);
         this.views[v].extension = this;
         this.views[v].macrosec = document.querySelector(`#extension-${this.id}-view`);
         const originalshow = this.views[v].show;
         this.views[v].show = (...args) => {
-          this.loadFile(`views/${v}.html`).then((content) => {
+          this.loadFile(`static/views/${v}/index.html`).then((content) => {
             document.querySelector(`#extension-${this.id}-view`).innerHTML = content;
             originalshow.call(this.views[v], ...args);
           });

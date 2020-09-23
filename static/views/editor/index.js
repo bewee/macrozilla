@@ -5,22 +5,22 @@ class EditorView {
     this.gridsize = 25;
 
     // import helper files
-    this.extension.loadModule('js/editor/dragndrophandler.js').then((mod) => {
+    this.extension.loadModule('static/views/editor/dragndrophandler.js').then((mod) => {
       this.dragndrophandler = new mod.prototype.constructor(this);
     });
-    this.extension.loadModule('js/editor/parameter.js').then((mod) => {
+    this.extension.loadModule('static/views/editor/parameter.js').then((mod) => {
       this.Parameter = mod;
     });
-    this.extension.loadModule('js/editor/macrobuildingelements.js').then((mod) => {
+    this.extension.loadModule('static/views/editor/macrobuildingelements.js').then((mod) => {
       this.MacroBuildingElement = mod.MacroBuildingElement;
       this.MacroBlock = mod.MacroBlock;
       this.MacroCard = mod.MacroCard;
       this.MacroCardBlock = mod.MacroCardBlock;
     });
-    this.extension.loadModule('js/editor/handler.js').then((mod) => {
+    this.extension.loadModule('static/views/editor/handler.js').then((mod) => {
       this.Handler = mod;
     });
-    this.extension.loadModule('js/editor/macrobuildinggroup.js').then((mod) => {
+    this.extension.loadModule('static/views/editor/macrobuildinggroup.js').then((mod) => {
       this.MacroBuildingGroup = mod;
     });
 

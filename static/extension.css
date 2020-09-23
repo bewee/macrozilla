@@ -1,9 +1,9 @@
 #main-menu #extension-macrozilla-menu-item {
-    background-image: url('../images/menu-icon-macros.svg');
+    background-image: url(/extensions/macrozilla/static/images/menu-icon-macros.svg);
 }
 
 #main-menu #extension-macrozilla-variables-menu-item {
-    background-image: url('../images/menu-icon-variables.svg');
+    background-image: url(/extensions/macrozilla/static/images/menu-icon-variables.svg);
 }
 
 #extension-macrozilla-view.selected{
@@ -185,7 +185,7 @@ div#throwtrashhere{
     top: 0;
     right: 0;
     background-color: rgba(0,0,0,0.8);
-    background-image: url(/extensions/macrozilla/images/delete.svg);
+    background-image: url(/extensions/macrozilla/static/images/delete.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 25% auto;
@@ -385,7 +385,7 @@ macro-constant-card input{
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    background-image: url(/extensions/macrozilla/images/menu-icon-macros.svg);
+    background-image: url(/extensions/macrozilla/static/images/menu-icon-macros.svg);
 }
 
 #macrozilla-macro-list .macroaddel{
@@ -404,7 +404,7 @@ macro-constant-card input{
 }
 
 #macrozilla-macro-list .macrodelel{
-    background: no-repeat center/50% url(/extensions/macrozilla/images/delete.svg);
+    background: no-repeat center/50% url(/extensions/macrozilla/static/images/delete.svg);
     width: 3.5rem;
     display: inline-block;
     height: 100%;
@@ -426,7 +426,7 @@ macro-constant-card input{
 }
 
 #macrozilla-macro-list .macropathdelel {
-    background: no-repeat center/55% url(/extensions/macrozilla/images/delete.svg);
+    background: no-repeat center/55% url(/extensions/macrozilla/static/images/delete.svg);
     width: 6rem;
     height: 6rem;
     float: right;
@@ -535,7 +535,7 @@ macro-constant-card input{
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    background-image: url(/extensions/macrozilla/images/menu-icon-variables.svg);
+    background-image: url(/extensions/macrozilla/static/images/menu-icon-variables.svg);
 }
 
 #macrozilla-variable-list .variableaddel{
@@ -554,7 +554,7 @@ macro-constant-card input{
 }
 
 #macrozilla-variable-list .variabledelel{
-    background: no-repeat center/50% url(/extensions/macrozilla/images/delete.svg);
+    background: no-repeat center/50% url(/extensions/macrozilla/static/images/delete.svg);
     width: 3.5rem;
     display: inline-block;
     height: 100%;
@@ -576,7 +576,7 @@ macro-constant-card input{
 }
 
 #macrozilla-variable-list .variablepathdelel {
-    background: no-repeat center/55% url(/extensions/macrozilla/images/delete.svg);
+    background: no-repeat center/55% url(/extensions/macrozilla/static/images/delete.svg);
     width: 6rem;
     height: 6rem;
     float: right;

@@ -2,7 +2,7 @@ class MacrolistView {
 
   constructor(extension) {
     this.extension = extension;
-    this.extension.loadFile('js/macrolist/macro_default.json').then((res) => {
+    this.extension.loadFile('static/views/macrolist/macro_default.json').then((res) => {
       this.macro_default = JSON.parse(res);
     });
   }
