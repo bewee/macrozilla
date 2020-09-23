@@ -137,9 +137,9 @@ class EditorView {
     });
   }
 
-  updateConnection(arrel, node1, node2) {
-    const rect1 = node1.getBoundingClientRect();
-    const rect2 = node2.getBoundingClientRect();
+  updateConnection(arrel, node1, node2, pnode1, pnode2) {
+    const rect1 = (pnode1 ? pnode1 : node1).getBoundingClientRect();
+    const rect2 = (pnode2 ? pnode2 : node2).getBoundingClientRect();
     const rect3 = this.executePath.getBoundingClientRect();
     const x1 = (rect1.left + rect1.width/2 - rect3.left);
     const y1 = (rect1.top + rect1.height/2 - rect3.top);

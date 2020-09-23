@@ -16,9 +16,6 @@ class DragndropHandler {
     this.macro_dragel.style.left = `${px}px`;
     this.macro_dragel.style.top = `${py}px`;
 
-    // update arrows when one of its blocks has been moved
-    this.updateArrows();
-
     // move preview
     const area = this.editor.programArea;
     let prevx = px + area.scrollLeft;
@@ -32,6 +29,9 @@ class DragndropHandler {
     }
     this.prev.style.left = `${prevx}px`;
     this.prev.style.top = `${prevy}px`;
+
+    // update arrows when one of its blocks has been moved
+    this.updateArrows();
 
     this.checkDropLegality();
   }
@@ -173,6 +173,7 @@ class DragndropHandler {
 
     // remove previews
     document.querySelectorAll('.macroblock.preview').forEach((prev) => prev.remove());
+    this.prev = null;
 
     // stop idling
     document.querySelectorAll('.macroblock').forEach((el) => {
@@ -197,10 +198,10 @@ class DragndropHandler {
       if (theotherblock == `macro_arr_${this.macro_dragel.getAttribute('macro-block-no')}`) {
         theotherblock = arrow.getAttribute('class').split(' ')[1];
         theotherblock = theotherblock.substr(10);
-        this.editor.updateConnection(arrow, this.macro_dragel, document.querySelector(`[macro-block-no='${theotherblock}']`));
+        this.editor.updateConnection(arrow, this.macro_dragel, document.querySelector(`[macro-block-no='${theotherblock}']`), this.prev, null);
       } else {
         theotherblock = theotherblock.substr(10);
-        this.editor.updateConnection(arrow, document.querySelector(`[macro-block-no='${theotherblock}']`), this.macro_dragel);
+        this.editor.updateConnection(arrow, document.querySelector(`[macro-block-no='${theotherblock}']`), this.macro_dragel, null, this.prev);
       }
     }
   }
