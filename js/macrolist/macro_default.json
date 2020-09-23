@@ -1,0 +1,26 @@
+[
+    {
+        "id":1,
+        "type":"comment",
+        "text":"description",
+        "ui":{"px":250,"py":25}
+    },
+    {
+        "id":2,
+        "type":"triggers",
+        "list":null,
+        "ui":{"px":300,"py":125}
+    },
+    {
+        "id":3,
+        "type":"conditions",
+        "list":null,
+        "ui":{"px":300,"py":225}
+    },
+    {
+        "id":4,
+        "type":"comment",
+        "text":"do stuff here",
+        "ui":{"px":250,"py":325}
+    }
+]

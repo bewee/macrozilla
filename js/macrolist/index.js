@@ -1,5 +1,12 @@
 class MacrolistView {
 
+  constructor(extension) {
+    this.extension = extension;
+    this.extension.loadFile('js/macrolist/macro_default.json').then((res) => {
+      this.macro_default = JSON.parse(res);
+    });
+  }
+
   show() {
     document.querySelector('#macrozilla-add-macropath').addEventListener('click', () => {
       const name = prompt('Name');
@@ -50,8 +57,9 @@ class MacrolistView {
         addbttn.className = 'macroaddel';
         addbttn.addEventListener('click', () => {
           const name = prompt('Name');
-          window.API.postJson('/extensions/macrozilla/api/create-macro', {path_id: el.id, name: name}).then(() => {
+          window.API.postJson('/extensions/macrozilla/api/create-macro', {path_id: el.id, name: name}).then((res) => {
             this.show();
+            window.API.postJson('/extensions/macrozilla/api/update-macro', {id: res.id, description: this.macro_default});
           });
         });
         macrolist.appendChild(addbttn);

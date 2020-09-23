@@ -28,6 +28,7 @@
   "version": "0.1.0",
   "web_accessible_resources": [
     "js/*.js",
+    "js/*.json",
     "css/*.css",
     "views/*.html",
     "views/*.js",
