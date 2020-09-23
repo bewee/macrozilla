@@ -10,7 +10,7 @@
       "type": "integer"
     },
     "qualifier": {
-      "type": "integer"
+      "type": "string"
     }
   },
   "required": ["type", "id"]

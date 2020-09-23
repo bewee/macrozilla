@@ -3,44 +3,35 @@ class SunClass {
   constructor(handler) {
     this.handler = handler;
 
-    const sunevs = {sunrise: 'Sunrise', sunset: 'Sunset', dawn: 'Dawn', dusk: 'Dusk', sunriseEnd: 'Sunrise end', sunsetStart: 'Sunset start', night: 'Night begin', nightEnd: 'Night end', nauticalDawn: 'Nautical dawn', nauticalDusk: 'Nautical dusk', goldenHour: 'Golden hour begin', goldenHourEnd: 'Golden hour end', solarNoon: 'Solar noon', nadir: 'Nadir'};
+    const sunevs = ['sunrise', 'sunset', 'dawn', 'dusk', 'sunriseEnd', 'sunsetStart', 'night', 'nightEnd', 'nauticalDawn', 'nauticalDusk', 'goldenHour', 'goldenHourEnd', 'solarNoon', 'nadir'];
+    const vsunevs = ['Sunrise', 'Sunset', 'Dawn', 'Dusk', 'Sunrise end', 'Sunset start', 'Night begin', 'Night end', 'Nautical dawn', 'Nautical dusk', 'Golden hour begin', 'Golden hour end', 'Solar noon', 'Nadir'];
 
-    const g_triggers = handler.addGroup('Sun Triggers', ['Trigger']);
-    for (const ev in sunevs) {
-      this.addTrigger(ev, sunevs[ev], g_triggers);
+    {
+      const card = this.handler.addCard('sun_trigger', ['Triggers']);
+      card.setTooltipText('Sun trigger');
+      card.addAbility('trigger');
+      const sunevs_ = sunevs.map((x) => `sun_${x}`);
+      const inp = card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs});
+      card.setText('%p', inp);
     }
-    const g_before = handler.addGroup('Sun Before', ['Sun']);
-    for (const ev in sunevs) {
-      this.addBefore(ev, sunevs[ev], g_before);
+    {
+      const card = this.handler.addCard('sun_before', ['Sun']);
+      card.setTooltipText('Before sun event?');
+      card.addAbility('evaluable');
+      const sunevs_ = sunevs.map((x) => `sun_before_${x}`);
+      const vsunevs_ = vsunevs.map((x) => `Before ${x}?`);
+      const inp = card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs_});
+      card.setText('%p', inp);
     }
-    const g_after = handler.addGroup('Sun After', ['Sun']);
-    for (const ev in sunevs) {
-      this.addAfter(ev, sunevs[ev], g_after);
+    {
+      const card = this.handler.addCard('sun_after', ['Sun']);
+      card.setTooltipText('After sun event?');
+      card.addAbility('evaluable');
+      const sunevs_ = sunevs.map((x) => `sun_after_${x}`);
+      const vsunevs_ = vsunevs.map((x) => `After ${x}?`);
+      const inp = card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs_});
+      card.setText('%p', inp);
     }
-  }
-
-  addTrigger(qualifier, text, g) {
-    const card = this.handler.addCard(`sun_${qualifier}`);
-    card.addAbility('trigger');
-    card.setText(text);
-    card.setTooltipText(text);
-    g.assign(card);
-  }
-
-  addBefore(qualifier, text, g) {
-    const card = this.handler.addCard(`sun_before_${qualifier}`);
-    card.addAbility('evaluable');
-    card.setText(`Before ${text}?`);
-    card.setTooltipText(`Before ${text}?`);
-    g.assign(card);
-  }
-
-  addAfter(qualifier, text, g) {
-    const card = this.handler.addCard(`sun_after_${qualifier}`);
-    card.addAbility('evaluable');
-    card.setText(`After ${text}?`);
-    card.setTooltipText(`After ${text}?`);
-    g.assign(card);
   }
 
 }

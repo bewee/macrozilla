@@ -335,9 +335,31 @@ div#throwtrashhere:hover{
     cursor: initial;
 }
 
-macro-constant-card input{
+macro-block span input, macro-card span input{
     text-align: center;
     width: 75px;
+}
+
+macro-card span select, macro-block span select{
+    display: inline-block;
+    text-align: left;
+    color: #fff;
+    background-color: #7f93a1;
+    margin: 1rem 0;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    height: 4rem;
+    background-image: url(/images/select-arrow.svg);
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+    background-position: calc(100% - 1rem);
+    padding-left: 1rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 3rem;
+    text-indent: 1px;
 }
 
 #macrozilla-macro-list{

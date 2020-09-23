@@ -6,6 +6,7 @@ class MacroBuildingElement extends HTMLElement {
     super();
 
     this.parameters = {};
+    this.inputs = {};
     this.group = null;
     this.internal_attributes = {};
     this.abilities = [];
@@ -29,16 +30,69 @@ class MacroBuildingElement extends HTMLElement {
     return p;
   }
 
+  addInput(name, type, options) {
+    let inpnode;
+    switch (type) {
+      case 'string':
+        if (Array.isArray(options.enum)) {
+          inpnode = document.createElement('SELECT');
+          for (const i in options.enum) {
+            const opt = document.createElement('OPTION');
+            opt.value = options.enum[i];
+            opt.innerHTML = options.venum ? options.venum[i] : options.enum[i];
+            inpnode.appendChild(opt);
+          }
+        } else {
+          inpnode = document.createElement('INPUT');
+          inpnode.type = 'text';
+          if ('placeholder' in options) inpnode.placeholder = options.placeholder;
+          if ('value' in options) inpnode.value = options.value;
+        }
+        break;
+      case 'number':
+        inpnode = document.createElement('INPUT');
+        inpnode.type = 'number';
+        if ('placeholder' in options) inpnode.placeholder = options.placeholder;
+        if ('min' in options) inpnode.min = options.min;
+        if ('max' in options) inpnode.max = options.max;
+        if ('step' in options) inpnode.step = options.step;
+        if ('value' in options) inpnode.value = options.value;
+        break;
+      case 'boolean':
+        inpnode = document.createElement('INPUT');
+        inpnode.type = 'checkbox';
+        if ('checked' in options) inpnode.checked = options.checked;
+        break;
+    }
+    inpnode.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+    });
+    inpnode.addEventListener('input', (_e) => {
+      this.editor.changes();
+    });
+    inpnode.setAttribute('data-name', name);
+    this.inputs[name] = inpnode;
+    return inpnode;
+  }
+
   setText(ftext, ...linkedParams) {
     this.children[0].innerHTML = '';
     let i = 0;
-    for (const strpart of ftext.split('%p')) {
-      const txtnode = document.createElement('SPAN');
-      txtnode.innerHTML = strpart;
-      this.children[0].appendChild(txtnode);
-      if (linkedParams[i]) {
-        this.children[0].appendChild(linkedParams[i]);
-        i++;
+    for (const strpart of ftext.split(/(%p)/g)) {
+      switch (strpart) {
+        case '%p': {
+          if (linkedParams[i]) {
+            this.children[0].appendChild(linkedParams[i]);
+            i++;
+          }
+          break;
+        }
+        default: {
+          const txtnode = document.createElement('SPAN');
+          txtnode.innerHTML = strpart;
+          this.children[0].appendChild(txtnode);
+          break;
+        }
       }
     }
   }
@@ -71,6 +125,17 @@ class MacroBuildingElement extends HTMLElement {
     }
     copyinstance.innerHTML = '';
     this.recursiveCopyElements(this, copyinstance, copyinstance);
+    for (const input_name in this.inputs) {
+      copyinstance.inputs[input_name] = copyinstance.querySelector(`*[data-name=${input_name}]`);
+      if (copyinstance.inputs[input_name].tagName == 'SELECT')
+        copyinstance.inputs[input_name].value = this.inputs[input_name].value;
+      copyinstance.inputs[input_name].addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+      });
+      copyinstance.inputs[input_name].addEventListener('input', (_e) => {
+        this.editor.changes();
+      });
+    }
     return copyinstance;
   }
 
@@ -87,6 +152,14 @@ class MacroBuildingElement extends HTMLElement {
       if (param.tagName == 'MACRO-PARAM') {
         jsonobj[param.name] = param.toJSON();
       }
+    }
+    for (const input_name in this.inputs) {
+      if (this.inputs[input_name].type == 'number')
+        jsonobj[input_name] = parseInt(this.inputs[input_name].value);
+      else if (this.inputs[input_name].type == 'checkbox')
+        jsonobj[input_name] = this.inputs[input_name].checked;
+      else
+        jsonobj[input_name] = this.inputs[input_name].value;
     }
     return jsonobj;
   }
@@ -127,6 +200,18 @@ class MacroBuildingElement extends HTMLElement {
         const cparam = param.copyFromJSON(json[paramname], maxid);
         pholder.placeCard(cparam);
       }
+    }
+    for (const input_name in this.inputs) {
+      let val;
+      try {
+        val = json[input_name];
+      } catch (_ex) {
+        val = null;
+      }
+      if (this.inputs[input_name].type == 'checkbox')
+        copy.inputs[input_name].checked = val;
+      else
+        copy.inputs[input_name].value = val;
     }
     return copy;
   }

@@ -8,7 +8,6 @@
       "enum": ["null", "boolean", "number", "string"]
     },
     "value": {
-      "type": "string"
     }
   },
   "required": ["qualifier", "value"]

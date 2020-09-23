@@ -4,9 +4,9 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "qualifier": {
+    "ev": {
       "enum": ["sun_solarNoon", "sun_nadir", "sun_sunrise", "sun_sunset", "sun_sunriseEnd", "sun_sunsetStart", "sun_dawn", "sun_dusk", "sun_nauticalDawn", "sun_nauticalDusk", "sun_nightEnd", "sun_night", "sun_goldenHourEnd", "sun_goldenHour"]
     }
   },
-  "required": ["qualifier"]
+  "required": ["ev"]
 }

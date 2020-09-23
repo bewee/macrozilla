@@ -5,7 +5,11 @@
   "allOf": [{"$ref": "/class"}],
   "properties": {
     "qualifier": {
-      "enum": ["not", "abs", "negate", "&", "|", "^", "+", "-", "*", "/", "pow", "%", "round", "=", ">", "<", ">=", "<=", "!="]
+      "enum": ["not", "abs", "negate", "&", "|", "^", "+", "-", "*", "/", "pow", "%", "round", "cmp"]
+    },
+    "cmp": {
+      "type": "string", 
+      "enum": ["=", ">", "<", ">=", "<=", "!="]
     },
     "operand": {"$ref": "/class"},
     "left": {"$ref": "/class"},
@@ -21,9 +25,15 @@
     },
     {
       "properties": {
-        "qualifier": {"enum": ["&", "|", "^", "+", "-", "*", "/", "pow", "%", "round", "=", ">", "<", ">=", "<=", "!="]}
+        "qualifier": {"enum": ["&", "|", "^", "+", "-", "*", "/", "pow", "%", "round"]}
       },
       "required": ["left", "right"]
+    },
+    {
+      "properties": {
+        "qualifier": {"enum": ["cmp"]}
+      },
+      "required": ["left", "right", "cmp"]
     }
   ]
 }

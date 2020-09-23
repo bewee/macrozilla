@@ -89,7 +89,7 @@ async function round() {
 
 async function cmp() {
   const left = this.params.description.left, right = this.params.description.right;
-  const comparator = this.params.description.qualifier;
+  const comparator = this.params.description.cmp;
   const lraw = await this.call(left, 'eval');
   const rraw = await this.call(right, 'eval');
   const lval = this.decode(lraw), rval = this.decode(rraw);
@@ -155,7 +155,7 @@ module.exports = {
         return await mod.call(this);
       case 'round':
         return await round.call(this);
-      case '=': case '>': case '<': case '>=': case '<=': case '!=':
+      case 'cmp':
         return await cmp.call(this);
     }
     return '';
