@@ -2,24 +2,35 @@ class Handler {
 
   constructor(classname, editor) {
     this.editor = editor;
-    this.groups = [];
+    this.groups = {};
     this.classname = classname;
-    this.buildingelements = [];
+    this.buildingelements = {};
   }
 
   addElement(c, categories) {
     c.addEventListener('mousedown', this.editor.dragndrophandler.handleDragStart.bind(this.editor.dragndrophandler));
     c.addEventListener('mouseup', this.editor.dragndrophandler.handleDragEnd.bind(this.editor.dragndrophandler));
 
+    if (!(c.qualifier in this.buildingelements))
+      this.buildingelements[c.qualifier] = c;
+
+    if (categories[0] == '_hidden')
+      return c;
+
     document.querySelector('#macrosidebar').appendChild(c);
 
     this.assignCategory(categories[0], c);
-    this.buildingelements.push(c);
   }
 
   addCardBlock(qualifier, categories = []) {
     const c = new this.editor.MacroCardBlock(qualifier, this.classname, this.editor);
     this.addElement(c, categories);
+    return c;
+  }
+
+  addLoadCardBlock(qualifier, fn) {
+    const c = this.addCardBlock(qualifier, ['_hidden']);
+    c.copyFromJSONCallback = fn;
     return c;
   }
 
@@ -29,11 +40,21 @@ class Handler {
     return c;
   }
 
+  addLoadBlock(qualifier, fn) {
+    const c = this.addBlock(qualifier, ['_hidden']);
+    c.copyFromJSONCallback = fn;
+    return c;
+  }
+
   addCard(qualifier, categories = []) {
     const c = new this.editor.MacroCard(qualifier, this.classname, this.editor);
-    if (categories[0] == '_hidden')
-      return c;
     this.addElement(c, categories);
+    return c;
+  }
+
+  addLoadCard(qualifier, fn) {
+    const c = this.addCard(qualifier, ['_hidden']);
+    c.copyFromJSONCallback = fn;
     return c;
   }
 

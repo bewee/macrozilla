@@ -70,7 +70,7 @@ class MacroBuildingElement extends HTMLElement {
     inpnode.addEventListener('input', (_e) => {
       this.editor.changes();
     });
-    inpnode.setAttribute('data-name', name);
+    inpnode.setAttribute('input-name', name);
     this.inputs[name] = inpnode;
     return inpnode;
   }
@@ -78,12 +78,21 @@ class MacroBuildingElement extends HTMLElement {
   setText(ftext, ...linkedParams) {
     this.children[0].innerHTML = '';
     let i = 0;
-    for (const strpart of ftext.split(/(%p)/g)) {
+    for (const strpart of ftext.split(/(%p|%a)/g)) {
       switch (strpart) {
         case '%p': {
           if (linkedParams[i]) {
             this.children[0].appendChild(linkedParams[i]);
             i++;
+          }
+          break;
+        }
+        case '%a': {
+          if (linkedParams[i]) {
+            const txtnode = document.createElement('SPAN');
+            txtnode.setAttribute('attribute-name', linkedParams[i]);
+            txtnode.innerHTML = this.internal_attributes[linkedParams[i]];
+            this.children[0].appendChild(txtnode);
           }
           break;
         }
@@ -126,7 +135,7 @@ class MacroBuildingElement extends HTMLElement {
     copyinstance.innerHTML = '';
     this.recursiveCopyElements(this, copyinstance, copyinstance);
     for (const input_name in this.inputs) {
-      copyinstance.inputs[input_name] = copyinstance.querySelector(`*[data-name=${input_name}]`);
+      copyinstance.inputs[input_name] = copyinstance.querySelector(`*[input-name=${input_name}]`);
       if (copyinstance.inputs[input_name].tagName == 'SELECT')
         copyinstance.inputs[input_name].value = this.inputs[input_name].value;
       copyinstance.inputs[input_name].addEventListener('mousedown', (e) => {
@@ -178,6 +187,10 @@ class MacroBuildingElement extends HTMLElement {
     const copy = this.copy();
     copy.setAttribute('macro-block-no', json.id);
     copy.className = copy.className.split(' ').includes('macrocard') ? 'macroblock macrocard placed' : 'macroblock placed';
+    for (const ia in copy.internal_attributes) {
+      copy.internal_attributes[ia] = json[ia];
+      copy.querySelector(`*[attribute-name=${ia}]`).innerHTML = this.internal_attributes[ia];
+    }
     copy.addEventListener('mousedown', this.editor.dragndrophandler.handleDragStart.bind(this.editor.dragndrophandler));
     copy.addEventListener('mouseup', this.editor.dragndrophandler.handleDragEnd.bind(this.editor.dragndrophandler));
     for (const paramname in copy.parameters) {
@@ -186,17 +199,17 @@ class MacroBuildingElement extends HTMLElement {
       if (Array.isArray(json[paramname])) {
         for (const el of json[paramname]) {
           const paramhandler = this.editor.classHandlers[el.type];
-          let param = paramhandler.buildingelements[0];
+          let param = Object.values(paramhandler.buildingelements)[0];
           if (el.qualifier)
-            param = paramhandler.buildingelements.find((x) => x.qualifier == el.qualifier);
+            param = paramhandler.buildingelements[el.qualifier];
           const cparam = param.copyFromJSON(el, maxid);
           pholder.placeCard(cparam);
         }
       } else {
         const paramhandler = this.editor.classHandlers[json[paramname].type];
-        let param = paramhandler.buildingelements[0];
+        let param = Object.values(paramhandler.buildingelements)[0];
         if (json[paramname].qualifier)
-          param = paramhandler.buildingelements.find((x) => x.qualifier == json[paramname].qualifier);
+          param = paramhandler.buildingelements[json[paramname].qualifier];
         const cparam = param.copyFromJSON(json[paramname], maxid);
         pholder.placeCard(cparam);
       }
@@ -213,6 +226,7 @@ class MacroBuildingElement extends HTMLElement {
       else
         copy.inputs[input_name].value = val;
     }
+    if (this.copyFromJSONCallback) this.copyFromJSONCallback(copy);
     return copy;
   }
 

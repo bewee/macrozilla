@@ -3,7 +3,7 @@
 module.exports = {
 
   set: async function() {
-    await this.handler.apihandler.dbhandler.updateVariableValue(this.params.description.variable_id, this.encode(this.params.value));
+    await this.handler.apihandler.dbhandler.updateVariableValue(this.params.description.variable_id, this.params.value);
   },
 
   eval: async function() {
@@ -12,20 +12,14 @@ module.exports = {
   },
 
   trigger: function() {
-    let fn;
-
-    switch (this.params.description.trigger) {
-      case 'valueChanged':
-        fn = (variable_id, _value) => {
-          if (variable_id == this.params.description.variable_id)
-            this.params.callback();
-        };
-        this.handler.apihandler.dbhandler.on(`variableValueChanged`, fn);
-        this.params.destruct = () => {
-          this.handler.apihandler.dbhandler.removeListener(`variableValueChanged`, fn);
-        };
-        break;
-    }
+    const fn = (variable_id, _value) => {
+      if (variable_id == this.params.description.variable_id)
+        this.params.callback();
+    };
+    this.handler.apihandler.dbhandler.on(`variableValueChanged`, fn);
+    this.params.destruct = () => {
+      this.handler.apihandler.dbhandler.removeListener(`variableValueChanged`, fn);
+    };
   },
 
 };

@@ -96,9 +96,9 @@ class EditorView {
         console.warn('Missing UI information', block.type);
         continue;
       }
-      let blockel = handler.buildingelements[0];
+      let blockel = Object.values(handler.buildingelements)[0];
       if ('qualifier' in block && block.qualifier !== null)
-        blockel = handler.buildingelements.find((x) => x.qualifier === block.qualifier);
+        blockel = handler.buildingelements[block.qualifier];
       if (!blockel) {
         console.warn('Cannot find matching building element');
         continue;
