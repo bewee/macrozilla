@@ -22,11 +22,10 @@ class DragndropHandler {
     let prevy = py + area.scrollTop;
     prevx = Math.round(prevx / this.editor.gridsize) * this.editor.gridsize;
     prevy = Math.round(prevy / this.editor.gridsize) * this.editor.gridsize;
-    if (prevx > area.children[0].getBoundingClientRect().width || prevy > area.children[0].getBoundingClientRect().height || prevx < 0 || prevy < 0) {
-      this.prev.style.display = 'none';
-    } else {
-      this.prev.style.display = 'block';
-    }
+    if (prevx < 0) prevx = 0;
+    if (prevy < 0) prevy = 0;
+
+    this.prev.style.display = 'block';
     this.prev.style.left = `${prevx}px`;
     this.prev.style.top = `${prevy}px`;
 
