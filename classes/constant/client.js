@@ -26,7 +26,7 @@ class ConstantClass {
       card.setTooltipText('None');
       card.addAbility('evaluable');
       card.setText('none');
-      card.setJSONAttribute('value', '');
+      card.setJSONAttribute('value', null);
     }
   }
 
