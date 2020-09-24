@@ -52,8 +52,12 @@ class Parameter extends HTMLElement {
   }
 
   toJSON() {
-    if (this.cards.length <= 0)
-      return null;
+    if (this.cards.length <= 0) {
+      if (this.multicards)
+        return [];
+      else
+        return null;
+    }
     if (this.multicards) {
       const l = [];
       this.cards.forEach((card) => {
