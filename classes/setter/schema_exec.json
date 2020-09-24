@@ -5,13 +5,13 @@
   "allOf": [{"$ref": "/class"}],
   "properties": {
     "qualifier": {"enum": ["set", "set_w_speed", "set_w_time"]},
-    "attribute": {"$ref": "/class"},
-    "value": {"$ref": "/class"},
+    "left": {"$ref": "/class"},
+    "right": {"$ref": "/class"},
     "speed": {"$ref": "/class"},
     "time": {"$ref": "/class"},
     "ups": {"type": "integer"}
   },
-  "required": ["qualifier", "attribute", "value"],
+  "required": ["qualifier", "left", "right"],
   "dependencies": {
     "ups": {
       "properties": {
@@ -22,6 +22,13 @@
     }
   },
   "oneOf": [
+    {
+      "properties": {
+        "qualifier": {
+          "enum": ["set"]
+        }
+      }
+    },
     {
       "properties": {
         "qualifier": {
