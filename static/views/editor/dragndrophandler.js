@@ -250,8 +250,8 @@ class DragndropHandler {
                 this.editor.cardpholder.style.minHeight = '';
               }
               this.editor.cardpholder = c;
-              this.editor.cardpholder.style.minWidth = rect2.width+'px';
-              this.editor.cardpholder.style.minHeight = rect2.height+'px';
+              this.editor.cardpholder.style.minWidth = `${rect2.width}px`;
+              this.editor.cardpholder.style.minHeight = `${rect2.height}px`;
               this.editor.cardpholder.id = 'hovering';
               break;
             } else {
