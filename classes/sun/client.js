@@ -1,7 +1,6 @@
 class SunClass {
 
   constructor(handler) {
-
     const sunevs = ['sunrise', 'sunset', 'dawn', 'dusk', 'sunriseEnd', 'sunsetStart', 'night', 'nightEnd', 'nauticalDawn', 'nauticalDusk', 'goldenHour', 'goldenHourEnd', 'solarNoon', 'nadir'];
     const vsunevs = ['Sunrise', 'Sunset', 'Dawn', 'Dusk', 'Sunrise end', 'Sunset start', 'Night begin', 'Night end', 'Nautical dawn', 'Nautical dusk', 'Golden hour begin', 'Golden hour end', 'Solar noon', 'Nadir'];
 

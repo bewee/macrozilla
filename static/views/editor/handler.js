@@ -22,18 +22,6 @@ class Handler {
     this.assignCategory(categories[0], c);
   }
 
-  addCardBlock(qualifier, categories = []) {
-    const c = new this.editor.MacroCardBlock(qualifier, this.classname, this.editor);
-    this.addElement(c, categories);
-    return c;
-  }
-
-  addLoadCardBlock(qualifier, fn) {
-    const c = this.addCardBlock(qualifier, ['_hidden']);
-    c.copyFromJSONCallback = fn;
-    return c;
-  }
-
   addBlock(qualifier, categories = []) {
     const c = new this.editor.MacroBlock(qualifier, this.classname, this.editor);
     this.addElement(c, categories);

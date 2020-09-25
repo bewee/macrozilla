@@ -15,7 +15,6 @@ class EditorView {
       this.MacroBuildingElement = mod.MacroBuildingElement;
       this.MacroBlock = mod.MacroBlock;
       this.MacroCard = mod.MacroCard;
-      this.MacroCardBlock = mod.MacroCardBlock;
     });
     this.extension.loadModule('static/views/editor/handler.js').then((mod) => {
       this.Handler = mod;

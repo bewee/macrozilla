@@ -108,7 +108,7 @@
     border-radius: 4rem;
 }
 
-.macroblock.macrocard .blockdescr, .blockgroup .macroblock .blockdescr{
+.macroblock.macrocard .blockdescr{
     color: black;
 }
 
@@ -219,7 +219,7 @@ div#throwtrashhere:hover{
     border: 2px solid #7f3939;
 }
 
-.macrocard .cardplaceholder, .blockgroup .macroblock .cardplaceholder{
+.macrocard .cardplaceholder{
     color: #353535;
 }
 
@@ -246,6 +246,13 @@ div#throwtrashhere:hover{
     background: white;
 }
 
+.blockgroup .macroblock:not(.macrocard){
+    opacity: 0;
+    transition: transform 0.4s, opacity 0.4s;
+    border: 3px solid white;
+    background: #5d9bc7;
+}
+
 .blockgroup .otheroptions .macroblock{
     min-height: 0;
     margin-left: 0.2rem;
@@ -257,7 +264,7 @@ div#throwtrashhere:hover{
     border: 1px solid #5d9bc7;
 }
 
-.blockgroup > .macroblock{
+.blockgroup > .macroblock, .blockgroup > .macroblock:not(.macrocard){
     opacity: 1;
     transform-origin: 50% 100%;
 }

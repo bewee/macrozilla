@@ -339,35 +339,10 @@ class MacroCard extends MacroBuildingElement {
 
 }
 
-class MacroCardBlock extends MacroCard {
-
-  constructor(qualifier, classname, editor, elgroup) {
-    super(qualifier, classname, editor, elgroup);
-    this.successor = null;
-    this.predecessor = null;
-  }
-
-  copy() {
-    const copyinstance = super.copy();
-    copyinstance.successor = this.successor;
-    if (copyinstance.successor)
-      copyinstance.successor.predecessor = copyinstance;
-    copyinstance.predecessor = this.predecessor;
-    if (copyinstance.predecessor)
-      copyinstance.predecessor.successor = copyinstance;
-    this.successor = null;
-    this.predecessor = null;
-    return copyinstance;
-  }
-
-}
-
 customElements.define('macro-block', MacroBlock);
 customElements.define('macro-card', MacroCard);
-customElements.define('macro-card-block', MacroCardBlock);
 window.exports = {
   MacroBuildingElement: MacroBuildingElement,
   MacroCard: MacroCard,
   MacroBlock: MacroBlock,
-  MacroCardBlock: MacroCardBlock,
 };
