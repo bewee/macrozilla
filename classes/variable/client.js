@@ -7,6 +7,7 @@ class VariableClass {
         // update text of newly loaded variable card
         copy.setTooltipText(`Variable ${this.variables[copy.internal_attributes.variable_id]}`);
         copy.setText(`${this.variables[copy.internal_attributes.variable_id]}`);
+        copy.revive();
       } else {
         // mark card as unfinished loaded variable card
         copy.setAttribute('variable-waiting', copy.internal_attributes.variable_id);
@@ -37,6 +38,7 @@ class VariableClass {
               c.removeAttribute('variable-waiting');
               c.setTooltipText(`Variable $this.variables[v.id]}`);
               c.setText(`${this.variables[v.id]}`);
+              c.revive();
             });
           });
         });

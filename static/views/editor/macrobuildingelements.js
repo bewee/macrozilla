@@ -20,6 +20,7 @@ class MacroBuildingElement extends HTMLElement {
     this.abilityTexts = {};
     this.defaultText = {text: '', params: []};
     this.currentAbility = null;
+    this.shutdown_ = false;
     this.setText_(this.defaultText);
   }
 
@@ -89,6 +90,7 @@ class MacroBuildingElement extends HTMLElement {
     this.setText_(this.defaultText);
   }
 
+  // meant for internal use only
   setText_(obj) {
     const ftext = obj.text.split(' ').join('&nbsp;');
     const linkedParams = obj.params;
@@ -146,9 +148,11 @@ class MacroBuildingElement extends HTMLElement {
           reference.inputs[c.getAttribute('input-name')] = c_target;
           if (c_target.tagName == 'SELECT')
             c_target.value = c.value;
+          // make input clickable
           c_target.addEventListener('mousedown', (e) => {
             e.stopPropagation();
           });
+          // register changes
           c_target.addEventListener('input', (_e) => {
             this.editor.changes();
           });
@@ -161,6 +165,7 @@ class MacroBuildingElement extends HTMLElement {
   }
 
   copy() {
+    // create new element of same type and copy all relevant attributes
     const copyinstance = new this.constructor(this.qualifier, this.classname, this.group);
     copyinstance.editor = this.editor;
     copyinstance.internal_attributes = JSON.parse(JSON.stringify(this.internal_attributes));
@@ -169,26 +174,35 @@ class MacroBuildingElement extends HTMLElement {
     copyinstance.abilityTexts = JSON.parse(JSON.stringify(this.abilityTexts));
     copyinstance.defaultText = JSON.parse(JSON.stringify(this.defaultText));
     copyinstance.currentAbility = this.currentAbility;
+    copyinstance.shutdown_ = this.shutdown_;
+    copyinstance.shutdown_json = this.shutdown_json;
     for (let i = this.attributes.length - 1; i > -1; --i) {
       copyinstance.setAttribute(this.attributes[i].name, this.attributes[i].value);
     }
     copyinstance.innerHTML = '';
+    // copy dom elements placed on this
     this.recursiveCopyElements(this, copyinstance, copyinstance);
+    // save parameter elements of copy
     for (const param_name in this.parameters) {
       if (!copyinstance.parameters[param_name]) {
         const cpy = this.parameters[param_name].copy();
         copyinstance.parameters[cpy.name] = cpy;
       }
     }
+    // save input elements of copy
     for (const input_name in this.inputs) {
       if (!copyinstance.inputs[input_name]) {
         const cpy = this.inputs[input_name].cloneNode();
+        // copy dom elements placed on input as well (e.g. options of select)
         this.recursiveCopyElements(this.inputs[input_name], cpy, null);
+        // for select, the value has to be copied manually
         if (cpy.tagName == 'SELECT')
           cpy.value = this.inputs[input_name].value;
+        // make input clickable
         cpy.addEventListener('mousedown', (e) => {
           e.stopPropagation();
         });
+        // register changes
         cpy.addEventListener('input', (_e) => {
           this.editor.changes();
         });
@@ -204,17 +218,21 @@ class MacroBuildingElement extends HTMLElement {
   }
 
   toJSON() {
+    if (this.shutdown_) return this.shutdown_json;
     const jsonobj = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
     if (this.qualifier !== null)
       jsonobj.qualifier = this.qualifier;
     if (this.abilityTexts[this.currentAbility])
       jsonobj.ability = this.currentAbility;
+    // save internal_attributes
     Object.assign(jsonobj, this.internal_attributes);
+    // save params recursively
     for (const param of this.children[0].children) {
       if (param.parentNode && param.tagName == 'MACRO-PARAM') {
         jsonobj[param.name] = param.toJSON();
       }
     }
+    // save input values
     for (const input_name in this.inputs) {
       if (this.inputs[input_name].parentNode) {
         if (this.inputs[input_name].type == 'number')
@@ -253,12 +271,15 @@ class MacroBuildingElement extends HTMLElement {
     const copy = this.copy();
     copy.setAttribute('macro-block-no', json.id);
     copy.className = copy.className.split(' ').includes('macrocard') ? 'macroblock macrocard placed' : 'macroblock placed';
+    // gather internal_attributes from json
     for (const ia in copy.internal_attributes) {
       copy.internal_attributes[ia] = json[ia];
       copy.querySelector(`*[attribute-name=${ia}]`).innerHTML = this.internal_attributes[ia];
     }
+    // add dnd functionality
     copy.addEventListener('mousedown', this.editor.dragndrophandler.handleDragStart.bind(this.editor.dragndrophandler));
     copy.addEventListener('mouseup', this.editor.dragndrophandler.handleDragEnd.bind(this.editor.dragndrophandler));
+    // fill parameters recursively
     for (const paramname in copy.parameters) {
       const pholder = copy.parameters[paramname];
       if (!json[paramname]) continue;
@@ -280,6 +301,7 @@ class MacroBuildingElement extends HTMLElement {
         pholder.placeCard(cparam);
       }
     }
+    // fill input values
     for (const input_name in this.inputs) {
       let val;
       try {
@@ -293,11 +315,25 @@ class MacroBuildingElement extends HTMLElement {
       else
         copy.inputs[input_name].value = val;
     }
+    // restore ability state
     if (json.ability) copy.useAbility(json.ability);
+    // internal_attributes copied from json may have to be reflected in the text
     copy.refreshText();
+
+    copy.shutdown_json = json;
     if (this.copyFromJSONCallback) this.copyFromJSONCallback(copy);
     if (this.loadCallback) this.loadCallback(copy);
     return copy;
+  }
+
+  revive() {
+    this.shutdown_ = false;
+    delete this.shutdown_json;
+  }
+
+  shutdown(json) {
+    this.shutdown_ = true;
+    this.shutdown_json = json;
   }
 
   refreshText() {

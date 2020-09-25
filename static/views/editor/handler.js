@@ -31,6 +31,7 @@ class Handler {
   addLoadBlock(qualifier, fn) {
     const c = this.addBlock(qualifier, ['_hidden']);
     c.copyFromJSONCallback = fn;
+    c.shutdown(null);
     return c;
   }
 
@@ -43,6 +44,7 @@ class Handler {
   addLoadCard(qualifier, fn) {
     const c = this.addCard(qualifier, ['_hidden']);
     c.copyFromJSONCallback = fn;
+    c.shutdown(null);
     return c;
   }
 

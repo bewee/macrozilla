@@ -8,6 +8,7 @@ class ThingClass {
     const load_card = handler.addLoadCard(null, (copy) => {
       if (copy.internal_attributes.thing in this.things) {
         this.loadThing(copy);
+        copy.revive();
       } else {
         copy.setAttribute('thing-waiting', copy.internal_attributes.thing);
       }
@@ -74,6 +75,7 @@ class ThingClass {
         document.querySelectorAll(`macro-card[thing-waiting='${thing_id}']`).forEach((c) => {
           c.removeAttribute('thing-waiting');
           this.loadThing(c);
+          c.revive();
         });
       });
     });
@@ -120,6 +122,7 @@ class ThingClass {
   }
 
   setTextForTrigger(ev) {
+    if (!ev.srcElement.parentNode) return;
     const card = ev.srcElement.parentNode.parentNode;
     switch (ev.srcElement.value) {
       case 'propertyChanged':
