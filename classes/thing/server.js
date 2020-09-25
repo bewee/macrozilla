@@ -5,8 +5,8 @@ const GWHandler = require('./gw-handler');
 let gwhandler;
 
 async function next() {
-  const thing = this.params.description.thing;
-  const property = this.params.description.property;
+  const thing = this.params.description.thing.thing;
+  const property = this.params.description.thing.property;
   let prop;
   try {
     prop = gwhandler.getProperty(thing, property);
@@ -35,8 +35,8 @@ async function next() {
 }
 
 async function prev() {
-  const thing = this.params.description.thing;
-  const property = this.params.description.property;
+  const thing = this.params.description.thing.thing;
+  const property = this.params.description.thing.property;
   let prop;
   try {
     prop = gwhandler.getProperty(thing, property);
@@ -65,8 +65,8 @@ async function prev() {
 }
 
 async function action() {
-  const thing = this.params.description.thing;
-  const action = this.params.description.action;
+  const thing = this.params.description.thing.thing;
+  const action = this.params.description.thing.action;
   let act;
   try {
     act = gwhandler.getAction(thing, action);
@@ -108,7 +108,7 @@ module.exports = {
         parname = this.params.description.event;
         break;
       case 'actionTriggered':
-        parname = this.params.description.description;
+        parname = this.params.description.action;
         break;
       case 'connectStateChanged':
         fn = () => {
@@ -167,7 +167,7 @@ module.exports = {
   },
 
   exec: async function() {
-    switch (this.params.description.function) {
+    switch (this.params.description.qualifier) {
       case 'next':
         await next.call(this);
         break;

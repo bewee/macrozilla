@@ -16,7 +16,7 @@ class DragndropHandler {
     this.macro_dragel.style.left = `${px}px`;
     this.macro_dragel.style.top = `${py}px`;
 
-    // move preview
+    // update preview
     const area = this.editor.programArea;
     let prevx = px + area.scrollLeft;
     let prevy = py + area.scrollTop;
@@ -28,6 +28,8 @@ class DragndropHandler {
     this.prev.style.display = 'block';
     this.prev.style.left = `${prevx}px`;
     this.prev.style.top = `${prevy}px`;
+    this.prev.style.width = `${rect.width - 14}px`;
+    this.prev.style.height = `${rect.height - 14}px`;
 
     // update arrows when one of its blocks has been moved
     this.updateArrows();
@@ -81,8 +83,6 @@ class DragndropHandler {
     document.querySelectorAll('.macroblock.preview').forEach((prev) => prev.remove());
     this.prev = document.createElement('DIV');
     this.prev.className = 'macroblock preview';
-    this.prev.style.width = `${rect.width - 14}px`;
-    this.prev.style.height = `${rect.height - 14}px`;
     this.prev.style.display = 'none';
     this.editor.macroInterface.appendChild(this.prev);
 
@@ -112,7 +112,7 @@ class DragndropHandler {
     this.macro_dragel.style.top = this.prev.style.top;
 
     if (!this.legalmove && !this.macro_dragel.className.split(' ').includes('macrocard') && this.macro_dragel.className.split(' ').includes('placed')) {
-      // illegal move but is card and dragged from program area -> just reset location
+      // illegal move but is not card and dragged from program area -> just reset location
       this.macro_dragel.style.left = this.startx;
       this.macro_dragel.style.top = this.starty;
       this.editor.programArea.children[0].appendChild(this.macro_dragel);
@@ -137,6 +137,7 @@ class DragndropHandler {
           this.editor.cardpholder.reset(true);
           this.editor.cardpholder.placeCard(pnode);
         }
+        this.macro_dragel.useAbility(null);
       } else {
         // ...from program area -> just drop it down as it is
         this.editor.programArea.children[0].appendChild(this.macro_dragel);
@@ -235,13 +236,18 @@ class DragndropHandler {
           this.editor.cardpholder = null;
           for (const c of el.querySelectorAll('.cardplaceholder')) {
             const rect3 = c.getBoundingClientRect();
-            if (c.accepts.find((x) => this.macro_dragel.abilities.includes(x)) && !(rect3.right < rect2.left || rect3.left > rect2.right || rect3.bottom < rect2.top || rect3.top > rect2.bottom)) {
+            const overlappingability = c.accepts.find((x) => this.macro_dragel.abilities.includes(x));
+            if (overlappingability && !(rect3.right < rect2.left || rect3.left > rect2.right || rect3.bottom < rect2.top || rect3.top > rect2.bottom)) {
+              this.macro_dragel.useAbility(overlappingability);
               this.prev.className = this.prev.className.split(' ').filter((x) => x !== 'illegal').join(' ');
               this.legalmove = true;
               if (this.editor.cardpholder != null)
                 this.editor.cardpholder.id = '';
               this.editor.cardpholder = c;
               this.editor.cardpholder.id = 'hovering';
+              break;
+            } else {
+              this.macro_dragel.useAbility(null);
             }
           }
           this.editor.connectionnode = null;

@@ -21,12 +21,10 @@ class ArithmeticClass {
     {
       const card = this.handler.addCard('cmp', ['Maths']);
       card.setTooltipText('Comparison');
-      const left = card.addParameter('left', ['evaluable']);
-      const right = card.addParameter('right', ['evaluable']);
-      left.setText('x');
-      right.setText('y');
-      const inp = card.addInput('cmp', 'string', {enum: ['=', '>', '<', '>=', '<=', '!='], venum: ['=', '>', '<', '≥', '≤', '≠']});
-      card.setText(`%p %p %p`, left, inp, right);
+      card.addParameter('left', {accepts: ['evaluable'], text: 'x'});
+      card.addParameter('right', {accepts: ['evaluable'], text: 'y'});
+      card.addInput('cmp', 'string', {enum: ['=', '>', '<', '>=', '<=', '!='], venum: ['=', '>', '<', '≥', '≤', '≠']});
+      card.setText(`%p %i %p`, 'left', 'cmp', 'right');
       card.addAbility('evaluable');
     }
 
@@ -44,14 +42,12 @@ class ArithmeticClass {
   binaryCard(qualifier, tooltip_text, card_text) {
     const card = this.handler.addCard(qualifier, ['Maths']);
     card.setTooltipText(tooltip_text);
-    const left = card.addParameter('left', ['evaluable']);
-    const right = card.addParameter('right', ['evaluable']);
-    left.setText('x');
-    right.setText('y');
+    card.addParameter('left', {accepts: ['evaluable'], text: 'x'});
+    card.addParameter('right', {accepts: ['evaluable'], text: 'y'});
     if (card_text)
-      card.setText(card_text, left, right);
+      card.setText(card_text, 'left', 'right');
     else
-      card.setText(`%p ${qualifier} %p`, left, right);
+      card.setText(`%p ${qualifier} %p`, 'left', 'right');
     card.addAbility('evaluable');
     return card;
   }
@@ -59,9 +55,8 @@ class ArithmeticClass {
   unaryCard(qualifier, tooltip_text, card_text) {
     const card = this.handler.addCard(qualifier, ['Maths']);
     card.setTooltipText(tooltip_text);
-    const operand = card.addParameter('operand', ['evaluable']);
-    operand.setText('x');
-    card.setText(card_text, operand);
+    card.addParameter('operand', {accepts: ['evaluable'], text: 'x'});
+    card.setText(card_text, 'operand');
     card.addAbility('evaluable');
     return card;
   }
@@ -69,10 +64,8 @@ class ArithmeticClass {
   unaryBlock(qualifier, tooltip_text, card_text) {
     const block = this.handler.addBlock(qualifier, ['Maths']);
     block.setTooltipText(tooltip_text);
-    const operand = block.addParameter('operand', ['settable']);
-    operand.setText('x');
-    block.setText(card_text, operand);
-    block.addAbility('evaluable');
+    block.addParameter('operand', {accepts: ['settable'], text: 'x'});
+    block.setText(card_text, 'operand');
     return block;
   }
 

@@ -11,8 +11,8 @@ class SunClass {
       card.setTooltipText('Sun trigger');
       card.addAbility('trigger');
       const sunevs_ = sunevs.map((x) => `sun_${x}`);
-      const inp = card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs});
-      card.setText('%p', inp);
+      card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs});
+      card.setText('%i', 'ev');
     }
     {
       const card = this.handler.addCard('sun_before', ['Sun']);
@@ -20,8 +20,8 @@ class SunClass {
       card.addAbility('evaluable');
       const sunevs_ = sunevs.map((x) => `sun_before_${x}`);
       const vsunevs_ = vsunevs.map((x) => `Before ${x}?`);
-      const inp = card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs_});
-      card.setText('%p', inp);
+      card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs_});
+      card.setText('%i', 'ev');
     }
     {
       const card = this.handler.addCard('sun_after', ['Sun']);
@@ -29,8 +29,8 @@ class SunClass {
       card.addAbility('evaluable');
       const sunevs_ = sunevs.map((x) => `sun_after_${x}`);
       const vsunevs_ = vsunevs.map((x) => `After ${x}?`);
-      const inp = card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs_});
-      card.setText('%p', inp);
+      card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs_});
+      card.setText('%i', 'ev');
     }
   }
 

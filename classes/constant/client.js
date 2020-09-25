@@ -4,22 +4,22 @@ class ConstantClass {
       const card = handler.addCard('boolean', ['Constants']);
       card.setTooltipText('True/False');
       card.addAbility('evaluable');
-      const inp = card.addInput('value', 'boolean', {checked: true});
-      card.setText('%p', inp);
+      card.addInput('value', 'boolean', {checked: true});
+      card.setText('%i', 'value');
     }
     {
       const card = handler.addCard('number', ['Constants']);
       card.setTooltipText('Number');
       card.addAbility('evaluable');
-      const inp = card.addInput('value', 'number', {placeholder: 'number'});
-      card.setText('%p', inp);
+      card.addInput('value', 'number', {placeholder: 'number'});
+      card.setText('%i', 'value');
     }
     {
       const card = handler.addCard('string', ['Constants']);
       card.setTooltipText('Text');
       card.addAbility('evaluable');
-      const inp = card.addInput('value', 'string', {placeholder: 'text'});
-      card.setText('%p', inp);
+      card.addInput('value', 'string', {placeholder: 'text'});
+      card.setText('%i', 'value');
     }
     {
       const card = handler.addCard('null', ['Constants']);

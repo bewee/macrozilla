@@ -4,33 +4,10 @@
   "type": "object",
   "allOf": [{"$ref": "/class"}],
   "properties": {
-    "thing": {
-      "type": "string"
-    },
-    "property": {
-      "type": "string"
-    },
-    "action": {
-      "type": "string"
-    },
-    "function": {
-      "type": "string",
+    "thing": {"$ref": "/class"},
+    "qualifier": {
       "enum": ["next", "prev", "action"]
     }
   },
-  "required": ["thing", "function"],
-  "oneOf": [
-    {
-      "properties": {
-        "function": {"enum": ["next", "prev"]}
-      },
-      "required": ["property"]
-    },
-    {
-      "properties": {
-        "function": {"enum": ["action"]}
-      },
-      "required": ["action"]
-    }
-  ]
+  "required": ["qualifier", "thing"]
 }
