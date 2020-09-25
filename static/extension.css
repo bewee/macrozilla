@@ -211,8 +211,6 @@ div#throwtrashhere:hover{
     border: 2px dotted #a5a5a5;
     display: inline-block;
     border-radius: 4rem;
-    margin-left: 0.4rem;
-    margin-right: 0.4rem;
     color: #d4d4d4;
     font-weight: 200;
 }
@@ -273,17 +271,12 @@ div#throwtrashhere:hover{
     transform: translate(0%, -3.5rem);
 }
 
-.blockgroup .otheroptions .macroblock .cardplaceholder{
+.blockgroup .otheroptions .macroblock :not(span){
     display: none;
 }
 
 .blockgroup .otheroptions .macroblock:hover{
     transform: scale(1.2) translate(0%, -3.5rem);
-}
-
-.blockgroup .otheroptions .macroblock .blockdescr span{
-    margin-left: 2pt;
-    margin-right: 2pt;
 }
 
 #macrosidebar h2{

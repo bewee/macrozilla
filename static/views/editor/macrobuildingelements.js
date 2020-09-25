@@ -90,7 +90,7 @@ class MacroBuildingElement extends HTMLElement {
   }
 
   setText_(obj) {
-    const ftext = obj.text;
+    const ftext = obj.text.split(' ').join('&nbsp;');
     const linkedParams = obj.params;
     this.children[0].innerHTML = '';
     let i = 0;

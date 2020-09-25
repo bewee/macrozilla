@@ -101,12 +101,12 @@ class ThingClass {
     const i_action = card.addInput('action', 'string', {enum: t.actions, venum: t.vactions});
     const i_event = card.addInput('event', 'string', {enum: t.events});
     const i_trigger = this.setupTrigger(card);
-    card.addAbility('evaluable', `${t.title}&nbsp;%i`, 'property');
-    card.addAbility('settable', `${t.title}&nbsp;%i`, 'property');
-    card.addAbility('thing-action', `${t.title}&nbsp;%i`, 'action');
-    card.addAbility('thing-event', `${t.title}&nbsp;%i`, 'event');
-    card.addAbility('thing-property', `${t.title}&nbsp;%i`, 'property');
-    card.addAbility('trigger', `${t.title}&nbsp;%i&nbsp;%i&nbsp;was changed`, 'trigger', 'property');
+    card.addAbility('evaluable', `${t.title} %i`, 'property');
+    card.addAbility('settable', `${t.title} %i`, 'property');
+    card.addAbility('thing-action', `${t.title} %i`, 'action');
+    card.addAbility('thing-event', `${t.title} %i`, 'event');
+    card.addAbility('thing-property', `${t.title} %i`, 'property');
+    card.addAbility('trigger', `${t.title} %i %i was changed`, 'trigger', 'property');
     return [i_property, i_action, i_event, i_trigger];
   }
 
@@ -123,16 +123,16 @@ class ThingClass {
     const card = ev.srcElement.parentNode.parentNode;
     switch (ev.srcElement.value) {
       case 'propertyChanged':
-        card.addAbility('trigger', `${card.getAttribute('data-title')}&nbsp;%i&nbsp;%i&nbsp;was changed`, 'trigger', 'property');
+        card.addAbility('trigger', `${card.getAttribute('data-title')} %i %i was changed`, 'trigger', 'property');
         break;
       case 'actionTriggered':
-        card.addAbility('trigger', `${card.getAttribute('data-title')}&nbsp;%i&nbsp;%i&nbsp;was triggered`, 'trigger', 'action');
+        card.addAbility('trigger', `${card.getAttribute('data-title')} %i %i was triggered`, 'trigger', 'action');
         break;
       case 'eventRaised':
-        card.addAbility('trigger', `${card.getAttribute('data-title')}&nbsp;%i&nbsp;%i&nbsp;was raised`, 'trigger', 'event');
+        card.addAbility('trigger', `${card.getAttribute('data-title')} %i %i was raised`, 'trigger', 'event');
         break;
       case 'connectStateChanged':
-        card.addAbility('trigger', `${card.getAttribute('data-title')}&nbsp;%i&nbsp`, 'trigger');
+        card.addAbility('trigger', `${card.getAttribute('data-title')} %i&nbsp`, 'trigger');
         break;
     }
     card.refreshText();
