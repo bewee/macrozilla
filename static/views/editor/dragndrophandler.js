@@ -34,7 +34,7 @@ class DragndropHandler {
     // update arrows when one of its blocks has been moved
     this.updateArrows();
 
-    this.checkDropLegality();
+    this.checkDropLegality(e);
   }
 
   handleDragStart(e) {
@@ -206,7 +206,7 @@ class DragndropHandler {
     }
   }
 
-  checkDropLegality() {
+  checkDropLegality(evt) {
     const rect2 = this.prev.getBoundingClientRect();
     const iscard = !this.macro_dragel.abilities.includes('executable');
     this.prev.className = this.prev.className.split(' ').filter((x) => x !== 'illegal').join(' ');
@@ -231,19 +231,27 @@ class DragndropHandler {
           this.legalmove = false;
         } else {
           this.legalmove = false;
-          if (this.editor.cardpholder != null)
+          if (this.editor.cardpholder != null) {
             this.editor.cardpholder.id = '';
+            this.editor.cardpholder.style.minWidth = '';
+            this.editor.cardpholder.style.minHeight = '';
+          }
           this.editor.cardpholder = null;
           for (const c of el.querySelectorAll('.cardplaceholder')) {
             const rect3 = c.getBoundingClientRect();
             const overlappingability = c.accepts.find((x) => this.macro_dragel.abilities.includes(x));
-            if (overlappingability && !(rect3.right < rect2.left || rect3.left > rect2.right || rect3.bottom < rect2.top || rect3.top > rect2.bottom)) {
+            if (overlappingability && (evt.clientX > rect3.left && evt.clientX < rect3.right && evt.clientY < rect3.bottom && evt.clientY > rect3.top)) {
               this.macro_dragel.useAbility(overlappingability);
               this.prev.className = this.prev.className.split(' ').filter((x) => x !== 'illegal').join(' ');
               this.legalmove = true;
-              if (this.editor.cardpholder != null)
+              if (this.editor.cardpholder != null) {
                 this.editor.cardpholder.id = '';
+                this.editor.cardpholder.style.minWidth = '';
+                this.editor.cardpholder.style.minHeight = '';
+              }
               this.editor.cardpholder = c;
+              this.editor.cardpholder.style.minWidth = rect2.width+'px';
+              this.editor.cardpholder.style.minHeight = rect2.height+'px';
               this.editor.cardpholder.id = 'hovering';
               break;
             } else {
