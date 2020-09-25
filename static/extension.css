@@ -697,3 +697,32 @@ macro-card span select, macro-block span select{
     background: url(/images/checkbox-sprite.png) no-repeat 0 0;
     background-size: 3rem auto;
 }
+
+.macroblock[comment]{
+    background: #f1f19a;
+}
+
+.macroblock[comment]::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #afaf82;
+    transform: translate(-7px, -2px) rotate(-45deg);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.macroblock[comment] .blockdescr{
+    color: #4a4a4a;
+}
+
+.macroblock[comment] input {
+    background: transparent;
+    min-width: 20rem;
+    text-align: left;
+    outline: 0;
+    color: #4a4a4a;
+}

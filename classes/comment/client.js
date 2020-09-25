@@ -5,6 +5,7 @@ class CommentClass {
     block.setTooltipText('Comments');
     block.addInput('text', 'string', {placeholder: 'Put your comment here'});
     block.setText('// %i', 'text');
+    block.setAttribute("comment", "true");
   }
 
 }
