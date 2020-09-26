@@ -1,0 +1,431 @@
+#macrotoolbar{
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 10rem;
+}
+
+#macrotoolbar h1{
+    color: white;
+    font-size: 3.5rem;
+    height: 10rem;
+    margin: 0;
+    line-height: 10rem;
+    margin-right: 9rem;
+}
+
+#programarea{
+    flex-grow: 5;
+    flex-shrink: 2;
+    background: white;
+    position: relative;
+    overflow: auto;
+}
+
+button#playmacro{
+    width: 9rem;
+    height: 9rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    bottom: 4rem;
+    right: calc(400px + 10rem);
+    position: fixed;
+    border-radius: 4.5rem;
+    background: #5d9bc7;
+    z-index: 999;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+    cursor: pointer;
+    outline: none !important;
+}
+
+#playmacro svg{
+    width: 100%;
+    height: 100%;
+    transform: translateX(0.2rem);
+    pointer-events: none;
+}
+
+#editor-back-button{
+    background-color: #7aadd1;
+    top: 2rem;
+    left: 2rem;
+    background: no-repeat center/100% url(/images/back.png);
+    position: fixed;
+    width: 5.6rem;
+    height: 5.6rem;
+    border-radius: 2.8rem;
+    padding: 0;
+    background-color: #5d9bc7;
+    border: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 1;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: 0;
+    z-index: 100;
+    cursor: default;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
+}
+
+button#savemacro{
+    width: 5rem;
+    height: 5rem;
+    border: 0;
+    position: fixed;
+    background: #5d9bc7;
+    z-index: 999;
+    cursor: pointer;
+    outline: none !important;
+    background-image: url(/extensions/macrozilla/static/images/save.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80% auto;
+    border: none;
+    padding: 1rem;
+    color: #fff;
+    right: 2rem;
+    top: 2.5rem;
+    background-color: #357099;
+    border-radius: 0.6rem;
+}
+
+.macrointerface{
+    background: url("/images/background.png");
+    background-size: 25px 25px;
+    min-width: 200%;
+    min-height: 200%;
+    position: absolute;
+}
+
+#macrosidebar{
+    flex-shrink: 2;
+    background:#7f3939;
+    width: 400px;
+    padding: 2rem;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.macroblock{
+    position: relative;
+    display: flex;
+    float: left;
+    justify-content: center;
+    align-items: center;
+    min-width: 100px;
+    min-height: 50px;
+    padding: 5px;
+    padding-left:1rem;
+    padding-right:1rem;
+    border: 1px solid #a5a5a5;
+    background: #5A9AC9;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);
+    margin: 1rem;
+    font-size: 1.2rem;
+}
+
+.macroblock:hover{
+    cursor: grab;
+}
+
+.macroblock#currentdrag:hover{
+    cursor: move;
+}
+
+.blockdescr{
+    color: white;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.macroblock#currentdrag{
+    position: absolute;
+    opacity: 0.8;
+    animation: flare 1s infinite;
+    z-index: 99;
+}
+
+.macroblock.macrocard{
+    background: white;
+    border-radius: 4rem;
+}
+
+.macroblock.macrocard .blockdescr{
+    color: black;
+}
+
+.macroblock.placed{
+    position: absolute;
+}
+
+@keyframes flare{
+    0% {opacity: 0.8;}
+    50% {opacity: 0.6;}
+    100% {opacity: 0.8;}
+}
+
+.macroblock.placeholder{
+    min-width: 0px;
+    min-height: 0px;
+    border: 2px dotted #a5a5a5;
+    background: transparent;
+}
+
+.macroblock.preview{
+    background: rgba(0,0,0,0.25);
+    position: absolute;
+    border: none;
+}
+
+.macroblock.preview.illegal{
+    background: rgba(255,0,0,0.25);
+}
+
+.macroblock.idling:not(.placeholder):not(#currentdrag):not(.preview){
+    animation: idlemacroblocks 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes idlemacroblocks{
+    0% {transform: translate(0px, 0px);}
+    25% {transform: translate(-2px, 1px);}
+    50% {transform: translate(1px, 1px);}
+    75% {transform: translate(1px, -1px);}
+    100% {transform: translate(0px, 0px);}
+}
+
+div#throwtrashhere{
+    z-index: 2;
+    width: calc(400px + 4rem);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.8);
+    background-image: url(/extensions/macrozilla/static/images/delete.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 25% auto;
+    transition: background-size 0.4s;
+    pointer-events: none;
+    opacity: 0;
+}
+
+div#throwtrashhere.active{
+    pointer-events: all;
+    opacity: 1;
+}
+
+div#throwtrashhere:hover{
+    background-size: 26% auto;
+}
+
+.cardplaceholder{
+    padding: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background: white;
+    border: 2px dotted #a5a5a5;
+    display: inline-block;
+    border-radius: 4rem;
+    color: #d4d4d4;
+    font-weight: 200;
+}
+
+.cardplaceholder#hovering{
+    border: 2px solid #7f3939;
+}
+
+.macrocard .cardplaceholder{
+    color: #353535;
+}
+
+.blockgroup{
+    position: relative;
+    display: flex;
+    float: left;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem;
+}
+
+.blockgroup .macroblock{
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+}
+
+.blockgroup .macroblock{
+    opacity: 0;
+    transition: transform 0.4s, opacity 0.4s;
+    border: 3px solid #5d9bc7;
+    background: white;
+}
+
+.blockgroup .macroblock:not(.macrocard){
+    opacity: 0;
+    transition: transform 0.4s, opacity 0.4s;
+    border: 3px solid white;
+    background: #5d9bc7;
+}
+
+.blockgroup .otheroptions .macroblock{
+    min-height: 0;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+    min-width: 0;
+    display: flex;
+    position: relative;
+    float: left;
+    border: 1px solid #5d9bc7;
+}
+
+.blockgroup > .macroblock, .blockgroup > .macroblock:not(.macrocard){
+    opacity: 1;
+    transform-origin: 50% 100%;
+}
+
+.blockgroup:hover > .macroblock{
+    transform: scale(0.8);
+}
+
+.blockgroup:hover .otheroptions .macroblock{
+    opacity: 1;
+    transform: translate(0%, -3.5rem);
+}
+
+.blockgroup .otheroptions .macroblock :not(span){
+    display: none;
+}
+
+.blockgroup .otheroptions .macroblock:hover{
+    transform: scale(1.2) translate(0%, -3.5rem);
+}
+
+#macrosidebar h2{
+    color: white;
+    font-size: 2rem;
+    display: flex;
+    flex: 1;
+    height: 20px;
+    width: 100%;
+    flex-basis: 100%;
+}
+
+.macrointerface.ready .macroblock:not(.preview):not(.macrocard)::after{
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    transform:translateY(80%);
+    z-index: -1;
+    height: 20px;
+    border: 1px dotted #7a7a7a;
+    background: rgba(93, 155, 199, 25%);
+    border-radius: 0 0 0.3rem 0.3rem;
+}
+
+#macro-execute-path{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.cardplaceholder .macrocard.placed{
+    position: relative;
+    margin: 0;
+}
+
+.cardplaceholder.filled{
+    background: transparent;
+    border-color: transparent;
+    padding: 0;
+}
+
+.macroblock.macrocard.placed{
+    cursor: initial;
+}
+
+macro-block span input, macro-card span input{
+    text-align: center;
+    width: 75px;
+}
+
+macro-card span select, macro-block span select{
+    display: inline-block;
+    text-align: left;
+    color: #fff;
+    background-color: #7f93a1;
+    margin: 1rem 0;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    height: 4rem;
+    background-image: url(/images/select-arrow.svg);
+    background-repeat: no-repeat;
+    background-size: 1.25rem;
+    background-position: calc(100% - 1rem);
+    padding-left: 1rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 3rem;
+    text-indent: 1px;
+}
+
+.blockdescr input[type='checkbox'] {
+    content: "";
+    height: 3rem;
+    width: 3rem;
+    background: url(/images/checkbox-sprite.png) no-repeat 0 0;
+    background-size: 3rem auto;
+}
+
+.macroblock[comment]{
+    background: #f1f19a;
+}
+
+.macroblock[comment]::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #afaf82;
+    transform: translate(-7px, -2px) rotate(-45deg);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.macroblock[comment] .blockdescr{
+    color: #4a4a4a;
+}
+
+.macroblock[comment] input {
+    background: transparent;
+    min-width: 20rem;
+    text-align: left;
+    outline: 0;
+    color: #4a4a4a;
+}

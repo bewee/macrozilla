@@ -1,0 +1,104 @@
+#macrotoolbar{
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 10rem;
+}
+
+#macrotoolbar h1{
+    color: white;
+    font-size: 3.5rem;
+    height: 10rem;
+    margin: 0;
+    line-height: 10rem;
+    margin-right: 9rem;
+}
+
+#programarea{
+    flex-grow: 5;
+    flex-shrink: 2;
+    background: white;
+    position: relative;
+    overflow: auto;
+    width: 100%;
+    overflow: hidden;
+}
+
+#programarea textarea{
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    resize: none;
+    white-space: nowrap;
+}
+
+button#playmacro{
+    width: 9rem;
+    height: 9rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    bottom: 4rem;
+    right: 4rem;
+    position: fixed;
+    border-radius: 4.5rem;
+    background: #5d9bc7;
+    z-index: 999;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+    cursor: pointer;
+    outline: none !important;
+}
+
+#playmacro svg{
+    width: 100%;
+    height: 100%;
+    transform: translateX(0.2rem);
+    pointer-events: none;
+}
+
+#editor-back-button{
+    background-color: #7aadd1;
+    top: 2rem;
+    left: 2rem;
+    background: no-repeat center/100% url(/images/back.png);
+    position: fixed;
+    width: 5.6rem;
+    height: 5.6rem;
+    border-radius: 2.8rem;
+    padding: 0;
+    background-color: #5d9bc7;
+    border: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 1;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: 0;
+    z-index: 100;
+    cursor: default;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
+}
+
+button#savemacro{
+    width: 5rem;
+    height: 5rem;
+    border: 0;
+    position: fixed;
+    background: #5d9bc7;
+    z-index: 999;
+    cursor: pointer;
+    outline: none !important;
+    background-image: url(/extensions/macrozilla/static/images/save.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80% auto;
+    border: none;
+    padding: 1rem;
+    color: #fff;
+    right: 2rem;
+    top: 2.5rem;
+    background-color: #357099;
+    border-radius: 0.6rem;
+}

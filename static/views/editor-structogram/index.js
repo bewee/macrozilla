@@ -5,7 +5,7 @@ class EditorView {
     this.gridsize = 25;
 
     // import helper files
-    this.extension.loadModule('static/views/editor/dragndrophandler.js').then((mod) => {
+    this.extension.loadModule('static/views/editor-structogram/dragndrophandler.js').then((mod) => {
       this.dragndrophandler = new mod.prototype.constructor(this);
     });
     this.extension.loadModule('static/views/editor/parameter.js').then((mod) => {
@@ -53,7 +53,7 @@ class EditorView {
     this.macroSidebar = document.querySelector('#macrosidebar');
     this.throwTrashHere = document.querySelector('#throwtrashhere');
     document.querySelector('#macrotoolbar h1').innerHTML = macro.name;
-    document.querySelector('#macro-back-button').addEventListener('click', async () => {
+    document.querySelector('#editor-back-button').addEventListener('click', async () => {
       if (this.changes_ && window.confirm('Save Changes?'))
         await this.saveMacro(macro.id);
       this.extension.views.macrolist.show(macro.id);
@@ -61,17 +61,24 @@ class EditorView {
     document.querySelector('#playmacro').addEventListener('click', async () => {
       this.executeMacro(macro.id);
     });
+    document.querySelector('#savemacro').addEventListener('click', async () => {
+      this.saveMacroAndUpdateInterface(macro.id);
+    });
     this.initSideBar();
     this.loadMacro(macro.id);
+  }
+
+  async saveMacroAndUpdateInterface(macro_id) {
+    await this.saveMacro(macro_id);
+    const titleel = document.querySelector('#macrotoolbar h1');
+    titleel.innerHTML = titleel.innerHTML.slice(0, -1);
+    this.changes_ = false;
   }
 
   async executeMacro(macro_id) {
     if (this.changes_) {
       if (window.confirm('Save Changes?')) {
-        await this.saveMacro(macro_id);
-        const titleel = document.querySelector('#macrotoolbar h1');
-        titleel.innerHTML = titleel.innerHTML.slice(0, -1);
-        this.changes_ = false;
+        this.saveMacroAndUpdateInterface(macro_id);
       } else {
         return;
       }

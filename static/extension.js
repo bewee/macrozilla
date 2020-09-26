@@ -41,6 +41,15 @@ window.importMacroModule = function(code, classname) {
       });
     }
 
+    loadStylesheet(path) {
+      const head = document.getElementsByTagName('head')[0];
+      const link = document.createElement('LINK');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = `/extensions/macrozilla/${path}`;
+      head.appendChild(link);
+    }
+
     loadModule(path) {
       return new Promise((resolve) => {
         this.loadScript(path).then(() => {
@@ -51,18 +60,20 @@ window.importMacroModule = function(code, classname) {
       });
     }
 
-    loadView(v) {
+    loadView(v, w) {
+      w = w || v;
       this.loadModule(`static/views/${v}/index.js`).then((mod) => {
-        this.views[v] = new mod.prototype.constructor(this);
-        this.views[v].extension = this;
-        this.views[v].macrosec = document.querySelector(`#extension-${this.id}-view`);
-        const originalshow = this.views[v].show;
-        this.views[v].show = (...args) => {
+        this.views[w] = new mod.prototype.constructor(this);
+        this.views[w].extension = this;
+        this.views[w].macrosec = document.querySelector(`#extension-${this.id}-view`);
+        const originalshow = this.views[w].show;
+        this.views[w].show = (...args) => {
           this.loadFile(`static/views/${v}/index.html`).then((content) => {
             document.querySelector(`#extension-${this.id}-view`).innerHTML = content;
-            originalshow.call(this.views[v], ...args);
+            originalshow.call(this.views[w], ...args);
           });
         };
+        this.loadStylesheet(`static/views/${v}/index.css`);
       });
     }
   }
@@ -75,7 +86,9 @@ window.importMacroModule = function(code, classname) {
 
       this.views = {};
       this.loadView('macrolist');
-      this.loadView('editor');
+      window.API.getAddonConfig('macrozilla').then((config) => {
+        this.loadView(`editor-${config.editor}`, 'editor');
+      });
     }
 
     show() {

@@ -1,0 +1,85 @@
+.macrozilla-variable-editor{
+    width: 100%;
+}
+
+.macrozilla-variable-editor h2{
+    color: white;
+    font-size: 20px;
+    margin-left: 40%;
+    margin-top: 15rem;
+    width: 20%;
+    text-align: center;
+}
+
+.macrozilla-variable-editor input {
+    position: absolute;
+    margin-left: 40%;
+    width: 20%;
+}
+.macrozilla-variable-editor div {
+    position: absolute;
+    margin-left: 40%;
+    width: 20%;
+    color: #fff;
+    text-align: center;
+}
+.macrozilla-variable-editor input[type='checkbox'] {
+    content: "";
+    height: 3rem;
+    background: url(/images/checkbox-sprite.png) no-repeat 0 0;
+    background-size: 3rem auto;
+}
+
+.macrozilla-select-datatype {
+    background-color: #5288af;
+    overflow: hidden;
+    position: absolute;
+    width: 60%;
+    margin-left: 20%;
+    user-select: none;
+    cursor: pointer;
+}
+
+.macrozilla-select-datatype li {
+    float: left;
+    color: #fff;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    list-style-type: none;
+    width: calc(25% - 2 * 16px);
+}
+
+.macrozilla-select-datatype li:hover {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.macrozilla-select-datatype li.active {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+#variableeditor-back-button{
+    background-color: #7aadd1;
+    top: 2rem;
+    left: 2rem;
+    background: no-repeat center/100% url(/images/back.png);
+    position: fixed;
+    width: 5.6rem;
+    height: 5.6rem;
+    border-radius: 2.8rem;
+    padding: 0;
+    background-color: #5d9bc7;
+    border: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 1;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: 0;
+    z-index: 100;
+    cursor: default;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
+}

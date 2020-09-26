@@ -9,7 +9,7 @@ class VariableeditorView {
         this.value = null;
       }
 
-      document.querySelector('#macro-back-button').addEventListener('click', () => {
+      document.querySelector('#variableeditor-back-button').addEventListener('click', () => {
         this.extension.views.variablelist.show();
       });
 

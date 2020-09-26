@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500">
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="602" width="802" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  
+  <rect rx="20" id="svg_8" height="476" width="476" y="12" x="12" fill-opacity="null" stroke-opacity="null" stroke-width="24" stroke="#0000" fill="none"/>
+  <mask id="re8-clip">
+   <rect fill="white" height="100%" width="100%" y="0" x="0" id="bg"/>
+   <rect fill="black" stroke="black" rx="30" height="49" width="400" y="80" x="50" stroke-width="29.5" id="sa11"/>
+  </mask>
+  <rect stroke="#0000" rx="20" id="svg_9" height="150" width="300" y="12" x="70" fill-opacity="null" stroke-opacity="null" stroke-width="24" fill="none"/>
+  <rect stroke="#fff" rx="5" id="svg_10" height="74" width="55" y="48" x="276" fill-opacity="null" stroke-opacity="null" stroke-width="24" fill="none"/>
+  <rect stroke="#fff" rx="20" id="svg_11" height="210" width="360" y="220" x="70" fill-opacity="null" stroke-opacity="null" stroke-width="24" fill="none"/>
+  <line stroke-linecap="round" stroke-linejoin="null" id="svg_12" y2="280" x2="380" y1="280" x1="120" fill-opacity="null" stroke-opacity="null" stroke-width="24" stroke="#fff" fill="none"/>
+  <line stroke-linecap="round" stroke-linejoin="null" id="svg_13" y2="330" x2="380" y1="330" x1="120" fill-opacity="null" stroke-opacity="null" stroke-width="24" stroke="#fff" fill="none"/>
+  <line stroke-linecap="round" stroke-linejoin="null" id="svg_14" y2="380" x2="380" y1="380" x1="120" fill-opacity="null" stroke-opacity="null" stroke-width="24" stroke="#fff" fill="none"/>
+  <path id="svg_15" d="m12,12L360,12L488,140L488,488L12,488z" fill-opacity="null" stroke-opacity="null" stroke-width="24" stroke="#fff" fill="none" stroke-linejoin="round"/><path id="svg_15" d="m70,12L70,162L370,162L370,24" fill-opacity="null" stroke-opacity="null" stroke-width="24" stroke="#fff" fill="none" stroke-linejoin="round"/>
+ </g>
+</svg>

@@ -34,6 +34,7 @@
 
   "options": {
     "default": {
+      "editor": "structogram",
       "scanInterval": 6000,
       "latitude": 40.7128,
       "longitude": 74.0060,
@@ -45,6 +46,7 @@
     "schema": {
       "type": "object",
       "required": [
+        "editor",
         "accessToken",
         "scanInterval",
         "latitude",
@@ -55,6 +57,12 @@
         "macrolog2console"
       ],
       "properties": {
+        "editor": {
+          "type": "string",
+          "title": "Editor",
+          "description": "Which graphical editor do you want to use?",
+          "enum": ["text", "structogram"]
+        },
         "accessToken": {
           "type": "string",
           "title": "Access token",
