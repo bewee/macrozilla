@@ -7,7 +7,7 @@ class ThingClass {
 
     const load_card = handler.addLoadCard(null, (copy) => {
       if (copy.internal_attributes.thing in this.things) {
-        this.loadThing(copy);
+        this.setupThing(copy);
         copy.revive();
       } else {
         copy.setAttribute('thing-waiting', copy.internal_attributes.thing);
@@ -21,10 +21,12 @@ class ThingClass {
     load_card.addInput('action', 'string');
     load_card.addInput('event', 'string');
     this.setupTrigger(load_card);
-    load_card.loadCallback = (copy) => {
-      if (copy.currentAbility === 'trigger') {
+    const old_copyFromJSON = load_card.copyFromJSON;
+    load_card.copyFromJSON = (json, maxid) => {
+      const copy = old_copyFromJSON.call(load_card, json, maxid);
+      if (copy.currentAbility === 'trigger')
         this.setTextForTrigger({srcElement: copy.inputs.trigger});
-      }
+      return copy;
     };
 
     {
@@ -74,24 +76,11 @@ class ThingClass {
         this.setupThing(card);
         document.querySelectorAll(`macro-card[thing-waiting='${thing_id}']`).forEach((c) => {
           c.removeAttribute('thing-waiting');
-          this.loadThing(c);
+          this.setupThing(c);
           c.revive();
         });
       });
     });
-  }
-
-  loadThing(card) {
-    const v_property = card.inputs.property.value;
-    const v_action = card.inputs.action.value;
-    const v_event = card.inputs.event.value;
-    const v_trigger = card.inputs.trigger.value;
-    const [i_property, i_action, i_event, i_trigger] = this.setupThing(card);
-    i_property.value = v_property || i_property.value;
-    i_action.value = v_action || i_action.value;
-    i_event.value = v_event || i_event.value;
-    i_trigger.value = v_trigger || i_property.value;
-    card.refreshText();
   }
 
   setupThing(card) {
@@ -99,23 +88,26 @@ class ThingClass {
     card.setTooltipText(`Thing ${t.title}`);
     card.setText(t.title);
     card.setAttribute('data-title', t.title);
-    const i_property = card.addInput('property', 'string', {enum: t.properties, venum: t.vproperties});
-    const i_action = card.addInput('action', 'string', {enum: t.actions, venum: t.vactions});
-    const i_event = card.addInput('event', 'string', {enum: t.events});
-    const i_trigger = this.setupTrigger(card);
+    card.addInput('property', 'string', {enum: t.properties, venum: t.vproperties});
+    card.addInput('action', 'string', {enum: t.actions, venum: t.vactions});
+    card.addInput('event', 'string', {enum: t.events});
+    this.setupTrigger(card);
     card.addAbility('evaluable', `${t.title} %i`, 'property');
     card.addAbility('settable', `${t.title} %i`, 'property');
     card.addAbility('thing-action', `${t.title} %i`, 'action');
     card.addAbility('thing-event', `${t.title} %i`, 'event');
     card.addAbility('thing-property', `${t.title} %i`, 'property');
     card.addAbility('trigger', `${t.title} %i %i was changed`, 'trigger', 'property');
-    return [i_property, i_action, i_event, i_trigger];
+    card.refreshText();
   }
 
   setupTrigger(card) {
     const i_trigger = card.addInput('trigger', 'string', {enum: this.triggerEnum, venum: this.triggerVEnum});
-    card.copyCallback = (copy) => {
+    const old_copy = card.copy;
+    card.copy = () => {
+      const copy = old_copy.call(card);
       copy.inputs.trigger.addEventListener('input', this.setTextForTrigger);
+      return copy;
     };
     i_trigger.addEventListener('input', this.setTextForTrigger);
     return i_trigger;

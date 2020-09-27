@@ -4,7 +4,7 @@ class ConstantClass {
       const card = handler.addCard('boolean', ['Constants']);
       card.setTooltipText('True/False');
       card.addAbility('evaluable');
-      card.addInput('value', 'boolean', {checked: true});
+      card.addInput('value', 'boolean', {value: true});
       card.setText('%i', 'value');
     }
     {

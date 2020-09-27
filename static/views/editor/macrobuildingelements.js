@@ -39,6 +39,9 @@ class MacroBuildingElement extends HTMLElement {
   }
 
   addInput(name, type, options = {}) {
+    if (this.inputs[name]) {
+      options.value = options.value || this.inputs[name].value;
+    }
     let inpnode;
     switch (type) {
       case 'string':
@@ -54,8 +57,8 @@ class MacroBuildingElement extends HTMLElement {
           inpnode = document.createElement('INPUT');
           inpnode.type = 'text';
           if ('placeholder' in options) inpnode.placeholder = options.placeholder;
-          if ('value' in options) inpnode.value = options.value;
         }
+        if ('value' in options) inpnode.value = options.value;
         break;
       case 'number':
         inpnode = document.createElement('INPUT');
@@ -69,7 +72,7 @@ class MacroBuildingElement extends HTMLElement {
       case 'boolean':
         inpnode = document.createElement('INPUT');
         inpnode.type = 'checkbox';
-        if ('checked' in options) inpnode.checked = options.checked;
+        if ('value' in options) inpnode.checked = options.value;
         break;
     }
     inpnode.addEventListener('mousedown', (e) => {
@@ -220,7 +223,6 @@ class MacroBuildingElement extends HTMLElement {
         copyinstance.inputs[input_name] = cpy;
       }
     }
-    if (this.copyCallback) this.copyCallback(copyinstance);
     return copyinstance;
   }
 
@@ -314,7 +316,6 @@ class MacroBuildingElement extends HTMLElement {
 
     copy.shutdown_json = json;
     if (this.copyFromJSONCallback) this.copyFromJSONCallback(copy);
-    if (this.loadCallback) this.loadCallback(copy);
     return copy;
   }
 
