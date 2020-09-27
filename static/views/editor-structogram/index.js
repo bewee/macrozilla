@@ -2,12 +2,8 @@ class EditorView {
 
   constructor(extension) {
     this.extension = extension;
-    this.gridsize = 25;
 
     // import helper files
-    this.extension.loadModule('static/views/editor-structogram/dragndrophandler.js').then((mod) => {
-      this.dragndrophandler = new mod.prototype.constructor(this);
-    });
     this.extension.loadModule('static/views/editor/parameter.js').then((mod) => {
       this.Parameter = mod;
     });
@@ -44,14 +40,18 @@ class EditorView {
 
   show(macro) {
     this.changes_ = false;
-    this.connectionnode = null;
     this.nextid = 1;
     this.categories = {};
-    this.executePath = document.querySelector('#macro-execute-path');
+    this.buildingArea = document.querySelector('#buildingarea');
+    this.macroInterface = document.querySelector('.macrointerface');
     this.programArea = document.querySelector('#programarea');
-    this.macroInterface = document.querySelector('#programarea .macrointerface');
     this.macroSidebar = document.querySelector('#macrosidebar');
     this.throwTrashHere = document.querySelector('#throwtrashhere');
+
+    this.hull = new this.Parameter('Drop here!', this);
+    this.hull.setAccepted('executable[]');
+    this.macroInterface.appendChild(this.hull);
+
     document.querySelector('#macrotoolbar h1').innerHTML = macro.name;
     document.querySelector('#editor-back-button').addEventListener('click', async () => {
       if (this.changes_ && window.confirm('Save Changes?'))
@@ -65,6 +65,7 @@ class EditorView {
       this.saveMacroAndUpdateInterface(macro.id);
     });
     this.initSideBar();
+    this.initDnD();
     this.loadMacro(macro.id);
   }
 
@@ -90,44 +91,13 @@ class EditorView {
   async loadMacro(macro_id) {
     const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: macro_id});
     console.log('loading', JSON.stringify(res.macro.description));
-    const nodes = [];
     const maxid = {i: 1};
-    for (const block of res.macro.description) {
-      if (!(block.type in this.classHandlers)) {
-        console.warn('Unknown class', block.type);
-        continue;
-      }
-      const handler = this.classHandlers[block.type];
-      if (!block.ui) {
-        console.warn('Missing UI information', block.type);
-        continue;
-      }
-      let blockel = Object.values(handler.buildingelements)[0];
-      if ('qualifier' in block && block.qualifier !== null)
-        blockel = handler.buildingelements[block.qualifier];
-      if (!blockel) {
-        console.warn('Cannot find matching building element');
-        continue;
-      }
-      // add nodes
-      const pnode = blockel.copyFromJSON(block, maxid);
-      pnode.style.left = `${block.ui.px}px`;
-      pnode.style.top = `${block.ui.py}px`;
-      this.programArea.children[0].appendChild(pnode);
-      nodes.push(pnode);
-    }
-    // add arrows
-    for (let i = 1; i < nodes.length; i++) {
-      nodes[i].predecessor = nodes[i-1];
-      nodes[i-1].successor = nodes[i];
-      this.connect(nodes[i-1], nodes[i]);
-    }
-    // set nextid
+    this.hull.copyFromJSON(res.macro.description, maxid);
     this.nextid = maxid.i+1;
   }
 
   async saveMacro(macro_id) {
-    const json = this.macroToJSON();
+    const json = this.hull.toJSON();
     console.log('saving', JSON.stringify(json));
     const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: macro_id, description: json});
     console.log('result', res);
@@ -143,50 +113,139 @@ class EditorView {
     });
   }
 
-  updateConnection(arrel, node1, node2, pnode1, pnode2) {
-    const rect1 = (pnode1 ? pnode1 : node1).getBoundingClientRect();
-    const rect2 = (pnode2 ? pnode2 : node2).getBoundingClientRect();
-    const rect3 = this.executePath.getBoundingClientRect();
-    const x1 = (rect1.left + rect1.width/2 - rect3.left);
-    const y1 = (rect1.top + rect1.height/2 - rect3.top);
-    const x2 = (rect2.left+rect2.width/2-rect3.left);
-    const y2 = (rect2.top + rect2.height/2 - rect3.top);
-    arrel.setAttribute('d', `M${x1},${y1} L${((x1+x2)/2)},${((y1+y2)/2)} L${x2},${y2}`);
-    node1.successor = node2;
-    node2.predecessor = node1;
+  initDnD() {
+    this.dragel = null;
+    const prevel = document.createElement('DIV');
+    prevel.className = 'preview';
+    this.hovercontainer = null;
+    this.buildingArea.addEventListener('mousedown', (ev) => {
+      let node = ev.target;
+      while (node.parentNode && !(node instanceof this.MacroBuildingElement)) {
+        node = node.parentNode;
+      }
+      if (!node || node === document) return;
+      this.changes();
+      if (node.parentNode instanceof this.Parameter) {
+        this.dragel = node;
+        this.dragel.parentNode.removeCard(this.dragel);
+      } else {
+        this.dragel = node.copy();
+        this.dragel.setAttribute('macro-block-no', this.nextid++);
+      }
+      this.dragel.id = 'currentdrag';
+      this.macroSidebar.appendChild(this.dragel);
+      this.setIdling(true);
+      this.throwTrashHere.className = 'active';
+      const evt = document.createEvent('MouseEvents');
+      evt.initMouseEvent('mousemove', true, true, window, 0, ev.screenX, ev.screenY, ev.clientX, ev.clientY, false, false, false, false, 0, ev.target);
+      ev.target.dispatchEvent(evt);
+    });
+    this.buildingArea.addEventListener('mouseup', () => {
+      if (!this.dragel) return;
+      const container = this.whereToPlace(this.dragel);
+      this.resetHovercontainer();
+      if (container) {
+        const posel = this.whereToPlaceInContainer(this.dragel, container);
+        this.macroSidebar.removeChild(this.dragel);
+        container.placeCard(this.dragel, posel);
+      }
+      prevel.remove();
+      this.dragel.id = this.dragel.style.left = this.dragel.style.top = '';
+      this.setIdling(false);
+      this.throwTrashHere.className = '';
+      this.dragel = null;
+    });
+    this.buildingArea.addEventListener('mousemove', (ev) => {
+      if (!this.dragel) return;
+      this.move(this.dragel, ev.clientX, ev.clientY);
+      const container = this.whereToPlace(this.dragel);
+      this.resetHovercontainer();
+      if (container) {
+        const posel = this.whereToPlaceInContainer(this.dragel, container);
+        container.insertBefore(prevel, posel);
+        this.setupHovercontainer(container);
+        this.dragel.useAbility(container.accepts);
+      } else {
+        this.dragel.useAbility(null);
+        prevel.remove();
+      }
+    });
   }
 
-  connect(node1, node2) {
-    if (node1 == null || node2 == null)
-      return;
-    if (document.querySelector(`.macro_arr_${node1.getAttribute('macro-block-no')}.macro_arr_${node2.getAttribute('macro-block-no')}`) != null) {
-      return;
+  resetHovercontainer() {
+    if (this.hovercontainer) {
+      this.hovercontainer.className = this.hovercontainer.className.split(' ').filter((x) => x !== 'hover').join(' ');
+      this.hovercontainer.style.minWidth = '';
+      this.hovercontainer.style.minHeight = '';
     }
-    const connection = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    connection.setAttribute('marker-mid', 'url(#arrowhead)');
-    connection.setAttribute('fill', 'none');
-    connection.setAttribute('stroke', 'gray');
-    connection.setAttribute('stroke-width', '3');
-    connection.setAttribute('class', `macro_arr_${node1.getAttribute('macro-block-no')} macro_arr_${node2.getAttribute('macro-block-no')}`);
-    this.updateConnection(connection, node1, node2);
-    this.executePath.appendChild(connection);
   }
 
-  macroToJSON() {
-    let startblock = document.querySelector('.macroblock.placed');
-    if (!startblock) return [];
-    while (startblock.predecessor)
-      startblock = startblock.predecessor;
-    const buffer = [];
-    while (startblock) {
-      const cblock = startblock.toJSON();
-      cblock.ui = {};
-      cblock.ui.px = parseInt(startblock.style.left);
-      cblock.ui.py = parseInt(startblock.style.top);
-      buffer.push(cblock);
-      startblock = startblock.successor;
+  setupHovercontainer(container) {
+    this.hovercontainer = container;
+    this.hovercontainer.className += ' hover';
+    const rect_dragel = this.dragel.getBoundingClientRect();
+    if (this.hovercontainer === this.hull) return;
+    this.hovercontainer.style.minWidth = `${rect_dragel.width}px`;
+    this.hovercontainer.style.minHeight = `${rect_dragel.height}px`;
+  }
+
+  setIdling(s) {
+    if (s) {
+      document.querySelectorAll('.macroblock').forEach((el) => {
+        el.className += ' idling';
+        el.style.animationDelay = `${Math.random()}s`;
+      });
+    } else {
+      document.querySelectorAll('.macroblock').forEach((el) => {
+        el.className = el.className.split(' ').filter((x) => x !== 'idling').join(' ');
+        el.style.animationDelay = '';
+      });
     }
-    return buffer;
+  }
+
+  move(el, x, y) {
+    const rect = el.getBoundingClientRect();
+    const rect2 = document.getElementById('extension-macrozilla-view').getBoundingClientRect();
+    const px = (x-rect2.left-rect.width/2);
+    const py = (y-rect2.top-rect.height/2);
+    el.style.left = `${px}px`;
+    el.style.top = `${py}px`;
+  }
+
+  whereToPlace(dragel) {
+    const dragel_rect = dragel.getBoundingClientRect();
+    const mouse_x = (dragel_rect.left+dragel_rect.right)/2;
+    const mouse_y = (dragel_rect.top+dragel_rect.bottom)/2;
+    let container = null;
+    for (const el of this.macroInterface.querySelectorAll('.cardplaceholder')) {
+      const el_rect = el.getBoundingClientRect();
+      if (mouse_x > el_rect.left && mouse_x < el_rect.right && mouse_y > el_rect.top && mouse_y < el_rect.bottom) {
+        if (dragel.abilities.includes(el.accepts)) {
+          container = el;
+        }
+      }
+    }
+    return container;
+  }
+
+  whereToPlaceInContainer(dragel, container) {
+    const dragel_rect = dragel.getBoundingClientRect();
+    const mouse_x = (dragel_rect.left+dragel_rect.right)/2;
+    const mouse_y = (dragel_rect.top+dragel_rect.bottom)/2;
+    for (const el of container.children) {
+      if (!(el instanceof this.MacroBuildingElement)) continue;
+      const el_rect = el.getBoundingClientRect();
+      if (container.accepts === 'executable') {
+        // placed top-to-bottom
+        const el_cy = (el_rect.bottom+el_rect.top)/2;
+        if (mouse_y < el_cy) return el;
+      } else {
+        // placed left-to-right
+        const el_cx = (el_rect.right+el_rect.left)/2;
+        if (mouse_x < el_cx) return el;
+      }
+    }
+    return null;
   }
 
 }

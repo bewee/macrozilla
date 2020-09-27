@@ -34,8 +34,6 @@ class MacroBuildingElement extends HTMLElement {
       p.setAccepted(options.accepts);
     if ('text' in options)
       p.setText(options.text);
-    if ('multicards' in options)
-      p.multicards = options.multicards;
     this.parameters[name] = p;
     return p;
   }
@@ -276,30 +274,11 @@ class MacroBuildingElement extends HTMLElement {
       copy.internal_attributes[ia] = json[ia];
       copy.querySelector(`*[attribute-name=${ia}]`).innerHTML = this.internal_attributes[ia];
     }
-    // add dnd functionality
-    copy.addEventListener('mousedown', this.editor.dragndrophandler.handleDragStart.bind(this.editor.dragndrophandler));
-    copy.addEventListener('mouseup', this.editor.dragndrophandler.handleDragEnd.bind(this.editor.dragndrophandler));
     // fill parameters recursively
     for (const paramname in copy.parameters) {
       const pholder = copy.parameters[paramname];
       if (!json[paramname]) continue;
-      if (Array.isArray(json[paramname])) {
-        for (const el of json[paramname]) {
-          const paramhandler = this.editor.classHandlers[el.type];
-          let param = Object.values(paramhandler.buildingelements)[0];
-          if (el.qualifier)
-            param = paramhandler.buildingelements[el.qualifier];
-          const cparam = param.copyFromJSON(el, maxid);
-          pholder.placeCard(cparam);
-        }
-      } else {
-        const paramhandler = this.editor.classHandlers[json[paramname].type];
-        let param = Object.values(paramhandler.buildingelements)[0];
-        if (json[paramname].qualifier)
-          param = paramhandler.buildingelements[json[paramname].qualifier];
-        const cparam = param.copyFromJSON(json[paramname], maxid);
-        pholder.placeCard(cparam);
-      }
+      pholder.copyFromJSON(json[paramname], maxid);
     }
     // fill input values
     for (const input_name in this.inputs) {

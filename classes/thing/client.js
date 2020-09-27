@@ -30,21 +30,21 @@ class ThingClass {
     {
       const block = handler.addBlock('action', ['Things']);
       block.setTooltipText(`Execute action`);
-      block.addParameter('thing', {accepts: ['thing-action'], text: 'thing action'});
+      block.addParameter('thing', {accepts: 'thing-action', text: 'thing action'});
       block.setText('Execute %p', 'thing');
     }
     const g_prevnext = handler.addGroup('prevnext', ['Things']);
     {
       const block = handler.addBlock('next');
       block.setTooltipText(`Set property to next valid value`);
-      block.addParameter('thing', {accepts: ['thing-property'], text: 'thing property'});
+      block.addParameter('thing', {accepts: 'thing-property', text: 'thing property'});
       block.setText('Set %p to next valid value', 'thing');
       g_prevnext.assign(block);
     }
     {
       const block = handler.addBlock('prev');
       block.setTooltipText(`Set property to previous valid value`);
-      block.addParameter('thing', {accepts: ['thing-property'], text: 'thing property'});
+      block.addParameter('thing', {accepts: 'thing-property', text: 'thing property'});
       block.setText('Set %p to previous valid value', 'thing');
       g_prevnext.assign(block);
     }

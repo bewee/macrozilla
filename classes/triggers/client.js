@@ -3,7 +3,7 @@ class TriggersClass {
   constructor(handler) {
     const block = handler.addBlock(null, ['Basics']);
     block.setTooltipText('Triggers (determine when this macro gets executed)');
-    block.addParameter('list', {accepts: ['trigger'], multicards: true});
+    block.addParameter('list', {accepts: 'trigger[]'});
     block.setText('Trigger on %p', 'list');
   }
 

@@ -5,8 +5,8 @@ class Parameter extends HTMLElement {
     this.name = name;
     this.editor = editor;
     this.cards = [];
-    this.multicards = false;
-    this.accepts = [];
+    this.multi = false;
+    this.accepts = null;
     this.text = '';
     this.className = 'cardplaceholder';
     this.innerHTML = (this.text ? this.text : this.name);
@@ -18,24 +18,58 @@ class Parameter extends HTMLElement {
       this.innerHTML = txt;
   }
 
-  placeCard(cardel) {
-    if (this.innerHTML == this.name || this.innerHTML == this.text || !this.multicards)
+  placeCard(cardel, before) {
+    if (!this.multi) {
+      this.cards.forEach((x) => {
+        x.remove();
+      });
+      this.cards = [cardel];
+    }
+    if (!this.className.split(' ').includes('filled')) {
       this.innerHTML = '';
+      this.className += ' filled';
+    }
     this.id = '';
-    this.className = 'cardplaceholder filled';
-    this.appendChild(cardel);
     cardel.style.top = '';
     cardel.style.left = '';
-    this.cards.push(cardel);
+    if (!before) {
+      this.appendChild(cardel);
+      this.cards.push(cardel);
+    } else {
+      this.insertBefore(cardel, before);
+      const index = this.cards.indexOf(before);
+      this.cards.splice(index, 0, cardel);
+    }
+  }
+
+  removeCard(cardel) {
+    this.removeChild(cardel);
+    this.cards = this.cards.filter((x) => x !== cardel);
+    if (this.cards.length <= 0) {
+      this.innerHTML = (this.text ? this.text : this.name);
+      this.className = this.className.split(' ').filter((x) => x !== 'filled').join(' ');
+    }
   }
 
   setAccepted(acc) {
-    this.accepts = acc;
+    if (acc.slice(-2) === '[]') {
+      this.accepts = acc.slice(0, -2);
+      this.multi = true;
+      this.className += ' multi';
+    } else {
+      this.accepts = acc;
+      this.multi = false;
+      this.className = this.className.split(' ').filter((x) => x !== 'multi').join(' ');
+    }
+    if (this.accepts == 'executable')
+      this.className += ' executable';
+    else
+      this.className = this.className.split(' ').filter((x) => x !== 'executable').join(' ');
   }
 
   copy() {
     const copyinstance = new this.constructor(this.name, this.editor);
-    copyinstance.multicards = this.multicards;
+    copyinstance.multi = this.multi;
     for (let i = this.attributes.length - 1; i > -1; --i) {
       copyinstance.setAttribute(this.attributes[i].name, this.attributes[i].value);
     }
@@ -53,12 +87,12 @@ class Parameter extends HTMLElement {
 
   toJSON() {
     if (this.cards.length <= 0) {
-      if (this.multicards)
+      if (this.multi)
         return [];
       else
         return null;
     }
-    if (this.multicards) {
+    if (this.multi) {
       const l = [];
       this.cards.forEach((card) => {
         l.push(card.toJSON());
@@ -69,8 +103,28 @@ class Parameter extends HTMLElement {
     }
   }
 
+  copyFromJSON(json, maxid) {
+    if (Array.isArray(json)) {
+      for (const el of json) {
+        const paramhandler = this.editor.classHandlers[el.type];
+        let param = Object.values(paramhandler.buildingelements)[0];
+        if (el.qualifier)
+          param = paramhandler.buildingelements[el.qualifier];
+        const cparam = param.copyFromJSON(el, maxid);
+        this.placeCard(cparam);
+      }
+    } else {
+      const paramhandler = this.editor.classHandlers[json.type];
+      let param = Object.values(paramhandler.buildingelements)[0];
+      if (json.qualifier)
+        param = paramhandler.buildingelements[json.qualifier];
+      const cparam = param.copyFromJSON(json, maxid);
+      this.placeCard(cparam);
+    }
+  }
+
   reset(cardobj) {
-    if (cardobj === true && !this.multicards)
+    if (cardobj === true && !this.multi)
       this.cards = [];
     else
       this.cards = this.cards.filter((x) => x !== cardobj);

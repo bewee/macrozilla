@@ -8,9 +8,6 @@ class Handler {
   }
 
   addElement(c, categories) {
-    c.addEventListener('mousedown', this.editor.dragndrophandler.handleDragStart.bind(this.editor.dragndrophandler));
-    c.addEventListener('mouseup', this.editor.dragndrophandler.handleDragEnd.bind(this.editor.dragndrophandler));
-
     if (!(c.qualifier in this.buildingelements))
       this.buildingelements[c.qualifier] = c;
 
