@@ -21,13 +21,6 @@
       "type": "array",
       "items": {"$ref": "/class"}
     },
-    "bodies": {
-      "type": "array",
-      "items": {
-        "type": "array",
-        "items": {"$ref": "/class"}
-      }
-    },
     "time": {"$ref": "/class"}
   },
   "required": ["qualifier"],
@@ -59,8 +52,7 @@
     {
       "properties": {
         "qualifier": {"enum": ["async"]}
-      },
-      "required": ["bodies"]
+      }
     }
   ]
 }

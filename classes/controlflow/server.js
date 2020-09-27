@@ -56,9 +56,11 @@ async function execWait() {
 }
 
 async function execAsync() {
-  const bodies = this.params.description.bodies;
   const promises = [];
-  for (const body of bodies) {
+  let i = 1;
+  while (this.params.description[`program${i}`]) {
+    const body = this.params.description[`program${i}`];
+    i++;
     promises.push(new Promise(async (resolve) => {
       for (const block of body) {
         await this.call(block, 'exec');
@@ -72,7 +74,7 @@ async function execAsync() {
 module.exports = {
 
   exec: async function() {
-    switch (this.params.description.statement) {
+    switch (this.params.description.qualifier) {
       case 'if':
         await execIf.call(this);
         break;

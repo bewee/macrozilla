@@ -94,7 +94,7 @@ class MacroBuildingElement extends HTMLElement {
     const linkedParams = obj.params;
     this.children[0].innerHTML = '';
     let i = 0;
-    for (const strpart of ftext.split(/(%p|%i|%a)/g)) {
+    for (const strpart of ftext.split(/(%p|%i|%a|%d|\n)/g)) {
       switch (strpart) {
         case '%p': {
           if (linkedParams[i]) {
@@ -118,6 +118,19 @@ class MacroBuildingElement extends HTMLElement {
             this.children[0].appendChild(txtnode);
             i++;
           }
+          break;
+        }
+        case '%d': {
+          if (linkedParams[i]) {
+            this.children[0].appendChild(linkedParams[i]);
+            i++;
+          }
+          break;
+        }
+        case '\n': {
+          const brknode = document.createElement('DIV');
+          brknode.className = 'break';
+          this.children[0].appendChild(brknode);
           break;
         }
         default: {
@@ -272,7 +285,7 @@ class MacroBuildingElement extends HTMLElement {
     // gather internal_attributes from json
     for (const ia in copy.internal_attributes) {
       copy.internal_attributes[ia] = json[ia];
-      copy.querySelector(`*[attribute-name=${ia}]`).innerHTML = this.internal_attributes[ia];
+      (copy.querySelector(`*[attribute-name=${ia}]`) || {}).innerHTML = this.internal_attributes[ia];
     }
     // fill parameters recursively
     for (const paramname in copy.parameters) {
