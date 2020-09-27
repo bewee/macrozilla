@@ -53,53 +53,55 @@ class EditorView {
     this.macroInterface.appendChild(this.hull);
 
     document.querySelector('#macrotoolbar h1').innerHTML = macro.name;
+    this.macro_name = macro.name;
+    this.macro_id = macro.id;
     document.querySelector('#editor-back-button').addEventListener('click', async () => {
       if (this.changes_ && window.confirm('Save Changes?'))
-        await this.saveMacro(macro.id);
-      this.extension.views.macrolist.show(macro.id);
+        await this.saveMacro();
+      this.extension.views.macrolist.show();
     });
     document.querySelector('#playmacro').addEventListener('click', async () => {
-      this.executeMacro(macro.id);
+      this.executeMacro();
     });
     document.querySelector('#savemacro').addEventListener('click', async () => {
-      this.saveMacroAndUpdateInterface(macro.id);
+      this.saveMacroAndUpdateInterface();
     });
     this.initSideBar();
     this.initDnD();
-    this.loadMacro(macro.id);
+    this.loadMacro();
   }
 
-  async saveMacroAndUpdateInterface(macro_id) {
-    await this.saveMacro(macro_id);
+  async saveMacroAndUpdateInterface() {
+    await this.saveMacro(this.macro_id);
     const titleel = document.querySelector('#macrotoolbar h1');
-    titleel.innerHTML = titleel.innerHTML.slice(0, -1);
+    titleel.innerHTML = this.macro_name;
     this.changes_ = false;
   }
 
-  async executeMacro(macro_id) {
+  async executeMacro() {
     if (this.changes_) {
       if (window.confirm('Save Changes?')) {
-        this.saveMacroAndUpdateInterface(macro_id);
+        this.saveMacroAndUpdateInterface(this.macro_id);
       } else {
         return;
       }
     }
     console.log('executing');
-    await window.API.postJson('/extensions/macrozilla/api/exec-macro', {id: macro_id});
+    await window.API.postJson('/extensions/macrozilla/api/exec-macro', {id: this.macro_id});
   }
 
-  async loadMacro(macro_id) {
-    const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: macro_id});
+  async loadMacro() {
+    const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: this.macro_id});
     console.log('loading', JSON.stringify(res.macro.description));
     const maxid = {i: 1};
     this.hull.copyFromJSON(res.macro.description, maxid);
     this.nextid = maxid.i+1;
   }
 
-  async saveMacro(macro_id) {
+  async saveMacro() {
     const json = this.hull.toJSON();
     console.log('saving', JSON.stringify(json));
-    const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: macro_id, description: json});
+    const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: this.macro_id, description: json});
     console.log('result', res);
   }
 
