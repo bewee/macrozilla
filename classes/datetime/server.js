@@ -73,7 +73,7 @@ module.exports = {
       this.log.e({title: 'Invalid cron string'});
       return;
     }
- 
+
     const task = cron.schedule(cronstr, () => {
       this.params.callback();
     });
