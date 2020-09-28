@@ -119,6 +119,7 @@ button#savemacro{
     padding: 2rem;
     display: flex;
     overflow: auto;
+    flex-direction: column;
 }
 
 #macrosidebar{
@@ -354,12 +355,12 @@ div#throwtrashhere:hover{
     cursor: initial;
 }
 
-macro-block span input, macro-card span input{
+.macroblock span input{
     text-align: center;
     width: 75px;
 }
 
-macro-card span select, macro-block span select{
+.macroblock span select{
     display: inline-block;
     text-align: left;
     color: #fff;
@@ -418,7 +419,7 @@ macro-card span select, macro-block span select{
     color: #4a4a4a;
 }
 
-.macrointerface > macro-param, .macrointerface > macro-param.filled{
+.macrointerface > .cardplaceholder, .macrointerface > .cardplaceholder.filled{
     position: relative;
     border: 1px dotted gray;
     margin: auto;
@@ -433,36 +434,40 @@ macro-card span select, macro-block span select{
     background: #0000;
     text-align: center;
     line-height: 75px;
+    margin-top: 0;
+    margin-bottom: 0;
+    width: initial !important;
 }
 
-.macrointerface > macro-param.filled{
+.macrointerface > .cardplaceholder.filled{
     line-height: initial;
     width: initial;
 }
 
-macro-param.executable > .preview{
+.cardplaceholder.executable > .preview{
     height: 5px;
     margin-top: 1rem;
     margin-bottom: 1rem;
     background: #5d9bc7;
 }
-macro-param:not(.executable) > .preview{
+
+.cardplaceholder:not(.executable) > .preview{
     width: 5px;
     margin: 1rem 0.5rem;
     background: #5d9bc7;    
 }
 
-macro-param:not(.filled) .preview, macro-param:not(.multi) .preview{
+.cardplaceholder:not(.filled) .preview, .cardplaceholder:not(.multi) .preview{
     display: none;
 }
 
-macro-param.hover{
+.cardplaceholder.hover{
     border: 2px solid #da2e2e !important;
     background: white !important;
     color: #0000 !important;
 }
 
-.macrointerface > macro-param.hover{
+.macrointerface > .cardplaceholder.hover{
     background: none !important;
 }
 

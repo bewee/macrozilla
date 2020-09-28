@@ -61,7 +61,7 @@ class Parameter extends HTMLElement {
       this.multi = false;
       this.className = this.className.split(' ').filter((x) => x !== 'multi').join(' ');
     }
-    if (this.accepts == 'executable')
+    if (this.accepts == 'executable' || this.accepts == 'header')
       this.className += ' executable';
     else
       this.className = this.className.split(' ').filter((x) => x !== 'executable').join(' ');

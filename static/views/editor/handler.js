@@ -11,8 +11,9 @@ class Handler {
     if (!(c.qualifier in this.buildingelements))
       this.buildingelements[c.qualifier] = c;
 
-    if (categories[0] == '_hidden')
+    if (categories[0] == '_hidden') {
       return c;
+    }
 
     document.querySelector('#macrosidebar').appendChild(c);
 
@@ -29,6 +30,13 @@ class Handler {
     const c = this.addBlock(qualifier, ['_hidden']);
     c.copyFromJSONCallback = fn;
     c.shutdown(null);
+    return c;
+  }
+
+  addHeaderBlock(qualifier, categories, obligatory) {
+    const c = this.addBlock(qualifier, categories);
+    c.abilities = ['header'];
+    c.obligatory = obligatory;
     return c;
   }
 

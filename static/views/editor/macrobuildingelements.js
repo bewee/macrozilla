@@ -340,21 +340,6 @@ class MacroBlock extends MacroBuildingElement {
   constructor(qualifier, classname, editor, elgroup = null) {
     super(qualifier, classname, editor, elgroup);
     this.abilities = ['executable'];
-    this.successor = null;
-    this.predecessor = null;
-  }
-
-  copy() {
-    const copyinstance = super.copy();
-    copyinstance.successor = this.successor;
-    if (copyinstance.successor)
-      copyinstance.successor.predecessor = copyinstance;
-    copyinstance.predecessor = this.predecessor;
-    if (copyinstance.predecessor)
-      copyinstance.predecessor.successor = copyinstance;
-    this.successor = null;
-    this.predecessor = null;
-    return copyinstance;
   }
 
 }

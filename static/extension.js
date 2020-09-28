@@ -84,10 +84,11 @@ window.importMacroModule = function(code, classname) {
       super('macrozilla');
       this.addMenuEntry('Macros');
 
-      this.views = {};
-      this.loadView('macrolist');
       window.API.getAddonConfig('macrozilla').then((config) => {
-        this.loadView(`editor-${config.editor}`, 'editor');
+        this.views = {};
+        this.editorName = `editor-${config.editor}`;
+        this.loadView(this.editorName, 'editor');
+        this.loadView('macrolist');
       });
     }
 
