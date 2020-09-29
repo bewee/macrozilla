@@ -23,4 +23,58 @@ In the add-on settings, you can choose between a text-based and a structogram-ba
 
 # Code structure
 
-...
+## `classes/`
+Each subfolder found here defines a "class", which is a collection of definitions of building elements. JSON objects are used to represent instances of a class. As an example, `x+y` is represented by something like `{"id":42,"type":"arithmetic","qualifier":"+","left":x,"right":y}`. Note that the type "arithmetic" is the name of the handling class and the qualifier "+" identifies the operation to be performed within this class.
+
+A class consists at least of a `server.js` and a `client.js` as well as JSON-schemas used for validation of instances of each of its abilities. Abilities define how instances of this class can be used. Examples of abilities are executable, evaluable, settable and trigger. They are not stated in an instance but rather arise from the context (e.g. if a thing is placed into a triggers block, then its ability will be "trigger" and when it is placed into a logical not its ability will be "ebaluable"). 
+
+For each ability, the `server.js` exports a function that defines how to process a  JSON instance ot this ability. This function may run async and may return something. Its "this" context is set to an execution context (see `lib/execution-context.js`).
+
+The `client.js` defines which blocks (ability executable) and cards (all other abilities) this class provides, in which category to put them, how to group them and more.
+
+
+## `lib/`
+Core back-end code.
+
+#### `lib/api-handler.js`
+Communication with the front-end
+
+#### `lib/db-handler.js`
+Definition of and access to the database tables
+
+#### `lib/macro-handler.js`
+General handling of macros (load, execute, ...)
+
+#### `lib/execution-context.js`
+Passed to back-end of classes as "this" context. Capsules the parameters passed to this function (mainly the JSON instance) and offers helpers for logging, casting, validating JSON schemas and calling other classes.
+
+
+## `static/`
+Core front-end code.
+
+#### `static/extension.js`
+Define helpers, load views and add menu entries
+
+#### `static/extension.css`
+Add-On wide style applied to all views
+
+#### `static/views/`
+Each subfolder found here defines a view. Each view consists at least of an `index.js`, `index.html` and `index.css`.
+
+##### `static/views/variablelist`
+List of all variable folders and variables
+
+##### `static/views/variableeditor`
+Editing a variable
+
+##### `static/views/macrolist`
+List of all macro folders and macros
+
+##### `static/views/editor`
+Shared resources used by all macro editors
+
+##### `static/views/editor-text`
+Very basic text-based macro editor
+
+##### `static/views/editor-structogram`
+Structogram-like graphical macro editor
