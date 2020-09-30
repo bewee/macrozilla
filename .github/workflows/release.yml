@@ -104,3 +104,130 @@ jobs:
         asset_path: macrozilla-${{ env.RELEASE_VERSION }}-${{ matrix.platform }}-v${{ matrix.version }}.tgz.sha256sum
         asset_name: macrozilla-${{ env.RELEASE_VERSION }}-${{ matrix.platform }}-v${{ matrix.version }}.tgz.sha256sum
         asset_content_type: text/plain
+
+  publish :
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download upload_url
+      uses: actions/download-artifact@v1
+      with:
+        name: upload_url
+    - name: Set upload_url env var
+      run: cat upload_url/upload_url
+    - name: Set env
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
+    - uses: actions/checkout@v2
+    - name: Download Checksum for linux-arm-v8
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm-v8.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-arm64-v8
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm64-v8.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-x64-v8
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-x64-v8.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for darwin-x64-v8
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-darwin-x64-v8.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-arm-v10
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm-v10.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-arm64-v10
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm64-v10.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-x64-v10
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-x64-v10.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for darwin-x64-v10
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-darwin-x64-v10.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-arm-v12
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm-v12.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-arm64-v12
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm64-v12.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-x64-v12
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-x64-v12.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for darwin-x64-v12
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-darwin-x64-v12.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-arm-v14
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm-v14.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-arm64-v14
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-arm64-v14.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for linux-x64-v14
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-linux-x64-v14.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Checksum for darwin-x64-v14
+      uses: dsaltares/fetch-gh-release-asset@master
+      with:
+        version: "latest"
+        file: "macrozilla-${{ env.RELEASE_VERSION }}-darwin-x64-v14.tgz.sha256sum"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Use python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+    - name: Create macrozilla.json
+      run: python publish.py "${{ env.RELEASE_VERSION }}"
+    - name: Upload macrozilla.json
+      id: upload-macrozilla-json
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ env.UPLOAD_URL }}
+        asset_path: macrozilla.json
+        asset_name: macrozilla.json
+        asset_content_type: text/plain
