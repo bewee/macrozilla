@@ -193,8 +193,9 @@ class EditorView {
       this.resetHovercontainer();
       if (container) {
         const posel = this.whereToPlaceInContainer(this.dragel, container);
-        this.macroSidebar.removeChild(this.dragel);
         container.placeCard(this.dragel, posel);
+      } else {
+        this.macroSidebar.removeChild(this.dragel);
       }
       prevel.remove();
       this.dragel.id = this.dragel.style.left = this.dragel.style.top = '';
