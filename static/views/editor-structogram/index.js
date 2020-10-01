@@ -165,6 +165,7 @@ class EditorView {
     prevel.className = 'preview';
     this.hovercontainer = null;
     this.buildingArea.addEventListener('mousedown', (ev) => {
+      if (this.dragel) return;
       let node = ev.target;
       while (node.parentNode && !(node instanceof this.MacroBuildingElement)) {
         node = node.parentNode;
