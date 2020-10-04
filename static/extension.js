@@ -1,17 +1,3 @@
-window.exportMacroModule = function(type) {
-  return type;
-};
-
-window.importMacroModule = function(code, classname) {
-  try {
-    const macromod = eval(code);
-    return new macromod(new window.Handler(classname));
-  } catch (err) {
-    console.error('Could not load Macro Module!', err);
-    return false;
-  }
-};
-
 (() => {
   class MacrozillaExtension extends window.Extension {
 
