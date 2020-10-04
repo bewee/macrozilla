@@ -15,6 +15,16 @@ window.importMacroModule = function(code, classname) {
 (() => {
   class MacrozillaExtension extends window.Extension {
 
+    constructor(id) {
+      super(id);
+      this.views = {};
+      this.views.oops = {
+        show() {
+          document.querySelector(`#extension-${id}-view`).innerHTML = '<div id="macrozilla-oops"></div>';
+        },
+      };
+    }
+
     loadFile(path) {
       return new Promise((resolve, reject) => {
         fetch(`/extensions/macrozilla/${path}`).then((res) => {
@@ -76,6 +86,16 @@ window.importMacroModule = function(code, classname) {
         this.loadStylesheet(`static/views/${v}/index.css`);
       });
     }
+
+    pingBackend() {
+      return new Promise((resolve) => {
+        window.API.postJson('/extensions/macrozilla/api/ping', {}).then(() => {
+          resolve(true);
+        }).catch(() => {
+          resolve(false);
+        });
+      });
+    }
   }
 
   class MacrozillaMacrosExtension extends MacrozillaExtension {
@@ -85,15 +105,17 @@ window.importMacroModule = function(code, classname) {
       this.addMenuEntry('Macros');
 
       window.API.getAddonConfig('macrozilla').then((config) => {
-        this.views = {};
         this.editorName = `editor-${config.editor}`;
         this.loadView(this.editorName, 'editor');
         this.loadView('macrolist');
       });
     }
 
-    show() {
-      this.views.macrolist.show();
+    async show() {
+      if (await this.pingBackend())
+        this.views.macrolist.show();
+      else
+        this.views.oops.show();
     }
 
   }
@@ -104,13 +126,15 @@ window.importMacroModule = function(code, classname) {
       super('macrozilla-variables');
       this.addMenuEntry('Variables');
 
-      this.views = {};
       this.loadView('variablelist');
       this.loadView('variableeditor');
     }
 
-    show() {
-      this.views.variablelist.show();
+    async show() {
+      if (await this.pingBackend())
+        this.views.variablelist.show();
+      else
+        this.views.oops.show();
     }
 
   }
