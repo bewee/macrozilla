@@ -165,6 +165,7 @@ class EditorView {
     prevel.className = 'preview';
     this.hovercontainer = null;
     this.buildingArea.addEventListener('mousedown', (ev) => {
+      if (this.dragel) return;
       let node = ev.target;
       while (node.parentNode && !(node instanceof this.MacroBuildingElement)) {
         node = node.parentNode;
@@ -193,8 +194,9 @@ class EditorView {
       this.resetHovercontainer();
       if (container) {
         const posel = this.whereToPlaceInContainer(this.dragel, container);
-        this.macroSidebar.removeChild(this.dragel);
         container.placeCard(this.dragel, posel);
+      } else {
+        this.macroSidebar.removeChild(this.dragel);
       }
       prevel.remove();
       this.dragel.id = this.dragel.style.left = this.dragel.style.top = '';
