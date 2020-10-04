@@ -21,3 +21,27 @@
     height: calc(100% - 10rem);
     overflow-y: auto;
 }
+
+#macrozilla-oops{
+    top: 40%;
+    position: relative;
+    width: 50%;
+    color: white;
+    text-align: center;
+}
+
+#macrozilla-oops::before {
+    position: absolute;
+    content: "Oops!";
+    font-size: 30px;
+    width: 100%;
+    font-weight: bold;
+}
+
+#macrozilla-oops::after {
+    top: 40px;
+    content: "Something went wrong...";
+    font-size: 20px;
+    position: absolute;
+    width: 100%;
+}
