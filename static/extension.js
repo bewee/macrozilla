@@ -21,8 +21,8 @@ window.importMacroModule = function(code, classname) {
       this.views.oops = {
         show() {
           document.querySelector(`#extension-${id}-view`).innerHTML = '<div id="macrozilla-oops"></div>';
-        }
-      }
+        },
+      };
     }
 
     loadFile(path) {
