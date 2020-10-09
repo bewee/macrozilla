@@ -9,6 +9,8 @@
       const load_card = handler.addLoadCard(null, (copy) => {
         if (copy.internal_attributes.thing in this.things) {
           this.setupThing(copy);
+          if (copy.currentAbility === 'trigger')
+            this.setTextForTrigger({srcElement: copy.inputs.trigger});
           copy.revive();
         } else {
           copy.setAttribute('thing-waiting', copy.internal_attributes.thing);
@@ -22,13 +24,6 @@
       load_card.addInput('action', 'string');
       load_card.addInput('event', 'string');
       this.setupTrigger(load_card);
-      const old_copyFromJSON = load_card.copyFromJSON;
-      load_card.copyFromJSON = (json, maxid) => {
-        const copy = old_copyFromJSON.call(load_card, json, maxid);
-        if (copy.currentAbility === 'trigger')
-          this.setTextForTrigger({srcElement: copy.inputs.trigger});
-        return copy;
-      };
 
       {
         const block = handler.addBlock('action', ['Things']);
@@ -78,6 +73,8 @@
           document.querySelectorAll(`macro-card[thing-waiting='${thing_id}']`).forEach((c) => {
             c.removeAttribute('thing-waiting');
             this.setupThing(c);
+            if (c.currentAbility === 'trigger')
+              this.setTextForTrigger({srcElement: c.inputs.trigger});
             c.revive();
           });
         });
@@ -89,9 +86,9 @@
       card.setTooltipText(`Thing ${t.title}`);
       card.setText(t.title);
       card.setAttribute('data-title', t.title);
-      card.addInput('property', 'string', {enum: t.properties, venum: t.vproperties});
-      card.addInput('action', 'string', {enum: t.actions, venum: t.vactions});
-      card.addInput('event', 'string', {enum: t.events});
+      card.addInput('property', 'string', {enum: t.properties, venum: t.vproperties, value: card.inputs.property && card.inputs.property.value ? card.inputs.property.value : t.properties[0]});
+      card.addInput('action', 'string', {enum: t.actions, venum: t.vactions, value: card.inputs.action && card.inputs.action.value ? card.inputs.action.value : t.actions[0]});
+      card.addInput('event', 'string', {enum: t.events, value: card.inputs.event && card.inputs.event.value ? card.inputs.event.value : t.events[0]});
       this.setupTrigger(card);
       card.addAbility('evaluable', `${t.title} %i`, 'property');
       card.addAbility('settable', `${t.title} %i`, 'property');
