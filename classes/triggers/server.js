@@ -26,7 +26,8 @@ module.exports = {
   },
 
   onunload: async function() {
-    if (Object.keys(triggerInstances).length == 0) return;
+    if (!triggerInstances[this.inf.macro_id]) return;
+    if (Object.keys(triggerInstances[this.inf.macro_id]).length == 0) return;
     for (const trigger of triggerInstances[this.inf.macro_id]) {
       if (trigger.destruct) trigger.destruct.call();
     }
