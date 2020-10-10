@@ -54,8 +54,9 @@
             });
             ctxmenu.appendChild(editbttn);
             const deletebttn = document.createElement('A');
-            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.innerHTML = '<img src="/images/remove.svg">Remove';
             deletebttn.addEventListener('click', () => {
+              if (!window.confirm('Really delete? This cannot be undone!')) return;
               window.API.postJson('/extensions/macrozilla/api/remove-macropath', {id: el.id}).then(() => {
                 this.show();
               });
@@ -109,8 +110,9 @@
             });
             ctxmenu.appendChild(duplicatebttn);
             const deletebttn = document.createElement('A');
-            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.innerHTML = '<img src="/images/remove.svg">Remove';
             deletebttn.addEventListener('click', () => {
+              if (!window.confirm('Really delete? This cannot be undone!')) return;
               window.API.postJson('/extensions/macrozilla/api/remove-macro', {id: macro.id}).then(() => {
                 this.show();
               });

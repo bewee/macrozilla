@@ -47,8 +47,9 @@
             });
             ctxmenu.appendChild(editbttn);
             const deletebttn = document.createElement('A');
-            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.innerHTML = '<img src="/images/remove.svg">Remove';
             deletebttn.addEventListener('click', () => {
+              if (!window.confirm('Really delete? This cannot be undone!')) return;
               window.API.postJson('/extensions/macrozilla/api/remove-variablepath', {id: el.id}).then(() => {
                 this.show();
               });
@@ -92,8 +93,9 @@
             });
             ctxmenu.appendChild(editbttn);
             const deletebttn = document.createElement('A');
-            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.innerHTML = '<img src="/images/remove.svg">Remove';
             deletebttn.addEventListener('click', () => {
+              if (!window.confirm('Really delete? This cannot be undone!')) return;
               window.API.postJson('/extensions/macrozilla/api/remove-variable', {id: variable.id}).then(() => {
                 this.show();
               });
