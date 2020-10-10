@@ -19,13 +19,13 @@
     list-style-type: none;
     background-color: #5288af;
     border-radius: 0.5rem;
+    position: relative;
+    color: white;
+    cursor: pointer;
     background-image: url(/images/right-arrow.png);
     background-size: auto 2rem;
     background-repeat: no-repeat;
     background-position: right 7.8rem center;
-    position: relative;
-    color: white;
-    cursor: pointer;
 }
 
 #macrozilla-macro-list span{
@@ -61,8 +61,8 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
 }
 
-#macrozilla-macro-list .macrodelel{
-    background: no-repeat center/50% url(/extensions/macrozilla/static/images/delete.svg);
+#macrozilla-macro-list .macroctxel {
+    background: no-repeat center/80% url(/extensions/macrozilla/static/images/overflow.svg);
     width: 3.5rem;
     display: inline-block;
     height: 100%;
@@ -75,8 +75,51 @@
     top: 0;
 }
 
-#macrozilla-macro-list .macrodelel:hover{
-    background-color: #4580a9;
+#macrozilla-macro-list .macroctxmenu {
+    position: absolute;
+    bottom: 0.8rem;
+    left: 7rem;
+    background-color: #5288af;
+    color: white;
+    padding: 1rem 0;
+    border-radius: 0.5rem;
+    transform: scale(1);
+    transition: transform 0.25s ease;
+    transform-origin: bottom left;
+}
+
+#macrozilla-macro-list .macroctxmenu.hidden {
+    transform: scale(0);
+}
+
+#macrozilla-macro-list .macroctxmenu::after {
+    content: "";
+    position: absolute;
+    bottom: 2rem;
+    left: -1.4rem;
+    border-width: 1rem 1rem 0;
+    border-style: solid;
+    border-color: #5288af transparent;
+    display: block;
+    width: 0;
+    transform: rotate(90deg);
+}
+
+#macrozilla-macro-list .macroctxmenu > a {
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    width: calc( 100% - 2rem );
+}
+
+#macrozilla-macro-list .macroctxmenu > a:hover {
+    background: #4d80a5;
+}
+
+#macrozilla-macro-list .macroctxmenu > a > img {
+    height: 2rem;
+    padding-right: 1rem;
+    margin-bottom: -0.3rem;
 }
 
 #macrozilla-macro-list h2 {
