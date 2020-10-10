@@ -19,14 +19,41 @@
           title.innerHTML = el.name;
           variablelist.appendChild(title);
           if (el.id != 1) {
-            const delbttn = document.createElement('DIV');
-            delbttn.className = 'variablepathdelel';
-            delbttn.addEventListener('click', () => {
+            const ctxbttn = document.createElement('DIV');
+            ctxbttn.className = 'variablepathctxel';
+            const ctxmenu = document.createElement('DIV');
+            ctxmenu.className = 'variablectxmenu hidden';
+            ctxbttn.appendChild(ctxmenu);
+            ctxbttn.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              document.querySelectorAll('.variablectxmenu').forEach((c) => {
+                if (c === ctxmenu) return;
+                if (!c.className.split(' ').includes('hidden'))
+                  c.className += ' hidden';
+              });
+              if (ctxmenu.className.split(' ').includes('hidden'))
+                ctxmenu.className = ctxmenu.className.split(' ').filter((x) => x !== 'hidden').join(' ');
+              else
+                ctxmenu.className += ' hidden';
+            });
+            variablelist.appendChild(ctxbttn);
+            const editbttn = document.createElement('A');
+            editbttn.innerHTML = '<img src="/images/edit-plain.svg">Edit';
+            editbttn.addEventListener('click', () => {
+              const name = prompt('Name', el.name);
+              window.API.postJson('/extensions/macrozilla/api/update-variablepath', {id: el.id, name: name}).then(() => {
+                this.show();
+              });
+            });
+            ctxmenu.appendChild(editbttn);
+            const deletebttn = document.createElement('A');
+            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.addEventListener('click', () => {
               window.API.postJson('/extensions/macrozilla/api/remove-variablepath', {id: el.id}).then(() => {
                 this.show();
               });
             });
-            variablelist.appendChild(delbttn);
+            ctxmenu.appendChild(deletebttn);
           }
           const variables = await window.API.postJson('/extensions/macrozilla/api/list-variables', {path_id: el.id});
           variables.list.forEach((variable) => {
@@ -37,15 +64,41 @@
               this.extension.views.variableeditor.show(variable);
             });
             variablelist.appendChild(variablelistel);
-            const delbttn = document.createElement('DIV');
-            delbttn.className = 'variabledelel';
-            delbttn.addEventListener('click', (ev) => {
+            const ctxbttn = document.createElement('DIV');
+            ctxbttn.className = 'variablectxel';
+            variablelistel.appendChild(ctxbttn);
+            const ctxmenu = document.createElement('DIV');
+            ctxmenu.className = 'variablectxmenu hidden';
+            ctxbttn.appendChild(ctxmenu);
+            ctxbttn.addEventListener('click', (ev) => {
               ev.stopPropagation();
+              document.querySelectorAll('.variablectxmenu').forEach((c) => {
+                if (c === ctxmenu) return;
+                if (!c.className.split(' ').includes('hidden'))
+                  c.className += ' hidden';
+              });
+              if (ctxmenu.className.split(' ').includes('hidden'))
+                ctxmenu.className = ctxmenu.className.split(' ').filter((x) => x !== 'hidden').join(' ');
+              else
+                ctxmenu.className += ' hidden';
+            });
+            const editbttn = document.createElement('A');
+            editbttn.innerHTML = '<img src="/images/edit-plain.svg">Edit';
+            editbttn.addEventListener('click', () => {
+              const name = prompt('Name', variable.name);
+              window.API.postJson('/extensions/macrozilla/api/update-variable', {id: variable.id, name: name}).then(() => {
+                this.show();
+              });
+            });
+            ctxmenu.appendChild(editbttn);
+            const deletebttn = document.createElement('A');
+            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.addEventListener('click', () => {
               window.API.postJson('/extensions/macrozilla/api/remove-variable', {id: variable.id}).then(() => {
                 this.show();
               });
             });
-            variablelistel.appendChild(delbttn);
+            ctxmenu.appendChild(deletebttn);
           });
           const addbttn = document.createElement('DIV');
           addbttn.className = 'variableaddel';

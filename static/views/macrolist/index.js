@@ -26,14 +26,41 @@
           title.innerHTML = el.name;
           macrolist.appendChild(title);
           if (el.id != 1) {
-            const delbttn = document.createElement('DIV');
-            delbttn.className = 'macropathdelel';
-            delbttn.addEventListener('click', () => {
+            const ctxbttn = document.createElement('DIV');
+            ctxbttn.className = 'macropathctxel';
+            const ctxmenu = document.createElement('DIV');
+            ctxmenu.className = 'macroctxmenu hidden';
+            ctxbttn.appendChild(ctxmenu);
+            ctxbttn.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              document.querySelectorAll('.macroctxmenu').forEach((c) => {
+                if (c === ctxmenu) return;
+                if (!c.className.split(' ').includes('hidden'))
+                  c.className += ' hidden';
+              });
+              if (ctxmenu.className.split(' ').includes('hidden'))
+                ctxmenu.className = ctxmenu.className.split(' ').filter((x) => x !== 'hidden').join(' ');
+              else
+                ctxmenu.className += ' hidden';
+            });
+            macrolist.appendChild(ctxbttn);
+            const editbttn = document.createElement('A');
+            editbttn.innerHTML = '<img src="/images/edit-plain.svg">Edit';
+            editbttn.addEventListener('click', () => {
+              const name = prompt('Name', el.name);
+              window.API.postJson('/extensions/macrozilla/api/update-macropath', {id: el.id, name: name}).then(() => {
+                this.show();
+              });
+            });
+            ctxmenu.appendChild(editbttn);
+            const deletebttn = document.createElement('A');
+            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.addEventListener('click', () => {
               window.API.postJson('/extensions/macrozilla/api/remove-macropath', {id: el.id}).then(() => {
                 this.show();
               });
             });
-            macrolist.appendChild(delbttn);
+            ctxmenu.appendChild(deletebttn);
           }
           const macros = await window.API.postJson('/extensions/macrozilla/api/list-macros', {path_id: el.id});
           macros.list.forEach((macro) => {
@@ -62,7 +89,15 @@
               else
                 ctxmenu.className += ' hidden';
             });
-            ctxbttn.appendChild(ctxmenu);
+            const editbttn = document.createElement('A');
+            editbttn.innerHTML = '<img src="/images/edit-plain.svg">Edit';
+            editbttn.addEventListener('click', () => {
+              const name = prompt('Name', macro.name);
+              window.API.postJson('/extensions/macrozilla/api/update-macro', {id: macro.id, name: name}).then(() => {
+                this.show();
+              });
+            });
+            ctxmenu.appendChild(editbttn);
             const duplicatebttn = document.createElement('A');
             duplicatebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/duplicate.svg">Duplicate';
             duplicatebttn.addEventListener('click', () => {

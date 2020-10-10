@@ -77,7 +77,6 @@
 
 #macrozilla-macro-list .macroctxmenu {
     position: absolute;
-    bottom: 0.8rem;
     left: 7rem;
     background-color: #5288af;
     color: white;
@@ -85,7 +84,7 @@
     border-radius: 0.5rem;
     transform: scale(1);
     transition: transform 0.25s ease;
-    transform-origin: bottom left;
+    transform-origin: top left;
 }
 
 #macrozilla-macro-list .macroctxmenu.hidden {
@@ -95,7 +94,7 @@
 #macrozilla-macro-list .macroctxmenu::after {
     content: "";
     position: absolute;
-    bottom: 2rem;
+    top: 2.5rem;
     left: -1.4rem;
     border-width: 1rem 1rem 0;
     border-style: solid;
@@ -126,17 +125,18 @@
     display: inline-block;
 }
 
-#macrozilla-macro-list .macropathdelel {
-    background: no-repeat center/55% url(/extensions/macrozilla/static/images/delete.svg);
+#macrozilla-macro-list .macropathctxel {
+    background: no-repeat center/80% url(/extensions/macrozilla/static/images/overflow.svg);
     width: 6rem;
     height: 6rem;
     float: right;
     margin-top: 1.2rem;
     border-radius: 3rem;
     cursor: pointer;
+    position: relative;
 }
 
-#macrozilla-macro-list .macropathdelel:hover{
+#macrozilla-macro-list .macropathctxel:hover{
     background-color: #4980a9;
 }
 
