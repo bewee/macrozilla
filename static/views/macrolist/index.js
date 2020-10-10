@@ -56,7 +56,7 @@
                 if (c === ctxmenu) return;
                 if (!c.className.split(' ').includes('hidden'))
                   c.className += ' hidden';
-              })
+              });
               if (ctxmenu.className.split(' ').includes('hidden'))
                 ctxmenu.className = ctxmenu.className.split(' ').filter((x) => x !== 'hidden').join(' ');
               else
