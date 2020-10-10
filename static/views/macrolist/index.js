@@ -44,15 +44,43 @@
               this.extension.views.editor.show(macro);
             });
             macrolist.appendChild(macrolistel);
-            const delbttn = document.createElement('DIV');
-            delbttn.className = 'macrodelel';
-            delbttn.addEventListener('click', (ev) => {
+            const ctxbttn = document.createElement('DIV');
+            ctxbttn.className = 'macroctxel';
+            macrolistel.appendChild(ctxbttn);
+            const ctxmenu = document.createElement('DIV');
+            ctxmenu.className = 'macroctxmenu hidden';
+            ctxbttn.appendChild(ctxmenu);
+            ctxbttn.addEventListener('click', (ev) => {
               ev.stopPropagation();
+              document.querySelectorAll('.macroctxmenu').forEach((c) => {
+                if (c === ctxmenu) return;
+                if (!c.className.split(' ').includes('hidden'))
+                  c.className += ' hidden';
+              });
+              if (ctxmenu.className.split(' ').includes('hidden'))
+                ctxmenu.className = ctxmenu.className.split(' ').filter((x) => x !== 'hidden').join(' ');
+              else
+                ctxmenu.className += ' hidden';
+            });
+            ctxbttn.appendChild(ctxmenu);
+            const duplicatebttn = document.createElement('A');
+            duplicatebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/duplicate.svg">Duplicate';
+            duplicatebttn.addEventListener('click', () => {
+              window.API.postJson('/extensions/macrozilla/api/create-macro', {path_id: el.id, name: `${macro.name} - copy`}).then(async (res) => {
+                this.show();
+                const m = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: macro.id});
+                window.API.postJson('/extensions/macrozilla/api/update-macro', {id: res.id, description: m.macro.description});
+              });
+            });
+            ctxmenu.appendChild(duplicatebttn);
+            const deletebttn = document.createElement('A');
+            deletebttn.innerHTML = '<img src="/extensions/macrozilla/static/images/delete.svg">Delete';
+            deletebttn.addEventListener('click', () => {
               window.API.postJson('/extensions/macrozilla/api/remove-macro', {id: macro.id}).then(() => {
                 this.show();
               });
             });
-            macrolistel.appendChild(delbttn);
+            ctxmenu.appendChild(deletebttn);
           });
           const addbttn = document.createElement('DIV');
           addbttn.className = 'macroaddel';
