@@ -1,0 +1,12 @@
+{
+  "title": "trigger",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "qualifier": {
+      "enum": ["onmacroload", "website"]
+    }
+  },
+  "required": ["qualifier"]
+}

@@ -88,6 +88,7 @@
 
     constructor() {
       super('macrozilla');
+      window.API.postJson('/extensions/macrozilla/api/callupwebpage', {});
       this.addMenuEntry('Macros');
 
       window.API.getAddonConfig('macrozilla').then((config) => {
