@@ -248,7 +248,7 @@
       for (const input_name in this.inputs) {
         if (this.inputs[input_name].parentNode) {
           if (this.inputs[input_name].type == 'number')
-            jsonobj[input_name] = parseInt(this.inputs[input_name].value);
+            jsonobj[input_name] = +this.inputs[input_name].value;
           else if (this.inputs[input_name].type == 'checkbox')
             jsonobj[input_name] = this.inputs[input_name].checked;
           else
