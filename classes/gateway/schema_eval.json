@@ -1,0 +1,12 @@
+{
+  "title": "eval",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "qualifier": {
+      "enum": ["execution_reason"]
+    }
+  },
+  "required": ["qualifier"]
+}

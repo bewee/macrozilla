@@ -16,9 +16,9 @@ module.exports = {
       if (variable_id == this.params.description.variable_id)
         this.params.callback();
     };
-    this.handler.apihandler.dbhandler.on(`variableValueChanged`, fn);
+    this.handler.apihandler.eventhandler.on(`variableValueChanged`, fn);
     this.params.destruct = () => {
-      this.handler.apihandler.dbhandler.removeListener(`variableValueChanged`, fn);
+      this.handler.apihandler.eventhandler.removeListener(`variableValueChanged`, fn);
     };
   },
 

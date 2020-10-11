@@ -13,15 +13,18 @@ module.exports = {
       return;
     this.inf.block_id = triggersBlock.id;
     triggerInstances[this.inf.macro_id] = [];
+    let i = 1;
     for (const trigger of triggersBlock.list) {
+      const triggerNum = i;
       const callback = async () => {
         if (await this.call({type: 'conditions'}, 'check', {macro_description: macro_description})) {
-          this.handler.execMacro(this.inf.macro_id, `trigger ${trigger.type}`);
+          this.handler.execMacro(this.inf.macro_id, `trigger nr ${triggerNum}`);
         }
       };
       const params = {description: trigger, callback: callback};
       this.call(trigger, 'trigger', params);
       triggerInstances[this.inf.macro_id].push(params);
+      i++;
     }
   },
 
