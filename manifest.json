@@ -1,5 +1,5 @@
 {
-  "author": "Galveston01",
+  "author": "bewee",
   "content_scripts": [
     {
       "js": [
@@ -19,7 +19,7 @@
       "strict_min_version": "0.10.0"
     }
   },
-  "homepage_url": "https://github.com/Galveston01/macrozilla",
+  "homepage_url": "https://github.com/bewee/macrozilla",
   "id": "macrozilla",
   "license": "GPL-3.0",
   "manifest_version": 1,

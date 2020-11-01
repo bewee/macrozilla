@@ -3,7 +3,7 @@
   "display_name": "Macros",
   "version": "0.1.7",
   "description": "Use macros to create advanced rules",
-  "author": "Galveston01",
+  "author": "bewee",
   "main": "index.js",
   "scripts": {
     "lint": "eslint ."
@@ -15,14 +15,14 @@
     "rule",
     "macro"
   ],
-  "homepage": "https://github.com/Galveston01/macrozilla",
+  "homepage": "https://github.com/bewee/macrozilla",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Galveston01/macrozilla.git"
+    "url": "https://github.com/bewee/macrozilla.git"
   },
   "bugs": {
-    "url": "https://github.com/Galveston01/macrozilla/issues"
+    "url": "https://github.com/bewee/macrozilla/issues"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
