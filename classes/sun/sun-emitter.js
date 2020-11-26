@@ -8,8 +8,12 @@ function setDateout(fn, d) {
   return setTimeout(fn, t);
 }
 
+function isFutureDate(d) {
+  return new Date().getTime() <= new Date(d).getTime();
+}
+
 function isValidDate(d) {
-  return d instanceof Date && !isNaN(d);
+  return d instanceof Date && !isNaN(d) && isFutureDate(d);
 }
 
 class SunEmitter extends EventEmitter {
