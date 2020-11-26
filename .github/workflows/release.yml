@@ -74,7 +74,7 @@ jobs:
       with:
         name: upload_url
     - name: Set upload_url env var
-      run: cat upload_url/upload_url
+      run: echo "UPLOAD_URL=$(cat upload_url/upload_url)" >> $GITHUB_ENV
     - name: Set env
       run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF:11})" >> $GITHUB_ENV
     - uses: actions/checkout@v2
@@ -115,7 +115,7 @@ jobs:
       with:
         name: upload_url
     - name: Set upload_url env var
-      run: cat upload_url/upload_url
+      run: echo "UPLOAD_URL=$(cat upload_url/upload_url)" >> $GITHUB_ENV
     - name: Set env
       run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF:11})" >> $GITHUB_ENV
     - uses: actions/checkout@v2
