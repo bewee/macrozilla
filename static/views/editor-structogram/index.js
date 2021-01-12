@@ -264,8 +264,12 @@
 
     whereToPlace(dragel) {
       const dragel_rect = dragel.getBoundingClientRect();
+      const prarea_rect = this.programArea.getBoundingClientRect();
       const mouse_x = (dragel_rect.left+dragel_rect.right)/2;
       const mouse_y = (dragel_rect.top+dragel_rect.bottom)/2;
+      if (mouse_x > prarea_rect.right || mouse_x < prarea_rect.left || mouse_y > prarea_rect.bottom || mouse_y < prarea_rect.top) {
+        return null;
+      }
       let container = null;
       for (const el of this.macroInterface.querySelectorAll('.cardplaceholder')) {
         const el_rect = el.getBoundingClientRect();
