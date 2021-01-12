@@ -440,6 +440,7 @@ div#throwtrashhere:hover{
 
 .macrointerface > .cardplaceholder.filled{
     line-height: initial;
+    width: initial;
 }
 
 .cardplaceholder.executable > .preview{
