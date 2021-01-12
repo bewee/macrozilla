@@ -436,12 +436,10 @@ div#throwtrashhere:hover{
     line-height: 75px;
     margin-top: 0;
     margin-bottom: 0;
-    width: initial !important;
 }
 
 .macrointerface > .cardplaceholder.filled{
     line-height: initial;
-    width: initial;
 }
 
 .cardplaceholder.executable > .preview{
