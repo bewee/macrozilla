@@ -15,11 +15,13 @@ In order to be able to use sun events, you have to fill out the fields "latutide
 
 # Usage
 
+This add-on follows the approach of ECA-rules ("event-condition-action"). This means that whenever one of the selected events/triggers gets fired (placed in "triggers", e.g. "property y of thing x was changed", "thing z was disconnected", "variable x was changed", "sunset started", etc) and all the conditions are fullfilled (placed in "conditions", e.g. "property y of thing x is greater than 200", "variable x contains the number 42", "it is after sunset", etc) then the actions (e.g. "set property y of thing x to value 17", "wait 10 seconds", "increment variable x", etc) get executed consecutively. Running the macro manually (play button in the lower right) will skip the triggers part and *not* check conditions but rather execute all the actions immediately.
+
 Using the side menu of your gateway's website, you can open the administration page for macros and variables.
 ![Screenshot_20200928_150905](https://user-images.githubusercontent.com/44091658/94436383-aa61e380-019c-11eb-8704-3c35cc4553cd.png)
 From there, you can add folders and macros/variables to these. Clicking on an existing macro/variable opens the editor.
 
-In the add-on settings, you can choose between a text-based and a structogram-based editor. A new node-based editor is currently under development.
+In the add-on settings, you can choose between a text-based and a structogram-based editor.
 
 # Code structure
 
