@@ -139,11 +139,11 @@
       const old_copy = card.copy;
       card.copy = () => {
         const copy = old_copy.call(card);
-        copy.inputs.action.addEventListener('input', ev => this.setTextForAction(copy, t));
+        copy.inputs.action.addEventListener('input', (_ev) => this.setTextForAction(copy, t));
         return copy;
       };
-      i_action.addEventListener('input', ev => this.setTextForAction(card, t));
-      if(card.currentAbility == 'thing-action')
+      i_action.addEventListener('input', (_ev) => this.setTextForAction(card, t));
+      if (card.currentAbility == 'thing-action')
         this.setTextForAction(card, t);
       return i_action;
     }

@@ -177,7 +177,7 @@
 
     recursiveCopyElements(src, target) {
       for (const c of src.childNodes) {
-        let c_target = target.appendChild(c.cloneNode(false));
+        const c_target = target.appendChild(c.cloneNode(false));
         this.recursiveCopyElements(c, c_target);
       }
     }
@@ -240,12 +240,13 @@
     inputToJSON(description) {
       if (description.node.parentNode) {
         switch (description.type) {
-          case 'object':
+          case 'object': {
             const json = {};
             for (const property in description.properties) {
               json[property] = this.inputToJSON(description.properties[property]);
             }
             return json;
+          }
           case 'number': case 'integer':
             return +description.node.value;
           case 'boolean':
