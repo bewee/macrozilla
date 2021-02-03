@@ -24,7 +24,7 @@
         card.setTooltipText('Comparison');
         card.addParameter('left', {accepts: 'evaluable', text: 'x'});
         card.addParameter('right', {accepts: 'evaluable', text: 'y'});
-        card.addInput('cmp', 'string', {enum: ['=', '>', '<', '>=', '<=', '!='], venum: ['=', '>', '<', '≥', '≤', '≠']});
+        card.addInput('cmp', {type: 'string', enum: ['=', '>', '<', '>=', '<=', '!='], venum: ['=', '>', '<', '≥', '≤', '≠']});
         card.setText(`%p %i %p`, 'left', 'cmp', 'right');
         card.addAbility('evaluable');
       }

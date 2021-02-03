@@ -41,11 +41,11 @@
       return p;
     }
 
-    addInput(name, type, options = {}) {
+    addInput(name, options = {}) {
       if (this.inputs[name]) {
         options.value = options.value || this.inputs[name].value;
       }
-      options.type = type || options.type;
+      options.type = options.type || 'string';
       const inpnode = this.inputFromDescription(options);
       inpnode.setAttribute('input-name', name);
       this.inputs[name] = inpnode;
@@ -192,7 +192,7 @@
       copyinstance.defaultText = JSON.parse(JSON.stringify(this.defaultText));
       copyinstance.currentAbility = this.currentAbility;
       copyinstance.shutdown_ = this.shutdown_;
-      copyinstance.shutdown_json = this.shutdown_json;
+      copyinstance.cached_json = this.cached_json;
       // copy html attributes
       for (let i = this.attributes.length - 1; i > -1; --i)
         copyinstance.setAttribute(this.attributes[i].name, this.attributes[i].value);
@@ -205,7 +205,7 @@
       }
       // copy inputs
       for (const input_name in this.inputs_) {
-        copyinstance.addInput(input_name, this.inputs_[input_name].type, this.inputs_[input_name]);
+        copyinstance.addInput(input_name, this.inputs_[input_name]);
       }
       copyinstance.refreshText();
       return copyinstance;
@@ -216,7 +216,7 @@
     }
 
     toJSON() {
-      if (this.shutdown_) return this.shutdown_json;
+      if (this.shutdown_) return this.cached_json;
       const jsonobj = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
       if (this.qualifier !== null)
         jsonobj.qualifier = this.qualifier;
@@ -302,8 +302,7 @@
       // internal_attributes copied from json may have to be reflected in the text and correct ability has to be shown
       copy.refreshText();
 
-      copy.shutdown_json = json;
-      if (this.copyFromJSONCallback) this.copyFromJSONCallback(copy);
+      copy.cached_json = json;
       return copy;
     }
 
@@ -330,12 +329,12 @@
 
     revive() {
       this.shutdown_ = false;
-      delete this.shutdown_json;
+      delete this.cached_json;
     }
 
     shutdown(json) {
       this.shutdown_ = true;
-      this.shutdown_json = json;
+      this.cached_json = json;
     }
 
     refreshText() {

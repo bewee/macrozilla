@@ -29,7 +29,7 @@
 
     addLoadBlock(qualifier, fn) {
       const c = this.addBlock(qualifier, ['_hidden']);
-      c.copyFromJSONCallback = fn;
+      this.addCopyFromJSONCallback_(c, fn);
       c.shutdown(null);
       return c;
     }
@@ -49,9 +49,18 @@
 
     addLoadCard(qualifier, fn) {
       const c = this.addCard(qualifier, ['_hidden']);
-      c.copyFromJSONCallback = fn;
+      this.addCopyFromJSONCallback_(c, fn);
       c.shutdown(null);
       return c;
+    }
+
+    addCopyFromJSONCallback_(buildingelement, fn) {
+      const oldCopyFromJSON = buildingelement.copyFromJSON;
+      buildingelement.copyFromJSON = (json, maxid) => {
+        const copy = oldCopyFromJSON.call(buildingelement, json, maxid);
+        fn(copy);
+        return copy;
+      };
     }
 
     addGroup(identifier, categories = []) {

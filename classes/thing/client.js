@@ -20,9 +20,9 @@
       load_card.setJSONAttribute('thing', null);
       load_card.setText('Thing(id=%a)', 'thing');
       load_card.setAttribute('data-title', null);
-      load_card.addInput('property', 'string');
-      load_card.addInput('action', 'string');
-      load_card.addInput('event', 'string');
+      load_card.addInput('property', {type: 'string'});
+      load_card.addInput('action', {type: 'string'});
+      load_card.addInput('event', {type: 'string'});
       this.setupTrigger(load_card);
 
       {
@@ -76,8 +76,8 @@
             if (c.currentAbility === 'trigger')
               this.setTextForTrigger({srcElement: c.inputs.trigger});
             // we have to fill the action input after (and only if) it has been created
-            if ('action-input' in c.inputs && 'action-input' in c.shutdown_json)
-              c.fillInputFromJSON(c.inputs_['action-input'], c.shutdown_json['action-input']);
+            if ('action-input' in c.inputs && 'action-input' in c.cached_json)
+              c.fillInputFromJSON(c.inputs_['action-input'], c.cached_json['action-input']);
             c.revive();
           });
         });
@@ -89,8 +89,8 @@
       card.setTooltipText(`Thing ${t.title}`);
       card.setText(t.title);
       card.setAttribute('data-title', t.title);
-      card.addInput('property', 'string', {enum: t.properties, venum: t.vproperties, value: card.inputs.property && card.inputs.property.value ? card.inputs.property.value : t.properties[0]});
-      card.addInput('event', 'string', {enum: t.events, value: card.inputs.event && card.inputs.event.value ? card.inputs.event.value : t.events[0]});
+      card.addInput('property', {type: 'string', enum: t.properties, venum: t.vproperties, value: card.inputs.property && card.inputs.property.value ? card.inputs.property.value : t.properties[0]});
+      card.addInput('event', {type: 'string', enum: t.events, value: card.inputs.event && card.inputs.event.value ? card.inputs.event.value : t.events[0]});
       card.addAbility('evaluable', `${t.title} %i`, 'property');
       card.addAbility('settable', `${t.title} %i`, 'property');
       card.addAbility('thing-action', `${t.title} %i`, 'action');
@@ -103,7 +103,7 @@
     }
 
     setupTrigger(card) {
-      const i_trigger = card.addInput('trigger', 'string', {enum: this.triggerEnum, venum: this.triggerVEnum});
+      const i_trigger = card.addInput('trigger', {type: 'string', enum: this.triggerEnum, venum: this.triggerVEnum});
       const old_copy = card.copy;
       card.copy = () => {
         const copy = old_copy.call(card);
@@ -135,7 +135,7 @@
     }
 
     setupAction(card, t) {
-      const i_action = card.addInput('action', 'string', {enum: t.actions, venum: t.vactions, value: card.inputs.action && card.inputs.action.value ? card.inputs.action.value : t.actions[0]});
+      const i_action = card.addInput('action', {type: 'string', enum: t.actions, venum: t.vactions, value: card.inputs.action && card.inputs.action.value ? card.inputs.action.value : t.actions[0]});
       const old_copy = card.copy;
       card.copy = () => {
         const copy = old_copy.call(card);
@@ -155,7 +155,7 @@
       const inputDescription = t.rawactions[action].input;
       delete card.inputs['action-input'];
       if (inputDescription) {
-        card.addInput('action-input', inputDescription.type, inputDescription);
+        card.addInput('action-input', inputDescription);
         card.addAbility('thing-action', `${t.title} %i \n %i`, 'action', 'action-input');
       } else {
         card.addAbility('thing-action', `${t.title} %i`, 'action');
