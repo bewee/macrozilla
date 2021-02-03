@@ -54,19 +54,19 @@
           const vproperties = [];
           Object.keys(dev.properties).forEach((p) => {
             properties.push(p);
-            vproperties.push(dev.properties[p].title);
+            vproperties.push(dev.properties[p].title ? dev.properties[p].title : p);
           });
           const actions = [];
           const vactions = [];
           Object.keys(dev.actions).forEach((a) => {
             actions.push(a);
-            vactions.push(dev.actions[a].title);
+            vactions.push(dev.actions[a].title ? dev.actions[a].title : a);
           });
           const events = [];
           Object.keys(dev.events).forEach((e) => {
             events.push(e);
           });
-          this.things[thing_id] = {title: dev.title, properties: properties, vproperties: vproperties, actions: actions, vactions: vactions, events: events};
+          this.things[thing_id] = {title: dev.title, properties: properties, vproperties: vproperties, actions: actions, vactions: vactions, rawactions: dev.actions, events: events};
           const card = handler.addCard(null, ['Things']);
           card.setJSONAttribute('thing', thing_id);
           this.setupThing(card);
@@ -75,6 +75,9 @@
             this.setupThing(c);
             if (c.currentAbility === 'trigger')
               this.setTextForTrigger({srcElement: c.inputs.trigger});
+            // we have to fill the action input after (and only if) it has been created
+            if ('action-input' in c.inputs && 'action-input' in c.shutdown_json)
+              c.fillInputFromJSON(c.inputs_['action-input'], c.shutdown_json['action-input']);
             c.revive();
           });
         });
@@ -87,15 +90,15 @@
       card.setText(t.title);
       card.setAttribute('data-title', t.title);
       card.addInput('property', 'string', {enum: t.properties, venum: t.vproperties, value: card.inputs.property && card.inputs.property.value ? card.inputs.property.value : t.properties[0]});
-      card.addInput('action', 'string', {enum: t.actions, venum: t.vactions, value: card.inputs.action && card.inputs.action.value ? card.inputs.action.value : t.actions[0]});
       card.addInput('event', 'string', {enum: t.events, value: card.inputs.event && card.inputs.event.value ? card.inputs.event.value : t.events[0]});
-      this.setupTrigger(card);
       card.addAbility('evaluable', `${t.title} %i`, 'property');
       card.addAbility('settable', `${t.title} %i`, 'property');
       card.addAbility('thing-action', `${t.title} %i`, 'action');
       card.addAbility('thing-event', `${t.title} %i`, 'event');
       card.addAbility('thing-property', `${t.title} %i`, 'property');
       card.addAbility('trigger', `${t.title} %i %i was changed`, 'trigger', 'property');
+      this.setupTrigger(card);
+      this.setupAction(card, t);
       card.refreshText();
     }
 
@@ -127,6 +130,35 @@
         case 'connectStateChanged':
           card.addAbility('trigger', `${card.getAttribute('data-title')} %i&nbsp`, 'trigger');
           break;
+      }
+      card.refreshText();
+    }
+
+    setupAction(card, t) {
+      const i_action = card.addInput('action', 'string', {enum: t.actions, venum: t.vactions, value: card.inputs.action && card.inputs.action.value ? card.inputs.action.value : t.actions[0]});
+      const old_copy = card.copy;
+      card.copy = () => {
+        const copy = old_copy.call(card);
+        copy.inputs.action.addEventListener('input', ev => this.setTextForAction(copy, t));
+        return copy;
+      };
+      i_action.addEventListener('input', ev => this.setTextForAction(card, t));
+      if(card.currentAbility == 'thing-action')
+        this.setTextForAction(card, t);
+      return i_action;
+    }
+
+    setTextForAction(card, t) {
+      const action = card.inputs.action.value;
+      if (t.rawactions[action].description)
+        card.inputs.action.title = `Description: ${t.rawactions[action].description}`;
+      const inputDescription = t.rawactions[action].input;
+      delete card.inputs['action-input'];
+      if (inputDescription) {
+        card.addInput('action-input', inputDescription.type, inputDescription);
+        card.addAbility('thing-action', `${t.title} %i \n %i`, 'action', 'action-input');
+      } else {
+        card.addAbility('thing-action', `${t.title} %i`, 'action');
       }
       card.refreshText();
     }
