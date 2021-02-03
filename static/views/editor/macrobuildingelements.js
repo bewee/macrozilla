@@ -5,7 +5,9 @@
       super();
 
       this.parameters = {};
+      this.parameters_ = {};
       this.inputs = {};
+      this.inputs_ = {};
       this.group = null;
       this.internal_attributes = {};
       this.abilities = [];
@@ -34,6 +36,8 @@
       if ('text' in options)
         p.setText(options.text);
       this.parameters[name] = p;
+      options.node = p;
+      this.parameters_[name] = options;
       return p;
     }
 
@@ -41,48 +45,74 @@
       if (this.inputs[name]) {
         options.value = options.value || this.inputs[name].value;
       }
-      let inpnode;
-      switch (type) {
-        case 'string':
-          if (Array.isArray(options.enum)) {
-            inpnode = document.createElement('SELECT');
-            for (const i in options.enum) {
-              const opt = document.createElement('OPTION');
-              opt.value = options.enum[i];
-              opt.innerHTML = options.venum ? options.venum[i] : options.enum[i];
-              inpnode.appendChild(opt);
-            }
-          } else {
-            inpnode = document.createElement('INPUT');
-            inpnode.type = 'text';
-            if ('placeholder' in options) inpnode.placeholder = options.placeholder;
-          }
-          if ('value' in options) inpnode.value = options.value;
-          break;
-        case 'number':
-          inpnode = document.createElement('INPUT');
-          inpnode.type = 'number';
-          if ('placeholder' in options) inpnode.placeholder = options.placeholder;
-          if ('min' in options) inpnode.min = options.min;
-          if ('max' in options) inpnode.max = options.max;
-          if ('step' in options) inpnode.step = options.step;
-          if ('value' in options) inpnode.value = options.value;
-          break;
-        case 'boolean':
-          inpnode = document.createElement('INPUT');
-          inpnode.type = 'checkbox';
-          if ('value' in options) inpnode.checked = options.value;
-          break;
-      }
-      inpnode.addEventListener('mousedown', (e) => {
-        e.stopPropagation();
-      });
-      inpnode.addEventListener('input', (_e) => {
-        this.editor.changes();
-      });
+      options.type = type || options.type;
+      const inpnode = this.inputFromDescription(options);
       inpnode.setAttribute('input-name', name);
       this.inputs[name] = inpnode;
+      this.inputs_[name] = options;
       return inpnode;
+    }
+
+    inputFromDescription(options) {
+      let node;
+
+      if (options.type === 'object') {
+        node = document.createElement('DIV');
+        node.style.borderLeft = '4px solid gray';
+        for (const property in options.properties) {
+          const label = document.createElement('SPAN');
+          label.innerHTML = property;
+          node.appendChild(label);
+          const propelement = this.inputFromDescription(options.properties[property]);
+          node.appendChild(propelement);
+          const brknode = document.createElement('DIV');
+          brknode.className = 'break';
+          node.appendChild(brknode);
+        }
+      } else {
+        switch (options.type) {
+          case 'string':
+            if (Array.isArray(options.enum)) {
+              node = document.createElement('SELECT');
+              for (const i in options.enum) {
+                const opt = document.createElement('OPTION');
+                opt.value = options.enum[i];
+                opt.innerHTML = options.venum ? options.venum[i] : options.enum[i];
+                node.appendChild(opt);
+              }
+            } else {
+              node = document.createElement('INPUT');
+              node.type = 'text';
+              if ('placeholder' in options) node.placeholder = options.placeholder;
+            }
+            if ('value' in options) node.value = options.value;
+            break;
+          case 'number': case 'integer':
+            node = document.createElement('INPUT');
+            node.type = 'number';
+            if (options.type === 'integer') node.step = 1;
+            if ('placeholder' in options) node.placeholder = options.placeholder;
+            if ('min' in options) node.min = options.min;
+            if ('max' in options) node.max = options.max;
+            if ('step' in options) node.step = options.step;
+            if ('value' in options) node.value = options.value;
+            break;
+          case 'boolean':
+            node = document.createElement('INPUT');
+            node.type = 'checkbox';
+            if ('value' in options) node.checked = options.value;
+            break;
+        }
+        node.addEventListener('mousedown', (e) => {
+          e.stopPropagation();
+        });
+        node.addEventListener('input', (_e) => {
+          this.editor.changes();
+        });
+      }
+
+      options.node = node;
+      return node;
     }
 
     setText(ftext, ...linkedParams) {
@@ -145,40 +175,14 @@
       }
     }
 
-    recursiveCopyElements(src, target, reference) {
+    recursiveCopyElements(src, target) {
       for (const c of src.childNodes) {
-        let c_target = null;
-        switch (c.tagName) {
-          case 'MACRO-PARAM':
-            c_target = c.copy();
-            target.appendChild(c_target);
-            reference.parameters[c.name] = c_target;
-            break;
-          case 'INPUT':
-          case 'SELECT':
-            c_target = target.appendChild(c.cloneNode(false));
-            this.recursiveCopyElements(c, c_target, reference);
-            reference.inputs[c.getAttribute('input-name')] = c_target;
-            if (c_target.tagName == 'SELECT')
-              c_target.value = c.value;
-            // make input clickable
-            c_target.addEventListener('mousedown', (e) => {
-              e.stopPropagation();
-            });
-            // register changes
-            c_target.addEventListener('input', (_e) => {
-              this.editor.changes();
-            });
-            break;
-          default:
-            c_target = target.appendChild(c.cloneNode(false));
-            this.recursiveCopyElements(c, c_target, reference);
-        }
+        let c_target = target.appendChild(c.cloneNode(false));
+        this.recursiveCopyElements(c, c_target);
       }
     }
 
     copy() {
-      // create new element of same type and copy all relevant attributes
       const copyinstance = new this.constructor(this.qualifier, this.classname, this.group);
       copyinstance.editor = this.editor;
       copyinstance.internal_attributes = JSON.parse(JSON.stringify(this.internal_attributes));
@@ -189,39 +193,21 @@
       copyinstance.currentAbility = this.currentAbility;
       copyinstance.shutdown_ = this.shutdown_;
       copyinstance.shutdown_json = this.shutdown_json;
-      for (let i = this.attributes.length - 1; i > -1; --i) {
+      // copy html attributes
+      for (let i = this.attributes.length - 1; i > -1; --i)
         copyinstance.setAttribute(this.attributes[i].name, this.attributes[i].value);
-      }
       copyinstance.innerHTML = '';
-      // copy dom elements placed on this
-      this.recursiveCopyElements(this, copyinstance, copyinstance);
-      // save parameter elements of copy
-      for (const param_name in this.parameters) {
-        if (!copyinstance.parameters[param_name]) {
-          const cpy = this.parameters[param_name].copy();
-          copyinstance.parameters[cpy.name] = cpy;
-        }
+      // copy nodes tree structure from this to copyinstance
+      this.recursiveCopyElements(this, copyinstance);
+      // copy parameters
+      for (const param_name in this.parameters_) {
+        copyinstance.addParameter(param_name, this.parameters_[param_name]);
       }
-      // save input elements of copy
-      for (const input_name in this.inputs) {
-        if (!copyinstance.inputs[input_name]) {
-          const cpy = this.inputs[input_name].cloneNode();
-          // copy dom elements placed on input as well (e.g. options of select)
-          this.recursiveCopyElements(this.inputs[input_name], cpy, null);
-          // for select, the value has to be copied manually
-          if (cpy.tagName == 'SELECT')
-            cpy.value = this.inputs[input_name].value;
-          // make input clickable
-          cpy.addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-          });
-          // register changes
-          cpy.addEventListener('input', (_e) => {
-            this.editor.changes();
-          });
-          copyinstance.inputs[input_name] = cpy;
-        }
+      // copy inputs
+      for (const input_name in this.inputs_) {
+        copyinstance.addInput(input_name, this.inputs_[input_name].type, this.inputs_[input_name]);
       }
+      copyinstance.refreshText();
       return copyinstance;
     }
 
@@ -239,23 +225,35 @@
       // save internal_attributes
       Object.assign(jsonobj, this.internal_attributes);
       // save params recursively
-      for (const param of this.children[0].children) {
-        if (param.parentNode && param.tagName == 'MACRO-PARAM') {
-          jsonobj[param.name] = param.toJSON();
-        }
+      for (const param_name in this.parameters) {
+        if (this.parameters[param_name].parentNode)
+          jsonobj[param_name] = this.parameters[param_name].toJSON();
       }
       // save input values
       for (const input_name in this.inputs) {
-        if (this.inputs[input_name].parentNode) {
-          if (this.inputs[input_name].type == 'number')
-            jsonobj[input_name] = +this.inputs[input_name].value;
-          else if (this.inputs[input_name].type == 'checkbox')
-            jsonobj[input_name] = this.inputs[input_name].checked;
-          else
-            jsonobj[input_name] = this.inputs[input_name].value;
-        }
+        if (this.inputs[input_name].parentNode)
+          jsonobj[input_name] = this.inputToJSON(this.inputs_[input_name]);
       }
       return jsonobj;
+    }
+
+    inputToJSON(description) {
+      if (description.node.parentNode) {
+        switch (description.type) {
+          case 'object':
+            const json = {};
+            for (const property in description.properties) {
+              json[property] = this.inputToJSON(description.properties[property]);
+            }
+            return json;
+          case 'number': case 'integer':
+            return +description.node.value;
+          case 'boolean':
+            return description.node.checked;
+          case 'string':
+            return description.node.value;
+        }
+      }
     }
 
     setJSONAttribute(name, value) {
@@ -295,27 +293,39 @@
         pholder.copyFromJSON(json[paramname], maxid);
       }
       // fill input values
-      for (const input_name in this.inputs) {
-        let val;
-        try {
-          if (!(input_name in json)) throw 1;
-          val = json[input_name];
-        } catch (_ex) {
-          val = null;
-        }
-        if (copy.inputs[input_name].type === 'checkbox')
-          copy.inputs[input_name].checked = val;
-        else
-          copy.inputs[input_name].value = val;
+      for (const input_name in copy.inputs) {
+        const val = input_name in json ? json[input_name] : null;
+        copy.fillInputFromJSON(copy.inputs_[input_name], val);
       }
       // restore ability state
-      if (json.ability) copy.useAbility(json.ability);
-      // internal_attributes copied from json may have to be reflected in the text
+      if (json.ability) copy.currentAbility = json.ability;
+      // internal_attributes copied from json may have to be reflected in the text and correct ability has to be shown
       copy.refreshText();
 
       copy.shutdown_json = json;
       if (this.copyFromJSONCallback) this.copyFromJSONCallback(copy);
       return copy;
+    }
+
+    fillInputFromJSON(description, value) {
+      switch (description.type) {
+        case 'object':
+          console.log('desc', description, 'value', value);
+          if (value !== null) {
+            for (const property_name in description.properties)
+              this.fillInputFromJSON(description.properties[property_name], value[property_name]);
+          }
+          break;
+        case 'number': case 'integer':
+          description.node.value = +value;
+          break;
+        case 'boolean':
+          description.node.checked = value;
+          break;
+        case 'string':
+          description.node.value = value;
+          break;
+      }
     }
 
     revive() {
