@@ -67,6 +67,7 @@ async function prev() {
 async function action() {
   const thing = this.params.description.thing.thing;
   const action = this.params.description.thing.action;
+  const actionInput = this.params.description.thing['action-input'];
   let act;
   try {
     act = gwhandler.getAction(thing, action);
@@ -74,7 +75,10 @@ async function action() {
     this.log.e({title: ex});
     return;
   }
-  await act.execute();
+  if (actionInput)
+    await act.execute(actionInput);
+  else
+    await act.execute();
 }
 
 module.exports = {
