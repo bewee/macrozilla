@@ -108,7 +108,7 @@
           be = this.classHandlers[b.type].buildingelements[b.qualifier];
         else
           be = Object.values(this.classHandlers[b.type].buildingelements)[0];
-        if (be.abilities.includes('header') && (be.obligatory || b.ability === 'header')) {
+        if (be.hasAbility('header') && (be.obligatory || b.ability === 'header')) {
           const be_copy = be.copyFromJSON(b, maxid);
           be_copy.obligatory = be.obligatory;
           this.header_hull.placeCard(be_copy);
@@ -122,7 +122,7 @@
       // add missing obligatory headers
       for (const ch of Object.values(this.classHandlers)) {
         for (const be of Object.values(ch.buildingelements)) {
-          if (be.abilities.includes('header') && be.obligatory && !processed_obligatoryheaders.has(be)) {
+          if (be.hasAbility('header') && be.obligatory && !processed_obligatoryheaders.has(be)) {
             const be_copy = be.copy();
             be_copy.obligatory = be.obligatory;
             be_copy.setAttribute('macro-block-no', this.nextid++);
@@ -140,7 +140,7 @@
           be = this.classHandlers[b.type].buildingelements[b.qualifier];
         else
           be = Object.values(this.classHandlers[b.type].buildingelements)[0];
-        if (be.abilities.includes('header') && be.abilities.length > 1) {
+        if (be.hasAbility('header') && be.abilityCount() > 1) {
           b.ability = 'header';
         }
       }
@@ -172,7 +172,7 @@
           node = node.parentNode;
         }
         if (!node || node === document) return;
-        if (node.abilities[0] == 'header' && node.obligatory) return;
+        if (node.hasAbility('header') && node.obligatory) return;
         this.changes();
         if (node.parentNode instanceof this.Parameter) {
           this.dragel = node;
@@ -274,7 +274,7 @@
       for (const el of this.macroInterface.querySelectorAll('.cardplaceholder')) {
         const el_rect = el.getBoundingClientRect();
         if (mouse_x > el_rect.left && mouse_x < el_rect.right && mouse_y > el_rect.top && mouse_y < el_rect.bottom) {
-          if (dragel.abilities.includes(el.accepts)) {
+          if (dragel.hasAbility(el.accepts)) {
             container = el;
           }
         }

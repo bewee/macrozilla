@@ -27,7 +27,7 @@
         card.setTooltipText('None');
         card.addAbility('evaluable');
         card.setText('none');
-        card.setJSONAttribute('value', null);
+        card.addInternalAttribute('value', null);
       }
     }
 

@@ -7,14 +7,14 @@
       this.triggerVEnum = ['Property', 'Event', 'Action', 'Connected/Disconnected'];
 
       const load_card = handler.addLoadCard(null, (copy) => {
-        if (copy.internal_attributes.thing in this.things)
+        if (copy.getInternalAttribute('thing') in this.things)
           this.setupThing(copy);
         else
-          copy.setAttribute('thing-waiting', copy.internal_attributes.thing);
+          copy.setAttribute('thing-waiting', copy.getInternalAttribute('thing'));
       });
       load_card.setTooltipText(`Thing _`);
-      load_card.setJSONAttribute('thing', null);
-      load_card.setText('Thing(id=%a)', 'thing');
+      load_card.addInternalAttribute('thing', null);
+      load_card.setShutdownText('Thing(id=%a)', 'thing');
       load_card.setAttribute('data-title', null);
       load_card.addInput('trigger', {type: 'string', enum: this.triggerEnum, venum: this.triggerVEnum, onInput: this.setTextForTrigger.bind(this)});
       load_card.addInput('property', {type: 'string'});
@@ -66,7 +66,7 @@
           });
           this.things[thing_id] = {title: dev.title, properties: properties, vproperties: vproperties, actions: actions, vactions: vactions, rawactions: dev.actions, events: events};
           const card = handler.addCard(null, ['Things'], load_card);
-          card.setJSONAttribute('thing', thing_id);
+          card.updateInternalAttribute('thing', thing_id);
           this.setupThing(card);
           document.querySelectorAll(`macro-card[thing-waiting='${thing_id}']`).forEach((c) => {
             c.removeAttribute('thing-waiting');
@@ -81,7 +81,7 @@
     }
 
     setupThing(card) {
-      const t = this.things[card.internal_attributes.thing];
+      const t = this.things[card.getInternalAttribute('thing')];
       card.setTooltipText(`Thing ${t.title}`);
       card.setText(t.title);
       card.setAttribute('data-title', t.title);
@@ -95,7 +95,6 @@
       card.updateAbility('trigger', `${t.title} %i %i was changed`, 'trigger', 'property');
       this.setupTrigger(card);
       this.setupAction(card);
-      card.refreshText();
       card.revive();
     }
 
@@ -122,7 +121,7 @@
     }
 
     setupAction(card) {
-      const t = this.things[card.internal_attributes.thing];
+      const t = this.things[card.getInternalAttribute('thing')];
       card.updateInput('action', {enum: t.actions, venum: t.vactions, default_value: t.actions[0]});
       if (card.currentAbility == 'thing-action')
         this.setTextForAction(card);
@@ -130,9 +129,9 @@
 
     setTextForAction(card) {
       const action = card.getInputValue('action');
-      const t = this.things[card.internal_attributes.thing];
+      const t = this.things[card.getInternalAttribute('thing')];
       if (t.rawactions[action].description)
-        card.getInputNode('action').title = `Description: ${t.rawactions[action].description}`;
+        card.getInput('action').title = `Description: ${t.rawactions[action].description}`;
       const inputDescription = t.rawactions[action].input;
       if (inputDescription) {
         card.updateInput('action-input', inputDescription);
