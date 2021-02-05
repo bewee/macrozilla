@@ -7,7 +7,6 @@
       this.parameters = {};
       this.parameters_ = {};
       this.inputs = {};
-      this.inputs_ = {};
       this.group = null;
       this.internal_attributes = {};
       this.abilities = [];
@@ -22,6 +21,7 @@
       this.defaultText = {text: '', params: []};
       this.currentAbility = null;
       this.shutdown_ = false;
+      this.cached_json = {};
       this.setText_(this.defaultText);
     }
 
@@ -41,19 +41,69 @@
       return p;
     }
 
+    hasInput(name) {
+      return name in this.inputs;
+    }
+
     addInput(name, options = {}) {
-      if (this.inputs[name]) {
-        options.value = options.value || this.inputs[name].value;
-      }
+      options = Object.assign({}, options);
+      if (this.hasInput(name))
+        throw `Input ${name} already exists`;
+      return this.addInput_(name, options);
+    }
+
+    addInput_(name, options) {
       options.type = options.type || 'string';
-      const inpnode = this.inputFromDescription(options);
+      const inpnode = this.inputFromDescription(options, (ev) => {
+        this.inputs[name].value = this.inputToJSON(this.inputs[name]);
+        if ('onInput' in options)
+          options.onInput(this, ev);
+      });
       inpnode.setAttribute('input-name', name);
-      this.inputs[name] = inpnode;
-      this.inputs_[name] = options;
+      options.node = inpnode;
+      this.inputs[name] = options;
+      this.setInputValue(name, options.value);
       return inpnode;
     }
 
-    inputFromDescription(options) {
+    updateInput(name, options = {}) {
+      options = Object.assign({}, this.inputs[name], options);
+      if (!this.hasInput(name))
+        throw `Unknown input ${name}`;
+      const nodeWasVisible = this.getInputNode(name).parentNode ? true : false;
+      options.value =
+        options.value ||
+        this.getInputValue(name) ||
+        this.cached_json && this.cached_json[name] && this.cached_json[name].value ||
+        options.default_value;
+      const inpnode = this.addInput_(name, options);
+      if (nodeWasVisible)
+        this.refreshText();
+      return inpnode;
+    }
+
+    deleteInput(name) {
+      if (!this.hasInput(name))
+        throw `Unknown input ${name}`;
+      const nodeWasVisible = this.getInputNode(name).parentNode ? true : false;
+      delete this.inputs[name];
+      if (nodeWasVisible)
+        this.refreshText();
+    }
+
+    getInputNode(name) {
+      if (!this.hasInput(name))
+        throw `Unknown input ${name}`;
+      return this.inputs[name].node;
+    }
+
+    getInputValue(name) {
+      if (!this.hasInput(name))
+        throw `Unknown input ${name}`;
+      return this.inputs[name].value;
+    }
+
+    inputFromDescription(options, inputCallback) {
       let node;
 
       if (options.type === 'object') {
@@ -63,7 +113,7 @@
           const label = document.createElement('SPAN');
           label.innerHTML = property;
           node.appendChild(label);
-          const propelement = this.inputFromDescription(options.properties[property]);
+          const propelement = this.inputFromDescription(options.properties[property], inputCallback);
           node.appendChild(propelement);
           const brknode = document.createElement('DIV');
           brknode.className = 'break';
@@ -103,10 +153,11 @@
             if ('value' in options) node.checked = options.value;
             break;
         }
-        node.addEventListener('mousedown', (e) => {
-          e.stopPropagation();
+        node.addEventListener('mousedown', (ev) => {
+          ev.stopPropagation();
         });
-        node.addEventListener('input', (_e) => {
+        node.addEventListener('input', (ev) => {
+          inputCallback(this, ev);
           this.editor.changes();
         });
       }
@@ -120,7 +171,6 @@
       this.setText_(this.defaultText);
     }
 
-    // meant for internal use only
     setText_(obj) {
       const ftext = obj.text.split(' ').join('&nbsp;');
       const linkedParams = obj.params;
@@ -137,7 +187,7 @@
           }
           case '%i': {
             if (linkedParams[i]) {
-              this.children[0].appendChild(this.inputs[linkedParams[i]]);
+              this.children[0].appendChild(this.getInputNode(linkedParams[i]));
               i++;
             }
             break;
@@ -204,8 +254,8 @@
         copyinstance.addParameter(param_name, this.parameters_[param_name]);
       }
       // copy inputs
-      for (const input_name in this.inputs_) {
-        copyinstance.addInput(input_name, this.inputs_[input_name]);
+      for (const input_name in this.inputs) {
+        copyinstance.addInput(input_name, this.inputs[input_name]);
       }
       copyinstance.refreshText();
       return copyinstance;
@@ -231,8 +281,8 @@
       }
       // save input values
       for (const input_name in this.inputs) {
-        if (this.inputs[input_name].parentNode)
-          jsonobj[input_name] = this.inputToJSON(this.inputs_[input_name]);
+        if (this.getInputNode(input_name).parentNode)
+          jsonobj[input_name] = this.inputToJSON(this.inputs[input_name]);
       }
       return jsonobj;
     }
@@ -262,19 +312,31 @@
     }
 
     addAbility(name, text, ...linkedParams) {
+      if (this.abilities.includes(name))
+        throw `Ability ${name} already exists`;
+      this.abilities.push(name);
+      this.updateAbility(name, text, ...linkedParams);
+    }
+
+    addAbilities(...names) {
+      for (const name of names) {
+        this.addAbility(name);
+      }
+    }
+
+    updateAbility(name, text, ...linkedParams) {
       if (!this.abilities.includes(name))
-        this.abilities.push(name);
+        throw `Unknown ability ${name}`;
       if (text)
         this.abilityTexts[name] = {text: text, params: linkedParams};
+      if (this.currentAbility == name)
+        this.refreshText();
     }
 
     useAbility(name) {
       if (this.currentAbility === name) return;
       this.currentAbility = name;
-      if (!(name in this.abilityTexts))
-        this.setText_(this.defaultText);
-      else
-        this.setText_(this.abilityTexts[name]);
+      this.refreshText();
     }
 
     copyFromJSON(json, maxid) {
@@ -296,10 +358,10 @@
       // fill input values
       for (const input_name in copy.inputs) {
         const val = input_name in json ? json[input_name] : null;
-        copy.fillInputFromJSON(copy.inputs_[input_name], val);
+        copy.setInputValue(input_name, val);
       }
       // restore ability state
-      if (json.ability) copy.currentAbility = json.ability;
+      if ('ability' in json) copy.currentAbility = json.ability;
       // internal_attributes copied from json may have to be reflected in the text and correct ability has to be shown
       copy.refreshText();
 
@@ -307,13 +369,20 @@
       return copy;
     }
 
-    fillInputFromJSON(description, value) {
+    setInputValue(name, value) {
+      if (!this.hasInput(name))
+        throw `Unknown input ${name}`;
+      this.setInputValue_(this.inputs[name], value);
+      this.inputs[name].value = value;
+    }
+
+    setInputValue_(description, value) {
+      if (typeof value === 'undefined' || value === null) return;
       switch (description.type) {
         case 'object':
-          console.log('desc', description, 'value', value);
           if (value !== null) {
             for (const property_name in description.properties)
-              this.fillInputFromJSON(description.properties[property_name], value[property_name]);
+              this.setInputValue_(description.properties[property_name], value[property_name]);
           }
           break;
         case 'number': case 'integer':
@@ -328,14 +397,21 @@
       }
     }
 
+    isShutdown() {
+      return this.shutdown_;
+    }
+
     revive() {
       this.shutdown_ = false;
-      delete this.cached_json;
     }
 
     shutdown(json) {
       this.shutdown_ = true;
       this.cached_json = json;
+    }
+
+    refreshCachedJSON() {
+      this.cached_json = this.toJSON();
     }
 
     refreshText() {

@@ -41,8 +41,14 @@
       return c;
     }
 
-    addCard(qualifier, categories = []) {
-      const c = new this.editor.MacroCard(qualifier, this.classname, this.editor);
+    addCard(qualifier, categories = [], template) {
+      let c;
+      if (template) {
+        c = template.copy();
+        c.qualifier = qualifier;
+      } else {
+        c = new this.editor.MacroCard(qualifier, this.classname, this.editor);
+      }
       this.addElement(c, categories);
       return c;
     }
