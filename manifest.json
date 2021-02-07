@@ -25,7 +25,7 @@
   "manifest_version": 1,
   "name": "Macros",
   "short_name": "Macros",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "web_accessible_resources": [
     "static/*",
     "classes/*/client.js",
