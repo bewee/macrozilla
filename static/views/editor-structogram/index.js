@@ -97,32 +97,32 @@
     async loadMacro() {
       const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: this.macro_id});
       console.log('loading', JSON.stringify(res.macro.description));
-      const json = res.macro.description;
+      const serialization = res.macro.description;
       const maxid = {i: 1};
-      const headless_json = [];
+      const headless_serialization = [];
       const processed_obligatoryheaders = new Set();
-      // load headers from json
-      for (const b of json) {
+      // load headers from serialization
+      for (const b of serialization) {
         let be = null;
         if ('qualifier' in b)
           be = this.classHandlers[b.type].buildingelements[b.qualifier];
         else
           be = Object.values(this.classHandlers[b.type].buildingelements)[0];
-        if (be.abilities.includes('header') && (be.obligatory || b.ability === 'header')) {
-          const be_copy = be.copyFromJSON(b, maxid);
+        if (be.hasAbility('header') && (be.obligatory || b.ability === 'header')) {
+          const be_copy = be.copyFromSerialization(b, maxid);
           be_copy.obligatory = be.obligatory;
           this.header_hull.placeCard(be_copy);
           processed_obligatoryheaders.add(be);
         } else {
-          headless_json.push(b);
+          headless_serialization.push(b);
         }
       }
-      this.hull.copyFromJSON(headless_json, maxid);
+      this.hull.loadFromSerialization(headless_serialization, maxid);
       this.nextid = maxid.i+1;
       // add missing obligatory headers
       for (const ch of Object.values(this.classHandlers)) {
         for (const be of Object.values(ch.buildingelements)) {
-          if (be.abilities.includes('header') && be.obligatory && !processed_obligatoryheaders.has(be)) {
+          if (be.hasAbility('header') && be.obligatory && !processed_obligatoryheaders.has(be)) {
             const be_copy = be.copy();
             be_copy.obligatory = be.obligatory;
             be_copy.setAttribute('macro-block-no', this.nextid++);
@@ -133,20 +133,20 @@
     }
 
     async saveMacro() {
-      const json = this.header_hull.toJSON();
-      for (const b of json) {
+      const serialization = this.header_hull.getSerialization();
+      for (const b of serialization) {
         let be = null;
         if ('qualifier' in b)
           be = this.classHandlers[b.type].buildingelements[b.qualifier];
         else
           be = Object.values(this.classHandlers[b.type].buildingelements)[0];
-        if (be.abilities.includes('header') && be.abilities.length > 1) {
+        if (be.hasAbility('header') && be.abilityCount() > 1) {
           b.ability = 'header';
         }
       }
-      json.push(...this.hull.toJSON());
-      console.log('saving', JSON.stringify(json));
-      const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: this.macro_id, description: json});
+      serialization.push(...this.hull.getSerialization());
+      console.log('saving', JSON.stringify(serialization));
+      const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: this.macro_id, description: serialization});
       console.log('result', res);
     }
 
@@ -172,7 +172,7 @@
           node = node.parentNode;
         }
         if (!node || node === document) return;
-        if (node.abilities[0] == 'header' && node.obligatory) return;
+        if (node.hasAbility('header') && node.obligatory) return;
         this.changes();
         if (node.parentNode instanceof this.Parameter) {
           this.dragel = node;
@@ -274,7 +274,7 @@
       for (const el of this.macroInterface.querySelectorAll('.cardplaceholder')) {
         const el_rect = el.getBoundingClientRect();
         if (mouse_x > el_rect.left && mouse_x < el_rect.right && mouse_y > el_rect.top && mouse_y < el_rect.bottom) {
-          if (dragel.abilities.includes(el.accepts)) {
+          if (dragel.hasAbility(el.accepts)) {
             container = el;
           }
         }

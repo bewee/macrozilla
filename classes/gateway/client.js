@@ -18,7 +18,7 @@
         const card = handler.addCard('execution_reason', ['Gateway']);
         card.setTooltipText('Reason for execution (e.g. "manual execution", "trigger nr 1", ...)');
         card.addAbility('evaluable');
-        card.setText('Reason for execution', 'ev');
+        card.setText('Reason for execution');
       }
     }
 

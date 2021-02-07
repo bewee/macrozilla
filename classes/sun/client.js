@@ -10,7 +10,7 @@
         card.setTooltipText('Sun trigger');
         card.addAbility('trigger');
         const sunevs_ = sunevs.map((x) => `sun_${x}`);
-        card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs});
+        card.addInput('ev', {type: 'string', enum: sunevs_, venum: vsunevs});
         card.setText('%i', 'ev');
       }
       const g_beforeafter = handler.addGroup('sun_beforeafter', ['Date & Time']);
@@ -19,7 +19,7 @@
         card.setTooltipText('Before sun event?');
         card.addAbility('evaluable');
         const sunevs_ = sunevs.map((x) => `sun_before_${x}`);
-        card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs});
+        card.addInput('ev', {type: 'string', enum: sunevs_, venum: vsunevs});
         card.setText('Before %i ?', 'ev');
         g_beforeafter.assign(card);
       }
@@ -28,7 +28,7 @@
         card.setTooltipText('After sun event?');
         card.addAbility('evaluable');
         const sunevs_ = sunevs.map((x) => `sun_after_${x}`);
-        card.addInput('ev', 'string', {enum: sunevs_, venum: vsunevs});
+        card.addInput('ev', {type: 'string', enum: sunevs_, venum: vsunevs});
         card.setText('After %i ?', 'ev');
         g_beforeafter.assign(card);
       }

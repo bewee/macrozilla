@@ -21,37 +21,58 @@
       this.assignCategory(categories[0], c);
     }
 
-    addBlock(qualifier, categories = []) {
-      const c = new this.editor.MacroBlock(qualifier, this.classname, this.editor);
+    addBlock(qualifier, categories = [], template) {
+      let c;
+      if (template) {
+        c = template.copy();
+        c.qualifier = qualifier;
+      } else {
+        c = new this.editor.MacroBlock(qualifier, this.classname, this.editor);
+      }
       this.addElement(c, categories);
       return c;
     }
 
     addLoadBlock(qualifier, fn) {
       const c = this.addBlock(qualifier, ['_hidden']);
-      c.copyFromJSONCallback = fn;
-      c.shutdown(null);
+      this.addCopyFromSerializationCallback_(c, fn);
+      c.shutdown();
       return c;
     }
 
     addHeaderBlock(qualifier, categories, obligatory) {
       const c = this.addBlock(qualifier, categories);
-      c.abilities = ['header'];
+      c.addAbility('header');
       c.obligatory = obligatory;
       return c;
     }
 
-    addCard(qualifier, categories = []) {
-      const c = new this.editor.MacroCard(qualifier, this.classname, this.editor);
+    addCard(qualifier, categories = [], template) {
+      let c;
+      if (template) {
+        c = template.copy();
+        c.qualifier = qualifier;
+      } else {
+        c = new this.editor.MacroCard(qualifier, this.classname, this.editor);
+      }
       this.addElement(c, categories);
       return c;
     }
 
     addLoadCard(qualifier, fn) {
       const c = this.addCard(qualifier, ['_hidden']);
-      c.copyFromJSONCallback = fn;
-      c.shutdown(null);
+      this.addCopyFromSerializationCallback_(c, fn);
+      c.shutdown();
       return c;
+    }
+
+    addCopyFromSerializationCallback_(buildingelement, fn) {
+      const oldCopyFromSerialization = buildingelement.copyFromSerialization;
+      buildingelement.copyFromSerialization = (serialization, maxid) => {
+        const copy = oldCopyFromSerialization.call(buildingelement, serialization, maxid);
+        fn(copy);
+        return copy;
+      };
     }
 
     addGroup(identifier, categories = []) {
