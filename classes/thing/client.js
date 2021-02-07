@@ -138,7 +138,7 @@
       const inputDescription = t.rawactions[action].input;
       if (inputDescription) {
         card.updateInput('action-input', inputDescription);
-        card.updateAbility('thing-action', `${t.title} %i \n %i`, 'action', 'action-input');
+        card.updateAbility('thing-action', `${t.title} %i\ninput: %i`, 'action', 'action-input');
       } else {
         card.updateAbility('thing-action', `${t.title} %i`, 'action');
       }

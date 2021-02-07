@@ -365,7 +365,7 @@
 
       if (options.type === 'object') {
         node = document.createElement('DIV');
-        node.style.borderLeft = '4px solid gray';
+        node.className = 'inp-object';
         for (const property in options.properties) {
           const label = document.createElement('SPAN');
           label.innerHTML = property;
@@ -376,9 +376,6 @@
               options.onInput(this, ev);
           });
           node.appendChild(propelement);
-          const brknode = document.createElement('DIV');
-          brknode.className = 'break';
-          node.appendChild(brknode);
         }
       } else if (options.type === 'button') {
         node = document.createElement('BUTTON');
