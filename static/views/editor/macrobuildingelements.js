@@ -21,7 +21,7 @@
       this.currentText = this.defaultText;
       this.shutdown_ = false;
       this.shutdownText = {text: 'Oops... :/', params: []};
-      this.cached_json = {};
+      this.cached_serialization = {};
       this.refreshText();
     }
 
@@ -46,12 +46,12 @@
       this.setText_(this.abilities[this.currentAbility]);
     }
 
-    refreshCachedJSON() {
-      this.cached_json = this.toJSON();
+    refreshCachedSerialization() {
+      this.cached_serialization = this.getSerialization();
     }
 
-    getCachedJSON() {
-      return this.cached_json;
+    getCachedSerialization() {
+      return this.cached_serialization;
     }
 
     isShutdown() {
@@ -112,8 +112,16 @@
       this.refreshText();
     }
 
+    getCurrentAbility() {
+      return this.currentAbility;
+    }
+
+    getAbilities() {
+      return Object.keys(this.abilities);
+    }
+
     abilityCount() {
-      return Object.keys(this.abilities).length;
+      return this.getAbilities().length;
     }
 
     hasInternalAttribute(name) {
@@ -165,6 +173,7 @@
     addParameter(name, options = {}) {
       if (this.hasParameter(name))
         throw `Parameter ${name} already exists`;
+      options = Object.assign({}, options);
       const p = new this.editor.Parameter(name, this.editor);
       options.node = p;
       this.parameters[name] = options;
@@ -172,10 +181,12 @@
       return p;
     }
 
-    updateParameter(name, options = {}) {
+    updateParameter(name, options = {}, soft = true) {
       if (!this.hasParameter(name))
         throw `Unknown parameter ${name}`;
-      options = Object.assign({}, this.parameters[name], options);
+      options = Object.assign({}, options);
+      if (soft)
+        options = Object.assign({}, this.parameters[name], options);
       const nodeWasVisible = this.getParameter(name).parentNode ? true : false;
       if ('accepts' in options)
         this.getParameter(name).setAccepted(options.accepts);
@@ -226,11 +237,14 @@
       return this.addInput_(name, options);
     }
 
-    updateInput(name, options = {}) {
-      options.value = options.value || this.getInputValue(name);
+    updateInput(name, options = {}, soft = true) {
       if (!this.hasInput(name))
         throw `Unknown input ${name}`;
-      options = Object.assign({}, this.inputs[name], options);
+      options = Object.assign({}, options);
+      if (soft) {
+        options.value = options.value || this.getInputValue(name);
+        options = Object.assign({}, this.inputs[name], options);
+      }
       const nodeWasVisible = this.getInput(name).parentNode ? true : false;
       const inpnode = this.addInput_(name, options);
       if (nodeWasVisible)
@@ -334,12 +348,10 @@
       options.type = options.type || 'string';
       options.value =
         options.value ||
-        this.cached_json && this.cached_json[name] && this.cached_json[name].value ||
-        options.default_value ||
         options.type === 'string' && options.enum && options.enum[0] ||
         '';
       const inpnode = this.inputFromDescription(options, () => {
-        this.inputs[name].value = this.inputToJSON(this.inputs[name]);
+        this.inputs[name].value = this.getInputValue_(this.inputs[name]);
       });
       inpnode.setAttribute('input-name', name);
       options.node = inpnode;
@@ -472,7 +484,7 @@
       copyinstance.currentText = JSON.parse(JSON.stringify(this.currentText));
       copyinstance.currentAbility = this.currentAbility;
       copyinstance.shutdown_ = this.shutdown_;
-      copyinstance.cached_json = this.cached_json;
+      copyinstance.cached_serialization = this.cached_serialization;
 
       copyinstance.refreshText();
       return copyinstance;
@@ -485,35 +497,35 @@
       }
     }
 
-    toJSON() {
-      if (this.isShutdown()) return this.cached_json;
-      const jsonobj = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
+    getSerialization() {
+      if (this.isShutdown()) return this.cached_serialization;
+      const serialization = {id: parseInt(this.getAttribute('macro-block-no')), type: this.classname};
       if (this.qualifier !== null)
-        jsonobj.qualifier = this.qualifier;
+        serialization.qualifier = this.qualifier;
       if (this.abilities[this.currentAbility])
-        jsonobj.ability = this.currentAbility;
+        serialization.ability = this.currentAbility;
       // save internal_attributes
-      Object.assign(jsonobj, this.internal_attributes);
+      Object.assign(serialization, this.internal_attributes);
       // save params recursively
       for (const param_name in this.parameters) {
         if (this.parameters[param_name].node.parentNode)
-          jsonobj[param_name] = this.parameters[param_name].node.toJSON();
+          serialization[param_name] = this.parameters[param_name].node.getSerialization();
       }
       // save input values
       for (const input_name in this.inputs) {
-        if (this.getInput(input_name).parentNode)
-          jsonobj[input_name] = this.inputToJSON(this.inputs[input_name]);
+        if (this.getInput(input_name).parentNode && this.inputs[input_name].type !== 'button')
+          serialization[input_name] = this.getInputValue_(this.inputs[input_name]);
       }
-      return jsonobj;
+      return serialization;
     }
 
-    inputToJSON(description) {
+    getInputValue_(description) {
       if (description.node.parentNode) {
         switch (description.type) {
           case 'object': {
             const json = {};
             for (const property in description.properties) {
-              json[property] = this.inputToJSON(description.properties[property]);
+              json[property] = this.getInputValue_(description.properties[property]);
             }
             return json;
           }
@@ -527,34 +539,38 @@
       }
     }
 
-    copyFromJSON(json, maxid) {
-      maxid.i = Math.max(maxid.i, json.id);
-      const copy = this.copy();
-      copy.setAttribute('macro-block-no', json.id);
-      copy.className =
-        copy.className.split(' ').includes('macrocard') ?
+    loadFromSerialization(serialization, maxid) {
+      maxid.i = Math.max(maxid.i, serialization.id);
+      this.setAttribute('macro-block-no', serialization.id);
+      this.className =
+        this.className.split(' ').includes('macrocard') ?
           'macroblock macrocard placed' :
           'macroblock placed';
-      // gather internal_attributes from json
-      for (const ia in copy.internal_attributes) {
-        copy.updateInternalAttribute(ia, json[ia]);
-        (copy.querySelector(`*[attribute-name=${ia}]`) || {}).innerHTML = this.getInternalAttribute(ia);
+      // gather internal_attributes from serialization
+      for (const ia in this.internal_attributes) {
+        this.updateInternalAttribute(ia, serialization[ia]);
+        (this.querySelector(`*[attribute-name=${ia}]`) || {}).innerHTML = this.getInternalAttribute(ia);
       }
       // fill parameters recursively
-      for (const paramname in copy.parameters) {
-        const pholder = copy.getParameter(paramname);
-        if (!json[paramname]) continue;
-        pholder.copyFromJSON(json[paramname], maxid);
+      for (const paramname in this.parameters) {
+        const pholder = this.getParameter(paramname);
+        if (!serialization[paramname]) continue;
+        pholder.loadFromSerialization(serialization[paramname], maxid);
       }
       // fill input values
-      for (const input_name in copy.inputs) {
-        const val = input_name in json ? json[input_name] : null;
-        copy.setInputValue(input_name, val);
+      for (const input_name in this.inputs) {
+        const val = input_name in serialization ? serialization[input_name] : null;
+        this.setInputValue(input_name, val);
       }
       // restore ability state
-      if ('ability' in json) copy.useAbility(json.ability);
+      if ('ability' in serialization) this.useAbility(serialization.ability);
 
-      copy.cached_json = json;
+      this.cached_serialization = serialization;
+    }
+
+    copyFromSerialization(serialization, maxid) {
+      const copy = this.copy();
+      copy.loadFromSerialization(serialization, maxid);
       return copy;
     }
 

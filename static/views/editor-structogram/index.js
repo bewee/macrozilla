@@ -97,27 +97,27 @@
     async loadMacro() {
       const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: this.macro_id});
       console.log('loading', JSON.stringify(res.macro.description));
-      const json = res.macro.description;
+      const serialization = res.macro.description;
       const maxid = {i: 1};
-      const headless_json = [];
+      const headless_serialization = [];
       const processed_obligatoryheaders = new Set();
-      // load headers from json
-      for (const b of json) {
+      // load headers from serialization
+      for (const b of serialization) {
         let be = null;
         if ('qualifier' in b)
           be = this.classHandlers[b.type].buildingelements[b.qualifier];
         else
           be = Object.values(this.classHandlers[b.type].buildingelements)[0];
         if (be.hasAbility('header') && (be.obligatory || b.ability === 'header')) {
-          const be_copy = be.copyFromJSON(b, maxid);
+          const be_copy = be.copyFromSerialization(b, maxid);
           be_copy.obligatory = be.obligatory;
           this.header_hull.placeCard(be_copy);
           processed_obligatoryheaders.add(be);
         } else {
-          headless_json.push(b);
+          headless_serialization.push(b);
         }
       }
-      this.hull.copyFromJSON(headless_json, maxid);
+      this.hull.loadFromSerialization(headless_serialization, maxid);
       this.nextid = maxid.i+1;
       // add missing obligatory headers
       for (const ch of Object.values(this.classHandlers)) {
@@ -133,8 +133,8 @@
     }
 
     async saveMacro() {
-      const json = this.header_hull.toJSON();
-      for (const b of json) {
+      const serialization = this.header_hull.getSerialization();
+      for (const b of serialization) {
         let be = null;
         if ('qualifier' in b)
           be = this.classHandlers[b.type].buildingelements[b.qualifier];
@@ -144,9 +144,9 @@
           b.ability = 'header';
         }
       }
-      json.push(...this.hull.toJSON());
-      console.log('saving', JSON.stringify(json));
-      const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: this.macro_id, description: json});
+      serialization.push(...this.hull.getSerialization());
+      console.log('saving', JSON.stringify(serialization));
+      const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: this.macro_id, description: serialization});
       console.log('result', res);
     }
 

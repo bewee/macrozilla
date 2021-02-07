@@ -30,36 +30,46 @@
         const load_block = handler.addLoadBlock('async', (copy) => {
           copy.updateInternalAttribute('programCount', 2);
           let i = 3;
-          for (; `program${i}` in copy.getCachedJSON(); i++) {
+          for (; `program${i}` in copy.getCachedSerialization(); i++) {
             this.addProgram(copy);
             const maxid = {i: handler.editor.nextId};
-            copy.getParameter(`program${i}`).copyFromJSON(copy.getCachedJSON()[`program${i}`], maxid);
+            copy.getParameter(`program${i}`).loadFromSerialization(copy.getCachedSerialization()[`program${i}`], maxid);
             handler.editor.nextId = Math.max(handler.editor.nextId, maxid.i);
           }
-          console.log(copy);
           this.setupAsyncBlock(copy);
         });
         load_block.addInternalAttribute('programCount', 0);
         this.addProgram(load_block);
         this.addProgram(load_block);
-        load_block.addInput('add', {type: 'button', text: '+', onClick: (block, _ev) => this.addProgram(block)});
-
+        load_block.addInput('add', {
+          type: 'button',
+          text: '+',
+          onClick: (block, _ev) => {
+            this.addProgram(block);
+            block.changes();
+          },
+        });
         const block = handler.addBlock('async', ['Controlflow'], load_block);
         this.setupAsyncBlock(block);
       }
     }
 
     addProgram(block) {
-      block.changes();
       const id = block.getInternalAttribute('programCount')+1;
       block.addParameter(`program${id}`, {accepts: 'executable[]', text: `Program ${id}`});
-      block.addInput(`delprogram${id}`, {type: 'button', text: 'x', onClick: (block, _ev) => this.delProrgam(block, id)});
+      block.addInput(`delprogram${id}`, {
+        type: 'button',
+        text: 'x',
+        onClick: (block, _ev) => {
+          this.delProrgam(block, id);
+          block.changes();
+        },
+      });
       block.updateInternalAttribute('programCount', id);
       this.setTextForAsyncBlock(block);
     }
 
     delProrgam(block, i) {
-      block.changes();
       block.setText('');
       block.deleteParameter(`program${i}`);
       block.deleteInput(`delprogram${i}`);

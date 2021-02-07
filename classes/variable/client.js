@@ -7,7 +7,6 @@
         if (copy.getInternalAttribute('variable_id') in this.variables) {
           // update text of newly loaded variable card
           this.setupVariable(copy);
-          copy.revive();
         } else {
           // mark card as unfinished loaded variable card
           copy.setAttribute('variable-waiting', copy.getInternalAttribute('variable_id'));

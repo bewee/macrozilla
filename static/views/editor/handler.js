@@ -35,7 +35,7 @@
 
     addLoadBlock(qualifier, fn) {
       const c = this.addBlock(qualifier, ['_hidden']);
-      this.addCopyFromJSONCallback_(c, fn);
+      this.addCopyFromSerializationCallback_(c, fn);
       c.shutdown();
       return c;
     }
@@ -61,15 +61,15 @@
 
     addLoadCard(qualifier, fn) {
       const c = this.addCard(qualifier, ['_hidden']);
-      this.addCopyFromJSONCallback_(c, fn);
+      this.addCopyFromSerializationCallback_(c, fn);
       c.shutdown();
       return c;
     }
 
-    addCopyFromJSONCallback_(buildingelement, fn) {
-      const oldCopyFromJSON = buildingelement.copyFromJSON;
-      buildingelement.copyFromJSON = (json, maxid) => {
-        const copy = oldCopyFromJSON.call(buildingelement, json, maxid);
+    addCopyFromSerializationCallback_(buildingelement, fn) {
+      const oldCopyFromSerialization = buildingelement.copyFromSerialization;
+      buildingelement.copyFromSerialization = (serialization, maxid) => {
+        const copy = oldCopyFromSerialization.call(buildingelement, serialization, maxid);
         fn(copy);
         return copy;
       };

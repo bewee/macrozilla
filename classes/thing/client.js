@@ -85,8 +85,10 @@
       card.setTooltipText(`Thing ${t.title}`);
       card.setText(t.title);
       card.setAttribute('data-title', t.title);
-      card.updateInput('property', {type: 'string', enum: t.properties, venum: t.vproperties, default_value: t.properties[0]});
-      card.updateInput('event', {type: 'string', enum: t.events, default_value: t.events[0]});
+      const value_property = card.getCachedSerialization().property || t.properties[0];
+      card.updateInput('property', {type: 'string', enum: t.properties, venum: t.vproperties, value: value_property});
+      const value_event = card.getCachedSerialization().event || t.events[0];
+      card.updateInput('event', {type: 'string', enum: t.events, value: value_event});
       card.updateAbility('evaluable', `${t.title} %i`, 'property');
       card.updateAbility('settable', `${t.title} %i`, 'property');
       card.updateAbility('thing-action', `${t.title} %i`, 'action');
@@ -122,7 +124,8 @@
 
     setupAction(card) {
       const t = this.things[card.getInternalAttribute('thing')];
-      card.updateInput('action', {enum: t.actions, venum: t.vactions, default_value: t.actions[0]});
+      const value = card.getCachedSerialization().action || t.actions[0];
+      card.updateInput('action', {enum: t.actions, venum: t.vactions, value: value});
       if (card.currentAbility == 'thing-action')
         this.setTextForAction(card);
     }

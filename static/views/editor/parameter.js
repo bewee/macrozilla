@@ -71,6 +71,7 @@
     copy() {
       const copyinstance = new this.constructor(this.name, this.editor);
       copyinstance.multi = this.multi;
+      // copy html attributes
       for (let i = this.attributes.length - 1; i > -1; --i) {
         copyinstance.setAttribute(this.attributes[i].name, this.attributes[i].value);
       }
@@ -86,7 +87,7 @@
       return copyinstance;
     }
 
-    toJSON() {
+    getSerialization() {
       if (this.cards.length <= 0) {
         if (this.multi)
           return [];
@@ -96,32 +97,37 @@
       if (this.multi) {
         const l = [];
         this.cards.forEach((card) => {
-          l.push(card.toJSON());
+          l.push(card.getSerialization());
         });
         return l;
       } else {
-        return this.cards[0].toJSON();
+        return this.cards[0].getSerialization();
       }
     }
 
-    copyFromJSON(json, maxid) {
-      if (Array.isArray(json)) {
-        for (const el of json) {
-          const paramhandler = this.editor.classHandlers[el.type];
-          let param = Object.values(paramhandler.buildingelements)[0];
-          if (el.qualifier)
-            param = paramhandler.buildingelements[el.qualifier];
-          const cparam = param.copyFromJSON(el, maxid);
-          this.placeCard(cparam);
+    copyFromSerialization(serialization, maxid) {
+      const copy = this.copy();
+      copy.loadFromSerialization(serialization, maxid);
+      return copy;
+    }
+
+    loadFromSerialization(serialization, maxid) {
+      if (Array.isArray(serialization)) {
+        for (const el of serialization) {
+          this.loadFromSerialization_(el, maxid);
         }
       } else {
-        const paramhandler = this.editor.classHandlers[json.type];
-        let param = Object.values(paramhandler.buildingelements)[0];
-        if (json.qualifier)
-          param = paramhandler.buildingelements[json.qualifier];
-        const cparam = param.copyFromJSON(json, maxid);
-        this.placeCard(cparam);
+        this.loadFromSerialization_(serialization, maxid);
       }
+    }
+
+    loadFromSerialization_(serialization, maxid) {
+      const paramhandler = this.editor.classHandlers[serialization.type];
+      let param = Object.values(paramhandler.buildingelements)[0];
+      if (serialization.qualifier)
+        param = paramhandler.buildingelements[serialization.qualifier];
+      const cparam = param.copyFromSerialization(serialization, maxid);
+      this.placeCard(cparam);
     }
 
     reset(cardobj) {
