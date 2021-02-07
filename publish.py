@@ -3,8 +3,8 @@ import json
 
 node_versions = {8: 57, 10: 64, 12: 72, 14: 83}
 platforms = ['linux-arm', 'linux-arm64', 'linux-x64', 'darwin-x64']
-release_url = 'https://github.com/Galveston01/macrozilla/releases/download'
-license_url = 'https://raw.githubusercontent.com/Galveston01/macrozilla/master/LICENSE.md'
+release_url = 'https://github.com/bewee/macrozilla/releases/download'
+license_url = 'https://raw.githubusercontent.com/bewee/macrozilla/master/LICENSE.md'
 json_file = 'macrozilla.json'
 
 release_version = sys.argv[1]
