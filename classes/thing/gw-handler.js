@@ -21,9 +21,6 @@ class GWHandler extends EventEmitter {
     for (const device of devlist) {
       if (!(device.id() in this.devices)) {
         console.log(device.id(), ':', 'Added');
-        device.on('connectFailed', () => {
-          console.error(device.id(), ':', 'Failed to connect');
-        });
         device.on('error', (error) => {
           console.error(device.id(), ':', 'Something went wrong', error);
         });
@@ -47,6 +44,8 @@ class GWHandler extends EventEmitter {
           setTimeout(async () => {
             await device.subscribeEvents(device.events);
           }, 100);
+        }).catch(() => {
+          console.error(device.id(), ':', 'Failed to connect');
         });
         this.devices[device.id()] = device;
       }
