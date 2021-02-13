@@ -28,9 +28,9 @@ module.exports = {
   },
 
   trigger: function() {
-    emitter.on(this.params.description.trigger, this.params.callback);
+    emitter.on(this.params.description.ev, this.params.callback);
     this.params.destruct = () => {
-      emitter.removeEventListener(this.params.description.trigger, this.params.callback);
+      emitter.removeListener(this.params.description.ev, this.params.callback);
     };
   },
 
