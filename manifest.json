@@ -42,6 +42,8 @@
       "log_limit_num": 100,
       "loglevel": "info",
       "macrolog2console": false,
+      "page_macros": true,
+      "page_variables": true,
       "device_macros": {
         "include": true,
         "raw_property": false,
