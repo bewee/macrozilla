@@ -60,6 +60,6 @@
     "sqlite3": "^5.0.0",
     "suncalc": "^1.8.0",
     "websocket": "^1.0.31",
-    "webthings-client": "^2.1.0"
+    "webthings-client": "^4.0.0"
   }
 }
