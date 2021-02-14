@@ -126,6 +126,10 @@
 
   }
 
-  new MacrozillaMacrosExtension();
-  new MacrozillaVariablesExtension();
+  window.API.getAddonConfig('macrozilla').then((config) => {
+    if (config.page_macros)
+      new MacrozillaMacrosExtension();
+    if (config.page_variables)
+      new MacrozillaVariablesExtension();
+  });
 })();

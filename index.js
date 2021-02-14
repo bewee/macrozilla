@@ -4,6 +4,7 @@
 
 'use strict';
 
+const jsonDefaults = require('json-schema-defaults');
 const Database = require('gateway-addon').Database;
 const DBHandler = require('./lib/db-handler');
 const MacroHandler = require('./lib/macro-handler');
@@ -22,7 +23,7 @@ class Macrozilla {
     this.addondb.open().then(() => {
       return this.addondb.loadConfig();
     }).then((config) => {
-      this.config = config;
+      this.config = Object.assign({}, jsonDefaults(manifest.options), config);
       this.dbhandler = new DBHandler(this);
       return this.dbhandler.open();
     }).then(() => {

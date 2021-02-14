@@ -41,7 +41,22 @@
       "log_limit_time": 86400,
       "log_limit_num": 100,
       "loglevel": "info",
-      "macrolog2console": false
+      "macrolog2console": false,
+      "device_macros": {
+        "include": true,
+        "raw_property": false,
+        "execute_action": true,
+        "actions": false,
+        "events": true
+      },
+      "device_variables": {
+        "include": true,
+        "raw_property": false,
+        "value_property": true,
+        "type_property": true,
+        "actions": true,
+        "events": true
+      }
     },
     "schema": {
       "type": "object",
@@ -54,7 +69,9 @@
         "log_limit_time",
         "log_limit_num",
         "loglevel",
-        "macrolog2console"
+        "macrolog2console",
+        "device_variables",
+        "device_macros"
       ],
       "properties": {
         "editor": {
@@ -103,6 +120,98 @@
           "type": "boolean",
           "title": "Add macro logs to log file",
           "description": "Print macro's log entries to the global log file of the gateway as well"
+        },
+        "page_macros": {
+          "type": "boolean",
+          "title": "Include macros page?",
+          "description": "Whether to include the extension page for managing macros"
+        },
+        "page_variables": {
+          "type": "boolean",
+          "title": "Include variables page?",
+          "description": "Whether to include the extension page for managing variables"
+        },
+        "device_macros": {
+          "type": "object",
+          "title": "Macros device",
+          "properties": {
+            "include": {
+              "type": "boolean",
+              "title": "Include macros device?",
+              "description": "Whether to add a device for managing macros"
+            },
+            "raw_property": {
+              "type": "boolean",
+              "title": "Include raw macro property?",
+              "description": "Whether to add a property for the raw contents of each macro"
+            },
+            "execute_action": {
+              "type": "boolean",
+              "title": "Include execute action?",
+              "description": "Whether to add an action for executing each macro"
+            },
+            "actions": {
+              "type": "boolean",
+              "title": "Include macro actions?",
+              "description": "Whether to add various macro actions (add, remove, ...)"
+            },
+            "events": {
+              "type": "boolean",
+              "title": "Include macro events?",
+              "description": "Whether to add events for each macro"
+            }
+          },
+          "required": [
+            "include",
+            "raw_property",
+            "execute_action",
+            "actions",
+            "events"
+          ]
+        },
+        "device_variables": {
+          "type": "object",
+          "title": "Variables device",
+          "properties": {
+            "include": {
+              "type": "boolean",
+              "title": "Include variables device?",
+              "description": "Whether to add a device for managing variables"
+            },
+            "raw_property": {
+              "type": "boolean",
+              "title": "Include raw variable property?",
+              "description": "Whether to add a property for the raw value of each variable"
+            },
+            "value_property": {
+              "type": "boolean",
+              "title": "Include variable value property?",
+              "description": "Whether to add a property for the value of each variable"
+            },
+            "type_property": {
+              "type": "boolean",
+              "title": "Include variable type property?",
+              "description": "Whether to add a property for the type of each variable"
+            },
+            "actions": {
+              "type": "boolean",
+              "title": "Include variable actions?",
+              "description": "Whether to add various variable actions (add, remove, ...)"
+            },
+            "events": {
+              "type": "boolean",
+              "title": "Include variable events?",
+              "description": "Whether to add events for each variable"
+            }
+          },
+          "required": [
+            "include",
+            "raw_property",
+            "value_property",
+            "type_property",
+            "actions",
+            "events"
+          ]
         }
       }
     }
