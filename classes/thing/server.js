@@ -84,7 +84,7 @@ async function action() {
 module.exports = {
 
   init: function(handler) {
-    const config = handler.apihandler.config;
+    const config = handler.macrozilla.config;
     gwhandler = new GWHandler(config.accessToken);
     gwhandler.init().then(() => {
       if (config.scanInterval)

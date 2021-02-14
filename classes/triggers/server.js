@@ -7,7 +7,7 @@ const triggerInstances = {};
 module.exports = {
 
   onload: async function() {
-    const macro_description = (await this.handler.apihandler.dbhandler.getMacro(this.inf.macro_id)).description;
+    const macro_description = (await this.handler.macrozilla.dbhandler.getMacro(this.inf.macro_id)).description;
     const triggersBlock = macro_description.find((block) => block && block.type && block.type == 'triggers');
     if (!triggersBlock || !this.validate(triggersBlock, schema_triggersblock))
       return;

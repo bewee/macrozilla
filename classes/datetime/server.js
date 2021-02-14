@@ -13,7 +13,7 @@ function evalGet() {
       return this.encodeNumber(new Date().getHours());
     case 'dayw': {
       let d = new Date().getDay();
-      if (!this.handler.apihandler.config.sundayfirst && d == 0)
+      if (!this.handler.macrozilla.config.sundayfirst && d == 0)
         d = 7;
       return this.encodeNumber(d);
     }
