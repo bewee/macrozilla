@@ -16,9 +16,9 @@ module.exports = {
         this.params.destruct = () => {};
         break;
       case 'website':
-        this.handler.apihandler.eventhandler.on(`websiteCalled`, this.params.callback);
+        this.handler.macrozilla.eventhandler.on(`websiteCalled`, this.params.callback);
         this.params.destruct = () => {
-          this.handler.apihandler.eventhandler.removeListener(`websiteCalled`, this.params.callback);
+          this.handler.macrozilla.eventhandler.removeListener(`websiteCalled`, this.params.callback);
         };
         break;
     }

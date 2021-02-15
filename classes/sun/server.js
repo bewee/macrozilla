@@ -9,8 +9,8 @@ let emitter;
 module.exports = {
 
   init: function(handler) {
-    lat = handler.apihandler.config.latitude;
-    lon = handler.apihandler.config.longitude;
+    lat = handler.macrozilla.config.latitude;
+    lon = handler.macrozilla.config.longitude;
     emitter = new SunEmitter(lat, lon);
   },
 

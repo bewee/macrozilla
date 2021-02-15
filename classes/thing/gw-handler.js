@@ -37,8 +37,16 @@ class GWHandler extends EventEmitter {
         device.on('actionTriggered', (...params) => {
           this.emit(`actionTriggered${device.id()}`, ...params);
         });
+        device.on('deviceModified', () => {
+          device.disconnect();
+          setTimeout(async () => {
+            await this.listDevices();
+          }, 100);
+        });
         device.on('connectStateChanged', (...params) => {
           this.emit(`connectStateChanged${device.id()}`, ...params);
+          if (!params[0])
+            delete this.devices[device.id()];
         });
         device.connect().then(() => {
           setTimeout(async () => {

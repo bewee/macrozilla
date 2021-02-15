@@ -1,0 +1,17 @@
+[
+    {
+        "id": 2,
+        "type": "triggers",
+        "list": []
+    },
+    {
+        "id": 3,
+        "type": "conditions",
+        "list": []
+    },
+    {
+        "id": 4,
+        "type": "comment",
+        "text": "Do stuff here"
+    }
+]
