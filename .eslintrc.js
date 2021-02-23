@@ -102,6 +102,7 @@ module.exports = {
       'always-multiline'
     ],
     'no-ex-assign': 'warn',
+    'no-fallthrough': 'warn',
     'no-console': 0,
     'no-duplicate-imports': 'error',
     'no-eval': 'warn',
