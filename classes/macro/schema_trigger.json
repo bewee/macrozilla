@@ -1,0 +1,15 @@
+{
+  "title": "trigger",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "macro_id": {
+      "type": "integer"
+    },
+    "moment": {
+      "enum": ["started", "finished"]
+    }
+  },
+  "required": ["macro_id", "moment"]
+}
