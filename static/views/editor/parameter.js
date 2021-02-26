@@ -33,7 +33,7 @@
       this.id = '';
       cardel.style.top = '';
       cardel.style.left = '';
-      if (!before) {
+      if (!before || !this.multi) {
         this.appendChild(cardel);
         this.cards.push(cardel);
       } else {
