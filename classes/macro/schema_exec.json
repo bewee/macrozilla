@@ -1,0 +1,13 @@
+{
+  "title": "exec",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{"$ref": "/class"}],
+  "properties": {
+    "macro": {"$ref": "/class"},
+    "qualifier": {
+      "enum": ["execute"]
+    }
+  },
+  "required": ["qualifier", "macro"]
+}
