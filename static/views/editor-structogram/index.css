@@ -447,6 +447,14 @@ div#throwtrashhere:hover{
     color: #4a4a4a;
 }
 
+.macroblock[unknown]{
+    background: #333;
+}
+
+.macroblock.macrocard[unknown] .blockdescr{
+    color: #fff;
+}
+
 .macrointerface > .cardplaceholder, .macrointerface > .cardplaceholder.filled{
     position: relative;
     border: 1px dotted gray;

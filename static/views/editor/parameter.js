@@ -122,10 +122,16 @@
     }
 
     loadFromSerialization_(serialization, maxid) {
-      const paramhandler = this.editor.classHandlers[serialization.type];
+      let paramhandler;
+      if (!(serialization.type in this.editor.classHandlers))
+        paramhandler = this.editor.classHandlers.unknown;
+      else
+        paramhandler = this.editor.classHandlers[serialization.type];
       let param = Object.values(paramhandler.buildingelements)[0];
       if (serialization.qualifier)
         param = paramhandler.buildingelements[serialization.qualifier];
+      if (!param)
+        param = Object.values(this.editor.classHandlers.unknown.buildingelements)[0];
       const cparam = param.copyFromSerialization(serialization, maxid);
       this.placeCard(cparam);
     }

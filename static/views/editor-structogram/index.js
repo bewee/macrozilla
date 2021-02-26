@@ -104,10 +104,14 @@
       // load headers from serialization
       for (const b of serialization) {
         let be = null;
-        if ('qualifier' in b)
+        if (!(b.type in this.classHandlers))
+          be = Object.values(this.classHandlers.unknown.buildingelements)[0];
+        else if ('qualifier' in b)
           be = this.classHandlers[b.type].buildingelements[b.qualifier];
         else
           be = Object.values(this.classHandlers[b.type].buildingelements)[0];
+        if (!be)
+          be = Object.values(this.classHandlers.unknown.buildingelements)[0];
         if (be.hasAbility('header') && (be.obligatory || b.ability === 'header')) {
           const be_copy = be.copyFromSerialization(b, maxid);
           be_copy.obligatory = be.obligatory;
