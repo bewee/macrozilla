@@ -15,24 +15,28 @@ async function next() {
     this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
     return;
   }
-  let val = await prop.getValue();
-  switch (prop.description.type) {
-    case 'boolean':
-      val = !val;
-      break;
-    case 'number': case 'integer':
-      val = val + 1;
-      if (val > prop.description.maximum) val = prop.description.minimum;
-      break;
-    case 'string':
-      if (prop.description.enum) {
-        val = prop.description.enum.indexOf(val) + 1;
-        if (val >= prop.description.enum.length) val = 0;
-        val = prop.description.enum[val];
-      }
-      break;
+  try {
+    let val = await prop.getValue();
+    switch (prop.description.type) {
+      case 'boolean':
+        val = !val;
+        break;
+      case 'number': case 'integer':
+        val = val + 1;
+        if (val > prop.description.maximum) val = prop.description.minimum;
+        break;
+      case 'string':
+        if (prop.description.enum) {
+          val = prop.description.enum.indexOf(val) + 1;
+          if (val >= prop.description.enum.length) val = 0;
+          val = prop.description.enum[val];
+        }
+        break;
+    }
+    await prop.setValue(val);
+  } catch (ex) {
+    this.log.e({title: `Failed to set property ${property} of thing ${thing} to next value`, message: ex.message});
   }
-  await prop.setValue(val);
 }
 
 async function prev() {
@@ -46,24 +50,28 @@ async function prev() {
     this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
     return;
   }
-  let val = await prop.getValue();
-  switch (prop.description.type) {
-    case 'boolean':
-      val = !val;
-      break;
-    case 'number': case 'integer':
-      val = val - 1;
-      if (val < prop.description.minimum) val = prop.description.maximum;
-      break;
-    case 'string':
-      if (prop.description.enum) {
-        val = prop.description.enum.indexOf(val) - 1;
-        if (val < 0) val = prop.description.enum.length - 1;
-        val = prop.description.enum[val];
-      }
-      break;
+  try {
+    let val = await prop.getValue();
+    switch (prop.description.type) {
+      case 'boolean':
+        val = !val;
+        break;
+      case 'number': case 'integer':
+        val = val - 1;
+        if (val < prop.description.minimum) val = prop.description.maximum;
+        break;
+      case 'string':
+        if (prop.description.enum) {
+          val = prop.description.enum.indexOf(val) - 1;
+          if (val < 0) val = prop.description.enum.length - 1;
+          val = prop.description.enum[val];
+        }
+        break;
+    }
+    await prop.setValue(val);
+  } catch (ex) {
+    this.log.e({title: `Failed to set property ${property} of thing ${thing} to previous value`, message: ex.message});
   }
-  await prop.setValue(val);
 }
 
 async function action() {
@@ -78,10 +86,14 @@ async function action() {
     this.log.e({title: `Cannot find action ${action} of thing ${thing}`});
     return;
   }
-  if (actionInput)
-    await act.execute(actionInput);
-  else
-    await act.execute();
+  try {
+    if (actionInput)
+      await act.execute(actionInput);
+    else
+      await act.execute();
+  } catch (ex) {
+    this.log.e({title: `Failed to execute action ${action} of thing ${thing}`, message: ex.message});
+  }
 }
 
 module.exports = {
@@ -163,24 +175,28 @@ module.exports = {
       this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
       return;
     }
-    switch (prop.description.type) {
-      case 'boolean':
-        val = this.decodeBoolean(this.params.value);
-        break;
-      case 'number':
-        val = this.decodeNumber(this.params.value);
-        break;
-      case 'integer':
-        val = this.decodeInteger(this.params.value);
-        break;
-      case 'string':
-        val = this.decodeString(this.params.value);
-        break;
-      default:
-        val = null;
-        break;
+    try {
+      switch (prop.description.type) {
+        case 'boolean':
+          val = this.decodeBoolean(this.params.value);
+          break;
+        case 'number':
+          val = this.decodeNumber(this.params.value);
+          break;
+        case 'integer':
+          val = this.decodeInteger(this.params.value);
+          break;
+        case 'string':
+          val = this.decodeString(this.params.value);
+          break;
+        default:
+          val = null;
+          break;
+      }
+      await prop.setValue(val);
+    } catch (ex) {
+      this.log.e({title: `Failed to set property ${property} of thing ${thing} to value ${this.params.value}`, message: ex.message});
     }
-    await prop.setValue(val);
   },
 
   eval: async function() {
@@ -194,8 +210,12 @@ module.exports = {
       this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
       return;
     }
-    const val = await prop.getValue();
-    return this.encode(val);
+    try {
+      const val = await prop.getValue();
+      return this.encode(val);
+    } catch (ex) {
+      this.log.e({title: `Failed to get value of property ${property} of thing ${thing}`, message: ex.message});
+    }
   },
 
   exec: async function() {
