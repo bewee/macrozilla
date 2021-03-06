@@ -1,17 +1,18 @@
 'use strict';
 
-const GWHandler = require('./gw-handler');
+const WebThingsClient = require('webthings-client').WebThingsClient;
 
-let gwhandler;
+let webthingsClient = null;
 
 async function next() {
   const thing = this.params.description.thing.thing;
   const property = this.params.description.thing.property;
   let prop;
   try {
-    prop = gwhandler.getProperty(thing, property);
-  } catch (ex) {
-    this.log.e({title: ex});
+    const device = await webthingsClient.getDevice(thing);
+    prop = device.properties[property];
+  } catch (_ex) {
+    this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
     return;
   }
   let val = await prop.getValue();
@@ -39,9 +40,10 @@ async function prev() {
   const property = this.params.description.thing.property;
   let prop;
   try {
-    prop = gwhandler.getProperty(thing, property);
-  } catch (ex) {
-    this.log.e({title: ex});
+    const device = await webthingsClient.getDevice(thing);
+    prop = device.properties[property];
+  } catch (_ex) {
+    this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
     return;
   }
   let val = await prop.getValue();
@@ -70,9 +72,10 @@ async function action() {
   const actionInput = this.params.description.thing['action-input'];
   let act;
   try {
-    act = gwhandler.getAction(thing, action);
+    const device = await webthingsClient.getDevice(thing);
+    act = device.actions[action];
   } catch (ex) {
-    this.log.e({title: ex});
+    this.log.e({title: `Cannot find action ${action} of thing ${thing}`});
     return;
   }
   if (actionInput)
@@ -83,22 +86,47 @@ async function action() {
 
 module.exports = {
 
-  init: function(handler) {
+  init: async function(handler) {
     const config = handler.macrozilla.config;
-    gwhandler = new GWHandler(config.accessToken);
-    gwhandler.init().then(() => {
-      if (config.scanInterval)
-        setInterval(gwhandler.listDevices.bind(gwhandler), config.scanInterval*1000);
+
+    webthingsClient = await WebThingsClient.local(config.accessToken);
+    console.info('Webthings client connected');
+    webthingsClient.on('error', (error) => {
+      console.error('Webthings client error', error);
     });
+    webthingsClient.on('close', () => {
+      console.error('Webthings client closed connection. Usually this should never happen. If it does anyway, please restart the add-on!');
+    });
+    webthingsClient.on('deviceAdded', async (device_id) => {
+      const device = await webthingsClient.getDevice(device_id);
+      await webthingsClient.subscribeEvents(device, device.events);
+      console.info(device.id(), ':', 'Subscribed to all events');
+    });
+
+    try {
+      await webthingsClient.connect();
+
+      setTimeout(async () => {
+        const devices = await webthingsClient.getDevices();
+        for (const device of devices) {
+          await webthingsClient.subscribeEvents(device, device.events);
+          console.info(device.id(), ':', 'Subscribed to all events');
+        }
+      }, 100);
+    } catch (e) {
+      console.warn(`Could not connect to gateway`);
+    }
   },
 
   trigger: function() {
     const trigger = this.params.description.trigger;
     const thing = this.params.description.thing;
     let parname;
-    let fn = (par) => {
+    const fn = (device_id, par_name) => {
+      if (device_id != thing)
+        return;
       if (parname) {
-        if (par.name == parname)
+        if (par_name == parname)
           this.params.callback();
       } else {
         this.params.callback();
@@ -115,14 +143,12 @@ module.exports = {
         parname = this.params.description.action;
         break;
       case 'connectStateChanged':
-        fn = () => {
-          this.params.callback();
-        };
+        parname = null;
         break;
     }
-    gwhandler.on(`${trigger}${thing}`, fn);
+    webthingsClient.on(`${trigger}`, fn);
     this.params.destruct = () => {
-      gwhandler.removeListener(`${trigger}${thing}`, fn);
+      webthingsClient.removeListener(`${trigger}`, fn);
     };
   },
 
@@ -131,9 +157,10 @@ module.exports = {
     const property = this.params.description.property;
     let prop, val;
     try {
-      prop = gwhandler.getProperty(thing, property);
-    } catch (ex) {
-      this.log.e({title: ex});
+      const device = await webthingsClient.getDevice(thing);
+      prop = device.properties[property];
+    } catch (_ex) {
+      this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
       return;
     }
     switch (prop.description.type) {
@@ -161,9 +188,10 @@ module.exports = {
     const property = this.params.description.property;
     let prop;
     try {
-      prop = gwhandler.getProperty(thing, property);
-    } catch (ex) {
-      this.log.e({title: ex});
+      const device = await webthingsClient.getDevice(thing);
+      prop = device.properties[property];
+    } catch (_ex) {
+      this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
       return;
     }
     const val = await prop.getValue();

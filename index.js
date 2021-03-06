@@ -32,6 +32,7 @@ class Macrozilla {
       this.apihandler = new APIHandler(addonManager, this);
       this.adapter = new Adapter(addonManager, this);
       this.macrohandler = new MacroHandler(this);
+      return this.macrohandler.init();
     }).catch(console.error);
   }
 
