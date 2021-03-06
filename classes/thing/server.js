@@ -82,7 +82,7 @@ async function action() {
   try {
     const device = await webthingsClient.getDevice(thing);
     act = device.actions[action];
-  } catch (ex) {
+  } catch (_ex) {
     this.log.e({title: `Cannot find action ${action} of thing ${thing}`});
     return;
   }
@@ -208,13 +208,14 @@ module.exports = {
       prop = device.properties[property];
     } catch (_ex) {
       this.log.e({title: `Cannot find property ${property} of thing ${thing}`});
-      return;
+      return '';
     }
     try {
       const val = await prop.getValue();
       return this.encode(val);
     } catch (ex) {
       this.log.e({title: `Failed to get value of property ${property} of thing ${thing}`, message: ex.message});
+      return '';
     }
   },
 
