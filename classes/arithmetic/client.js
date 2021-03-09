@@ -7,6 +7,7 @@
       const g_arith_b = handler.addGroup('Arithmetic Operations', ['Maths']);
       const g_logic_b = handler.addGroup('Logic Operations', ['Maths']);
       const g_crement = handler.addGroup('Increment/Decrement Operations', ['Maths']);
+      const g_as = handler.addGroup('Conversion Operations', ['Maths']);
 
       g_arith_b.assign(this.binaryCard('+', 'Plus'));
       g_arith_b.assign(this.binaryCard('-', 'Minus'));
@@ -28,6 +29,13 @@
         card.setText(`%p %i %p`, 'left', 'cmp', 'right');
         card.addAbility('evaluable');
       }
+
+      g_as.assign(this.unaryCard('as_string', 'Text conversion', '%p as text'));
+      g_as.assign(this.unaryCard('as_number', 'Number conversion', '%p as number'));
+      g_as.assign(this.unaryCard('as_boolean', 'True/false conversion', '%p as true/false'));
+      g_as.assign(this.unaryCard('as_integer', 'Integer conversion', '%p as integer'));
+
+      this.unaryCard('typeof', 'Datatype (text, number, true/false)', 'type of %p');
 
       g_logic_b.assign(this.binaryCard('&', 'And', '%p and %p'));
       g_logic_b.assign(this.binaryCard('|', 'Or', '%p or %p'));

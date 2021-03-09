@@ -90,13 +90,13 @@
           return;
         }
       }
-      console.log('executing');
+      console.debug('executing');
       await window.API.postJson('/extensions/macrozilla/api/exec-macro', {id: this.macro_id});
     }
 
     async loadMacro() {
       const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: this.macro_id});
-      console.log('loading', JSON.stringify(res.macro.description));
+      console.debug('loading', JSON.stringify(res.macro.description));
       const serialization = res.macro.description;
       const maxid = {i: 1};
       const headless_serialization = [];
@@ -149,9 +149,9 @@
         }
       }
       serialization.push(...this.hull.getSerialization());
-      console.log('saving', JSON.stringify(serialization));
+      console.debug('saving', JSON.stringify(serialization));
       const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: this.macro_id, description: serialization});
-      console.log('result', res);
+      console.debug('result', res);
     }
 
     initSideBar() {

@@ -23,15 +23,15 @@ class SunEmitter extends EventEmitter {
     this.lat = lat;
     this.lon = lon;
     this.calculateTimes();
-    //console.log(this.times);
+    //console.info(this.times);
     for (const property of Object.keys(this.times)) {
       const propfn = (() => {
         this.emit(property);
         this.calculateTimes();
         setDateout(propfn, this.times[property]);
-        console.log('starting dateout for', property, this.times[property]);
+        console.info('starting dateout for', property, this.times[property]);
       }).bind(this);
-      console.log('starting dateout for', property, this.times[property]);
+      console.info('starting dateout for', property, this.times[property]);
       setDateout(propfn, this.times[property]);
     }
   }

@@ -78,7 +78,7 @@
 
     addAbility(name, text, ...linkedParams) {
       if (this.hasAbility(name))
-        throw `Ability ${name} already exists`;
+        throw Error(`Ability ${name} already exists`);
       this.abilities[name] = null;
       this.updateAbility(name, text, ...linkedParams);
     }
@@ -91,7 +91,7 @@
 
     updateAbility(name, text, ...linkedParams) {
       if (!this.hasAbility(name))
-        throw `Unknown ability ${name}`;
+        throw Error(`Unknown ability ${name}`);
       if (text)
         this.abilities[name] = {text: text, params: linkedParams};
       if (this.currentAbility === name)
@@ -100,13 +100,13 @@
 
     deleteAbility(name) {
       if (!this.hasAbility(name))
-        throw `Unknown ability ${name}`;
+        throw Error(`Unknown ability ${name}`);
       delete this.abilities[name];
     }
 
     useAbility(name) {
       if (!this.hasAbility(name) && name !== null)
-        throw `Unknown ability ${name}`;
+        throw Error(`Unknown ability ${name}`);
       if (this.currentAbility === name) return;
       this.currentAbility = name;
       this.refreshText();
@@ -130,27 +130,27 @@
 
     addInternalAttribute(name, value) {
       if (this.hasInternalAttribute(name))
-        throw `Internal attribute ${name} already exists`;
+        throw Error(`Internal attribute ${name} already exists`);
       this.internal_attributes[name] = value;
     }
 
     updateInternalAttribute(name, value) {
       if (!this.hasInternalAttribute(name))
-        throw `Unknown internal attribute ${name}`;
+        throw Error(`Unknown internal attribute ${name}`);
       this.internal_attributes[name] = value;
       this.refreshText();
     }
 
     deleteInternalAttribute(name) {
       if (!this.hasInternalAttribute(name))
-        throw `Unknown internal attribute ${name}`;
+        throw Error(`Unknown internal attribute ${name}`);
       delete this.internal_attributes[name];
       this.refreshText();
     }
 
     renameInternalAttribute(name, new_name) {
       if (!this.hasInternalAttribute(name))
-        throw `Unknown internal attribute ${name}`;
+        throw Error(`Unknown internal attribute ${name}`);
       this.addInternalAttribute(new_name, this.internal_attributes[name]);
       this.deleteInternalAttribute(name);
       this.refreshText();
@@ -158,7 +158,7 @@
 
     getInternalAttribute(name) {
       if (!this.hasInternalAttribute(name))
-        throw `Unknown internal attribute ${name}`;
+        throw Error(`Unknown internal attribute ${name}`);
       return this.internal_attributes[name];
     }
 
@@ -172,7 +172,7 @@
 
     addParameter(name, options = {}) {
       if (this.hasParameter(name))
-        throw `Parameter ${name} already exists`;
+        throw Error(`Parameter ${name} already exists`);
       options = Object.assign({}, options);
       const p = new this.editor.Parameter(name, this.editor);
       options.node = p;
@@ -183,7 +183,7 @@
 
     updateParameter(name, options = {}, soft = true) {
       if (!this.hasParameter(name))
-        throw `Unknown parameter ${name}`;
+        throw Error(`Unknown parameter ${name}`);
       options = Object.assign({}, options);
       if (soft)
         options = Object.assign({}, this.parameters[name], options);
@@ -199,7 +199,7 @@
 
     deleteParameter(name) {
       if (!this.hasParameter(name))
-        throw `Unknown parameter ${name}`;
+        throw Error(`Unknown parameter ${name}`);
       const nodeWasVisible = this.getParameter(name).parentNode ? true : false;
       delete this.parameters[name];
       if (nodeWasVisible)
@@ -208,7 +208,7 @@
 
     renameParameter(name, new_name) {
       if (!this.hasParameter(name))
-        throw `Unknown parameter ${name}`;
+        throw Error(`Unknown parameter ${name}`);
       const nodeWasVisible = this.getParameter(name).parentNode ? true : false;
       this.parameters[new_name] = this.parameters[name];
       delete this.parameters[name];
@@ -218,7 +218,7 @@
 
     getParameter(name) {
       if (!this.hasParameter(name))
-        throw `Unknown parameter ${name}`;
+        throw Error(`Unknown parameter ${name}`);
       return this.parameters[name].node;
     }
 
@@ -233,13 +233,13 @@
     addInput(name, options = {}) {
       options = Object.assign({}, options);
       if (this.hasInput(name))
-        throw `Input ${name} already exists`;
+        throw Error(`Input ${name} already exists`);
       return this.addInput_(name, options);
     }
 
     updateInput(name, options = {}, soft = true) {
       if (!this.hasInput(name))
-        throw `Unknown input ${name}`;
+        throw Error(`Unknown input ${name}`);
       options = Object.assign({}, options);
       if (soft) {
         options.value = options.value || this.getInputValue(name);
@@ -254,7 +254,7 @@
 
     deleteInput(name) {
       if (!this.hasInput(name))
-        throw `Unknown input ${name}`;
+        throw Error(`Unknown input ${name}`);
       const nodeWasVisible = this.getInput(name).parentNode ? true : false;
       delete this.inputs[name];
       if (nodeWasVisible)
@@ -263,7 +263,7 @@
 
     renameInput(name, new_name) {
       if (!this.hasInput(name))
-        throw `Unknown input ${name}`;
+        throw Error(`Unknown input ${name}`);
       const nodeWasVisible = this.getInput(name).parentNode ? true : false;
       this.addInput(new_name, this.inputs[name]);
       this.deleteInput(name);
@@ -273,19 +273,19 @@
 
     getInput(name) {
       if (!this.hasInput(name))
-        throw `Unknown input ${name}`;
+        throw Error(`Unknown input ${name}`);
       return this.inputs[name].node;
     }
 
     getInputValue(name) {
       if (!this.hasInput(name))
-        throw `Unknown input ${name}`;
+        throw Error(`Unknown input ${name}`);
       return this.inputs[name].value;
     }
 
     setInputValue(name, value) {
       if (!this.hasInput(name))
-        throw `Unknown input ${name}`;
+        throw Error(`Unknown input ${name}`);
       this.setInputValue_(this.inputs[name], value);
       this.inputs[name].value = value;
     }
@@ -305,7 +305,7 @@
       const linkedParams = obj.params;
       const selectors = ftext.match(/(%p|%i|%a|%d)/g) || [];
       if (selectors.length !== linkedParams.length)
-        throw 'Invalid number of linked parameters passed';
+        throw Error('Invalid number of linked parameters passed');
       this.children[0].innerHTML = '';
       let i = 0;
       for (const strpart of ftext.split(/(%p|%i|%a|%d|\n)/g)) {

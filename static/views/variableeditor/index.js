@@ -86,7 +86,7 @@
 
     updateValue(val) {
       window.API.postJson('/extensions/macrozilla/api/update-variable', {id: this.variable.id, value: JSON.stringify(val)}).then((res) => {
-        console.log(res);
+        console.debug(res);
       });
     }
 
