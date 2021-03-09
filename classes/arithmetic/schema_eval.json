@@ -5,7 +5,7 @@
   "allOf": [{"$ref": "/class"}],
   "properties": {
     "qualifier": {
-      "enum": ["not", "abs", "negate", "&", "|", "^", "+", "-", "*", "/", "pow", "%", "round", "cmp"]
+      "enum": ["not", "abs", "negate", "&", "|", "^", "+", "-", "*", "/", "pow", "%", "round", "cmp", "as_string", "as_number", "as_boolean", "as_integer", "typeof"]
     },
     "cmp": {
       "type": "string", 
@@ -19,7 +19,7 @@
   "oneOf": [
     {
       "properties": {
-        "qualifier": {"enum": ["not", "abs", "negate"]}
+        "qualifier": {"enum": ["not", "abs", "negate", "as_string", "as_number", "as_boolean", "as_integer", "typeof"]}
       },
       "required": ["operand"]
     },

@@ -41,22 +41,22 @@
           return;
         }
       }
-      console.log('executing');
+      console.debug('executing');
       await window.API.postJson('/extensions/macrozilla/api/exec-macro', {id: this.macro_id});
     }
 
     async loadMacro() {
       const res = await window.API.postJson('/extensions/macrozilla/api/get-macro', {id: this.macro_id});
-      console.log('loading', JSON.stringify(res.macro.description));
+      console.debug('loading', JSON.stringify(res.macro.description));
       this.textarea.value = JSON.stringify(res.macro.description, null, 2);
     }
 
     async saveMacro() {
       const json = JSON.parse(this.textarea.value);
       this.textarea.value = JSON.stringify(json, null, 2);
-      console.log('saving', JSON.stringify(json));
+      console.debug('saving', JSON.stringify(json));
       const res = await window.API.postJson('/extensions/macrozilla/api/update-macro', {id: this.macro_id, description: json});
-      console.log('result', res);
+      console.debug('result', res);
     }
 
     async saveMacroAndUpdateInterface() {

@@ -102,15 +102,48 @@ async function cmp() {
     case '<=': cmp = (a, b) => a <= b; break;
     case '!=': cmp = (a, b) => a != b; break;
   }
-  if (typeof lval == typeof rval) {
-    return this.encodeBoolean(cmp(lval, rval));
-  } else if (typeof lval == 'string' || typeof rval == 'string') {
-    return this.encodeBoolean(cmp(this.decodeString(lraw), this.decodeString(rraw)));
-  } else if (typeof lval == 'number' || typeof rval == 'number') {
-    return this.encodeBoolean(cmp(this.decodeNumber(lraw), this.decodeNumber(rraw)));
-  } else if (typeof lval == 'boolean' || typeof rval == 'boolean') {
-    return this.encodeBoolean(cmp(this.decodeBoolean(lraw), this.decodeBoolean(rraw)));
+  if (typeof lval != typeof rval) {
+    this.log.w({title: 'Attempting to compare incompatible types', description: `Attempting to compare '${lraw}' and '${rraw}', but their types do not match! Did you consider using 'as ...' or 'type of ...'?`});
   }
+  return this.encodeBoolean(typeof lval == typeof rval && cmp(lval, rval));
+}
+
+async function as(fn) {
+  const op = await this.call(this.params.description.operand, 'eval');
+  const log = this.log;
+  this.log = {w: () => {}};
+  const res = this.encode(fn.call(this, op));
+  this.log = log;
+  return res;
+}
+
+async function as_string() {
+  return await as.call(this, this.decodeString.bind(this));
+}
+
+async function as_number() {
+  return await as.call(this, this.decodeNumber.bind(this));
+}
+
+async function as_boolean() {
+  return await as.call(this, this.decodeBoolean.bind(this));
+}
+
+async function as_integer() {
+  return await as.call(this, this.decodeInteger.bind(this));
+}
+
+async function type_of() {
+  const op = await this.call(this.params.description.operand, 'eval');
+  const d = this.decode(op);
+  if (d === null) {
+    return this.encodeString('none');
+  } else if (typeof d === 'string') {
+    return this.encodeString('text');
+  } else if (typeof d === 'boolean') {
+    return this.encodeString('true/false');
+  }
+  return this.encodeString(typeof d);
 }
 
 async function incdec(num) {
@@ -157,6 +190,16 @@ module.exports = {
         return await round.call(this);
       case 'cmp':
         return await cmp.call(this);
+      case 'as_string':
+        return await as_string.call(this);
+      case 'as_number':
+        return await as_number.call(this);
+      case 'as_boolean':
+        return await as_boolean.call(this);
+      case 'as_integer':
+        return await as_integer.call(this);
+      case 'typeof':
+        return await type_of.call(this);
     }
     return '';
   },
