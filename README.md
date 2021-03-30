@@ -3,7 +3,7 @@ This add-on for Mozilla WebThings Gateway enables you to build so-called macros 
 ![Screenshot_20200928_150609](https://user-images.githubusercontent.com/44091658/94436365-a6ce5c80-019c-11eb-8b5b-eb291361dcd4.png)
 
 # Installation
-Install this addon through the addon list or clone it to `~/.mozilla-iot/addons/` using git.
+Install this addon through the addon list or clone it to `~/.webthingsio/addons/` using git.
 
 Reload your gateway's website (F5). There should now be two additional entries in the menu of your gateway's website.
 
