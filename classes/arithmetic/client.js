@@ -17,7 +17,7 @@
       this.binaryCard('round', 'Round', 'Round %p to %ps');
       this.unaryCard('negate', 'Negate', '-%p');
       this.binaryCard('pow', 'Power');
-      this.binaryCard('mod', 'Modulo');
+      this.binaryCard('%', 'Modulo');
       this.unaryCard('abs', 'Absolute', '|%p|');
 
       {
