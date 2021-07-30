@@ -76,10 +76,6 @@
       });
     }
 
-    onTriggerUpdate(card) {
-      this.setTextForTrigger(card);
-    }
-
     setupThing(card) {
       const t = this.things[card.getInternalAttribute('thing')];
       card.setTooltipText(`Thing ${t.title}`);
@@ -101,8 +97,7 @@
     }
 
     setupTrigger(card) {
-      if (card.currentAbility === 'trigger')
-        this.setTextForTrigger(card);
+      this.setTextForTrigger(card);
     }
 
     setTextForTrigger(card) {
@@ -126,12 +121,12 @@
       const t = this.things[card.getInternalAttribute('thing')];
       const value = card.getCachedSerialization().action || t.actions[0];
       card.updateInput('action', {enum: t.actions, venum: t.vactions, value: value});
-      if (card.currentAbility == 'thing-action')
-        this.setTextForAction(card);
+      this.setTextForAction(card);
     }
 
     setTextForAction(card) {
       const action = card.getInputValue('action');
+      if (!action) return;
       const t = this.things[card.getInternalAttribute('thing')];
       if (t.rawactions[action].description)
         card.getInput('action').title = `Description: ${t.rawactions[action].description}`;
