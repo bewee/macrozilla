@@ -193,6 +193,22 @@ module.exports = {
           val = null;
           break;
       }
+      if (prop.description.type === 'number' || prop.description.type === 'integer') {
+        if ('maximum' in prop.description && val > prop.description.maximum) {
+          val = prop.description.maximum;
+        }
+        if ('minimum' in prop.description && val < prop.description.minimum) {
+          val = prop.description.minimum;
+        }
+        let multipleOf = 1.0;
+        if ('multipleOf' in prop.description) multipleOf = prop.description.multipleOf;
+        val = Math.round(val / multipleOf) * multipleOf;
+        // Deal with floating point nonsense
+        if (`${multipleOf}`.includes('.')) {
+          const precision = `${multipleOf}`.split('.')[1].length;
+          val = Number(val.toFixed(precision));
+        }
+      }
       await prop.setValue(val);
     } catch (ex) {
       this.log.e({title: `Failed to set property ${property} of thing ${thing} to value ${this.params.value}`, message: ex.message});
