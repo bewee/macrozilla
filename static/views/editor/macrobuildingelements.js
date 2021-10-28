@@ -345,6 +345,7 @@
     }
 
     addInput_(name, options) {
+      options = JSON.parse(JSON.stringify(options));
       options.type = options.type || 'string';
       options.value =
         options.value ||
